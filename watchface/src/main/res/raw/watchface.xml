@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WatchFace width="450" height="450">
+    <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+    <Metadata key="PREVIEW_TIME" value="15:23:37" />
+    <Scene backgroundColor="#000000">
+        <PartText x="0" y="185" width="450" height="80">
+            <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="42" color="#FFFFFF">
+                    <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template>
+                </Font>
+            </Text>
+        </PartText>
+    </Scene>
+</WatchFace>
