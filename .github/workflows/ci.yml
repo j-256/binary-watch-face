@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  ANDROID_CLI_VERSION: 1.0.15985488
+  ANDROID_CLI_SHA256: 7d0f4b41e6511ab6eeeaec4b885442f02aded270cf83cb75f521aca2c03d593d
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Android CLI
+        shell: bash
+        run: |
+          cli_dir="${RUNNER_TEMP}/android-cli"
+          cli_url="https://dl.google.com/android/cli/${ANDROID_CLI_VERSION}/linux_x86_64/android"
+          install -d "$cli_dir"
+          curl -fsSL "$cli_url" -o "$cli_dir/android"
+          echo "${ANDROID_CLI_SHA256}  $cli_dir/android" | sha256sum --check
+          chmod +x "$cli_dir/android"
+          echo "$cli_dir" >> "$GITHUB_PATH"
+
+      - name: Install Android SDK packages
+        run: android --no-metrics --sdk="$ANDROID_HOME" sdk install platforms/android-37.0 build-tools/36.0.0
+
+      - name: Test the generator
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 tools/generate_watchface.py --check
+
+      - name: Build the APK and app bundle
+        run: ./gradlew --no-daemon check assembleDebug bundleRelease
