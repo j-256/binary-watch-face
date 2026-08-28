@@ -4,17 +4,19 @@ Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, 
 
 ![Binary Watch Face in 24-hour mode](watchface/src/main/res/drawable/preview.png)
 
-The leftmost dot in each row is the most significant bit. Add the weights above the lit dots to read the value. For example, `23` is `16 + 4 + 2 + 1`.
+The leftmost dot in each row is the most significant bit. Add the weights above the lit dots to read the value. For example, `23` is `16 + 4 + 2 + 1`. Every row spans the same left and right endpoints while distributing its four, five, or six bits evenly between them.
 
 ## Features
 
-- Follows the watch's 12- or 24-hour system setting, with overrides for either mode
+- Offers direct 12- or 24-hour clock selection, defaulting to 24-hour mode
 - Uses four hour bits in 12-hour mode, five in 24-hour mode, and six for minutes and seconds
-- Offers optional decimal hints, bit weights, a seconds row, date, battery level, and second ticks
-- Defaults to phosphor terminal green on true black, with monochrome, amber, cyan, red, and violet themes
+- Offers optional full-dial decimal values, bit weights, a seconds row, multiple date formats, and decimal, hexadecimal, or binary watch-battery readouts
+- Defaults dots and text independently to phosphor terminal green, with a broad palette and dark or light appearance
+- Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
+- Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable two-, three-, and four-slot layouts
 - Preserves normal provider actions on complications without defining any whole-face or custom tap actions
-- Removes high-activity decoration, hints, weights, and complications in always-on display mode
+- Uses dense patterned dots and the selected color in always-on display mode by default, with optional decimal values, date, weekday, and watch battery while keeping complications legible
 
 ## Compatibility
 
@@ -22,13 +24,32 @@ The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Fo
 
 ## Customize
 
-Long-press the active face and choose **Edit**. The on-watch editor groups related switches onto compact pages. Available settings cover color, clock mode, date format, the complication count, the seconds row, decimal hints, bit weights, battery level, and second ticks. Each enabled complication can be assigned through the normal Wear OS complication picker.
+Long-press the active face and choose **Edit**. Every choice names both the setting and selected value, such as **Dots: Terminal green** or **Seconds: Hidden**, and the package supplies a matching highlight overlay for editors that support it. Each enabled complication can be assigned through the normal Wear OS complication picker.
 
-The complication layouts keep the upper-left and upper-right providers stable when the count changes:
+| Setting | Options |
+| --- | --- |
+| Dots color | Terminal green by default, plus white, warm colors, cool colors, greens, and grays |
+| Text color | The same palette, selected independently and defaulting to terminal green |
+| Theme | Dark by default or light |
+| Backdrop color | The full palette, selected independently and defaulting to medium gray |
+| Backdrop opacity | 15%, 30% by default, 50%, 75%, or 100% |
+| Backdrop layout | Small, normal, or large at a raised, centered, or lowered position |
+| Backdrop visibility | Active only by default, hidden, AOD only, or active and AOD |
+| Size | Tiny, small, normal, large by default, or huge |
+| Clock mode | 24-hour by default or 12-hour |
+| Effect | None, glow by default, or bezel |
+| Ticks | None, single, wave, boost, or all by default |
+| Binary display | Optional seconds row and bit weights |
+| Date | Nov 26, 11/26, 26 Nov, 26/11, 26.11, ISO, Unix timestamp, or hidden, with independent weekday and uppercase controls |
+| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden |
+| Complications | Two by default, three, or four |
+| Always-on display | Optional date, weekday, and watch-battery presets, plus optional monochrome rendering |
 
-- Two: upper left and upper right
-- Three: the upper pair plus lower center
-- Four: the upper pair plus lower left and lower right
+The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
+
+- Two: lower left and lower right
+- Three: the lower pair plus a smaller lower center slot
+- Four: the lower pair plus upper left and upper right
 
 ## Toolchain
 
@@ -74,7 +95,7 @@ android --no-metrics install \
     --apks=watchface/build/outputs/apk/debug/watchface-debug.apk
 ```
 
-On the watch, long-press the active face, scroll to **Add new**, and select **Binary Watch Face**. The release app bundle is written beneath `watchface/build/outputs/bundle/release/` and must be signed with a private release key before publication.
+On the watch, long-press the active face, scroll to **Add new**, and select **Binary**. The release app bundle is written beneath `watchface/build/outputs/bundle/release/` and must be signed with a private release key before publication.
 
 ## Verification
 

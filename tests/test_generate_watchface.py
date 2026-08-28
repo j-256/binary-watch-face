@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import importlib.util
 import io
+import math
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 GENERATOR_PATH = PROJECT_ROOT / "tools/generate_watchface.py"
+STRINGS_PATH = PROJECT_ROOT / "watchface/src/main/res/values/strings.xml"
 MODULE_SPEC = importlib.util.spec_from_file_location("generate_watchface", GENERATOR_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"Unable to load {GENERATOR_PATH}")
@@ -22,9 +24,14 @@ MODULE_SPEC.loader.exec_module(GENERATOR)
 
 
 class WatchFaceGeneratorTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.xml = GENERATOR.render_watchface()
-        self.root = ET.fromstring(self.xml)
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.xml = GENERATOR.render_watchface()
+        cls.root = ET.fromstring(cls.xml)
+        cls.strings = {
+            string.get("name"): string.text
+            for string in ET.parse(STRINGS_PATH).getroot().findall("string")
+        }
 
     def user_configuration(self, configuration_id: str) -> ET.Element:
         configurations = self.root.find("UserConfigurations")
@@ -35,13 +42,177 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                 return configuration
         self.fail(f"Missing user configuration: {configuration_id}")
 
-    def test_terminal_green_is_the_default_theme(self) -> None:
-        themes = self.user_configuration(GENERATOR.THEME_ID)
-        self.assertEqual(themes.get("defaultValue"), "terminal")
-        terminal = themes.find("ColorOption[@id='terminal']")
-        self.assertIsNotNone(terminal)
-        assert terminal is not None
-        self.assertEqual(terminal.get("colors").split()[0], "#39FF88")
+    def test_reference_setting_catalog_is_available_without_touch_shortcuts(self) -> None:
+        expected = {
+            GENERATOR.DOT_COLOR_ID,
+            GENERATOR.TEXT_COLOR_ID,
+            GENERATOR.APPEARANCE_ID,
+            GENERATOR.BACKDROP_COLOR_ID,
+            GENERATOR.BACKDROP_OPACITY_ID,
+            GENERATOR.BACKDROP_LAYOUT_ID,
+            GENERATOR.BACKDROP_VISIBILITY_ID,
+            GENERATOR.SIZE_ID,
+            GENERATOR.CLOCK_MODE_ID,
+            GENERATOR.DOT_EFFECT_ID,
+            GENERATOR.TICK_STYLE_ID,
+            GENERATOR.SHOW_SECONDS_ID,
+            GENERATOR.SHOW_WEIGHTS_ID,
+            GENERATOR.SHOW_WEEKDAY_ID,
+            GENERATOR.UPPERCASE_DATE_ID,
+            GENERATOR.AMBIENT_INFO_ID,
+            GENERATOR.AMBIENT_COLOR_ID,
+            GENERATOR.DATE_FORMAT_ID,
+            GENERATOR.BATTERY_DISPLAY_ID,
+            GENERATOR.COMPLICATION_COUNT_ID,
+        }
+        configurations = self.root.find("UserConfigurations")
+        self.assertIsNotNone(configurations)
+        assert configurations is not None
+        actual = {configuration.get("id") for configuration in configurations}
+        self.assertEqual(actual, expected)
+        self.assertEqual(len(configurations), 20)
+        self.assertFalse(any("touch" in str(configuration_id).lower() for configuration_id in actual))
+
+    def test_terminal_green_is_the_default_dot_and_text_color(self) -> None:
+        expected_options = [choice.option_id for choice in GENERATOR.COLOR_CHOICES]
+        for configuration_id in (GENERATOR.DOT_COLOR_ID, GENERATOR.TEXT_COLOR_ID):
+            with self.subTest(configuration_id=configuration_id):
+                colors = self.user_configuration(configuration_id)
+                self.assertEqual(colors.get("defaultValue"), "terminal")
+                options = colors.findall("ColorOption")
+                self.assertEqual([option.get("id") for option in options], expected_options)
+                terminal = colors.find("ColorOption[@id='terminal']")
+                self.assertIsNotNone(terminal)
+                assert terminal is not None
+                terminal_colors = terminal.get("colors", "").split()
+                self.assertEqual(terminal_colors, ["#28FE14", "#0C4A06", "#28FE14"])
+                self.assertEqual(terminal_colors[2], terminal_colors[0])
+
+    def test_backdrop_has_color_opacity_layout_and_visibility_controls(self) -> None:
+        color = self.user_configuration(GENERATOR.BACKDROP_COLOR_ID)
+        self.assertEqual(color.get("defaultValue"), GENERATOR.DEFAULT_BACKDROP_COLOR_ID)
+        self.assertEqual(
+            [option.get("id") for option in color.findall("ColorOption")],
+            [choice.option_id for choice in GENERATOR.COLOR_CHOICES],
+        )
+        medium_gray = color.find("ColorOption[@id='medium_gray']")
+        self.assertIsNotNone(medium_gray)
+        assert medium_gray is not None
+        self.assertEqual(medium_gray.get("colors"), "#757575")
+        self.assertEqual(
+            GENERATOR.COLOR_BACKDROP,
+            f"[CONFIGURATION.{GENERATOR.BACKDROP_COLOR_ID}.0]",
+        )
+
+        for configuration_id, default, option_ids in (
+            (
+                GENERATOR.BACKDROP_OPACITY_ID,
+                GENERATOR.DEFAULT_BACKDROP_OPACITY_ID,
+                [choice.option_id for choice in GENERATOR.BACKDROP_OPACITY_CHOICES],
+            ),
+            (
+                GENERATOR.BACKDROP_LAYOUT_ID,
+                GENERATOR.DEFAULT_BACKDROP_LAYOUT_ID,
+                [choice.option_id for choice in GENERATOR.BACKDROP_LAYOUT_CHOICES],
+            ),
+            (
+                GENERATOR.BACKDROP_VISIBILITY_ID,
+                GENERATOR.DEFAULT_BACKDROP_VISIBILITY_ID,
+                [option_id for option_id, _ in GENERATOR.BACKDROP_VISIBILITY_OPTIONS],
+            ),
+        ):
+            with self.subTest(configuration_id=configuration_id):
+                configuration = self.user_configuration(configuration_id)
+                self.assertEqual(configuration.get("defaultValue"), default)
+                self.assertEqual(
+                    [option.get("id") for option in configuration.findall("ListOption")],
+                    option_ids,
+                )
+
+    def test_editor_values_identify_the_setting_they_change(self) -> None:
+        configurations = self.root.find("UserConfigurations")
+        self.assertIsNotNone(configurations)
+        assert configurations is not None
+        for configuration in configurations:
+            for option in configuration:
+                with self.subTest(configuration=configuration.get("id"), option=option.get("id")):
+                    label_id = option.get("displayName")
+                    self.assertIn(label_id, self.strings)
+                    self.assertIn(":", self.strings[label_id])
+
+    def test_editor_labels_escape_android_format_characters(self) -> None:
+        configurations = self.root.find("UserConfigurations")
+        self.assertIsNotNone(configurations)
+        assert configurations is not None
+        for configuration in configurations:
+            for option in configuration:
+                label_id = option.get("displayName")
+                label = self.strings[label_id]
+                with self.subTest(
+                    configuration=configuration.get("id"),
+                    option=option.get("id"),
+                ):
+                    self.assertNotIn("%", label.replace("%%", ""))
+
+    def test_every_editor_setting_has_an_existing_highlight(self) -> None:
+        configurations = self.root.find("UserConfigurations")
+        self.assertIsNotNone(configurations)
+        assert configurations is not None
+        self.assertEqual(
+            {configuration.get("id") for configuration in configurations},
+            set(GENERATOR.CONFIGURATION_HIGHLIGHTS),
+        )
+        for configuration in configurations:
+            with self.subTest(configuration=configuration.get("id")):
+                highlight = configuration.get("highlight", "")
+                self.assertTrue(highlight.startswith("@drawable/"))
+                drawable_name = highlight.removeprefix("@drawable/")
+                drawable = PROJECT_ROOT / f"watchface/src/main/res/drawable/{drawable_name}.xml"
+                self.assertTrue(drawable.is_file())
+
+    def test_binary_settings_are_visible_two_choice_lists(self) -> None:
+        expected_ids = {setting_id for setting_id, *_ in GENERATOR.BINARY_SETTINGS}
+        for setting_id in expected_ids:
+            with self.subTest(setting_id=setting_id):
+                setting = self.user_configuration(setting_id)
+                self.assertEqual(setting.tag, "ListConfiguration")
+                self.assertEqual(
+                    [option.get("id") for option in setting.findall("ListOption")],
+                    ["TRUE", "FALSE"],
+                )
+        self.assertNotIn("BooleanConfiguration", self.xml)
+        self.assertNotIn("BooleanOption", self.xml)
+
+    def test_reference_appearance_size_effect_and_tick_options_are_available(self) -> None:
+        expected = (
+            (GENERATOR.APPEARANCE_ID, "dark", ["dark", "light"]),
+            (GENERATOR.SIZE_ID, "large", ["tiny", "small", "normal", "large", "huge"]),
+            (GENERATOR.CLOCK_MODE_ID, "24", ["12", "24"]),
+            (GENERATOR.DOT_EFFECT_ID, "glow", ["none", "glow", "bezel"]),
+            (GENERATOR.TICK_STYLE_ID, "all", ["none", "single", "wave", "boost", "all"]),
+        )
+        for configuration_id, default, option_ids in expected:
+            with self.subTest(configuration_id=configuration_id):
+                configuration = self.user_configuration(configuration_id)
+                self.assertEqual(configuration.get("defaultValue"), default)
+                self.assertEqual([option.get("id") for option in configuration], option_ids)
+
+    def test_bezel_effect_draws_a_visible_ring_and_core(self) -> None:
+        bezel = next(
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_bezel")
+        )
+        ellipses = bezel.findall("./PartDraw/Ellipse")
+        self.assertEqual(len(ellipses), 3)
+        self.assertEqual(
+            [ellipse.find("Fill").get("color") for ellipse in ellipses],
+            [
+                GENERATOR.COLOR_DOT_ACTIVE,
+                GENERATOR.COLOR_BACKGROUND,
+                GENERATOR.COLOR_DOT_ACTIVE,
+            ],
+        )
 
     def test_true_binary_rows_cover_12_and_24_hour_time(self) -> None:
         self.assertEqual(GENERATOR.HOUR_12_WEIGHTS, (8, 4, 2, 1))
@@ -49,9 +220,215 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertEqual(GENERATOR.SIX_BIT_WEIGHTS, (32, 16, 8, 4, 2, 1))
         self.assertIn("[HOUR_1_12]", self.xml)
         self.assertIn("[HOUR_0_23]", self.xml)
-        self.assertIn("[IS_24_HOUR_MODE]", self.xml)
+        self.assertNotIn("[IS_24_HOUR_MODE]", self.xml)
         self.assertIn("floor(([HOUR_0_23]) / 16) % 2 == 1 ? 255 : 0", self.xml)
         self.assertIn("floor(([MINUTE]) / 32) % 2 == 1 ? 255 : 0", self.xml)
+
+    def test_clock_tree_is_shared_across_complication_layouts(self) -> None:
+        clock_modes = self.root.findall(
+            f"./Scene/ListConfiguration[@id='{GENERATOR.CLOCK_MODE_ID}']"
+        )
+        self.assertEqual(len(clock_modes), 1)
+        self.assertEqual(
+            [option.get("id") for option in clock_modes[0].findall("ListOption")],
+            ["12", "24"],
+        )
+        self.assertEqual(
+            self.root.findall(
+                f"./Scene/ListConfiguration[@id='{GENERATOR.COMPLICATION_COUNT_ID}']"
+            ),
+            [],
+        )
+
+    def test_clock_rows_use_the_available_space_when_seconds_are_hidden(self) -> None:
+        self.assertEqual(GENERATOR.CLOCK_ROW_LAYOUT[False], (150, 210))
+        self.assertEqual(GENERATOR.CLOCK_ROW_LAYOUT[True], (106, 162, 218))
+        large_size = next(
+            size for size in GENERATOR.SIZE_CHOICES if size.option_id == "large"
+        )
+        large_dot_size = round(GENERATOR.REFERENCE_DOT_SIZE * large_size.scale)
+        no_seconds_bottom = GENERATOR.CLOCK_ROW_LAYOUT[False][-1] + large_dot_size
+        seconds_bottom = GENERATOR.CLOCK_ROW_LAYOUT[True][-1] + large_dot_size
+        complication_top = min(slot.y for slot in GENERATOR.COMPLICATION_SLOTS[:2])
+        self.assertLessEqual(complication_top - no_seconds_bottom, 42)
+        self.assertLessEqual(complication_top - seconds_bottom, 34)
+
+    def test_ticks_render_above_the_clock_and_below_complications(self) -> None:
+        scene = self.root.find("Scene")
+        self.assertIsNotNone(scene)
+        assert scene is not None
+        children = list(scene)
+        clock_index = next(
+            index
+            for index, child in enumerate(children)
+            if child.tag == "ListConfiguration" and child.get("id") == GENERATOR.CLOCK_MODE_ID
+        )
+        tick_index = next(
+            index
+            for index, child in enumerate(children)
+            if child.tag == "ListConfiguration" and child.get("id") == GENERATOR.TICK_STYLE_ID
+        )
+        complication_indexes = [
+            index for index, child in enumerate(children) if child.tag == "ComplicationSlot"
+        ]
+        self.assertLess(clock_index, tick_index)
+        self.assertTrue(complication_indexes)
+        self.assertLess(tick_index, min(complication_indexes))
+
+    def test_binary_rows_share_endpoints_and_distribute_their_bits(self) -> None:
+        for size in GENERATOR.SIZE_CHOICES:
+            with self.subTest(size=size.option_id):
+                geometries = {bit_count: GENERATOR.bit_geometry(bit_count, size) for bit_count in (4, 5, 6)}
+                endpoints = {(positions[0], positions[-1]) for _, positions in geometries.values()}
+                self.assertEqual(len(endpoints), 1)
+                for bit_count, (dot_size, positions) in geometries.items():
+                    self.assertEqual(len(positions), bit_count)
+                    self.assertEqual(tuple(sorted(positions)), positions)
+                    self.assertEqual(dot_size, round(GENERATOR.REFERENCE_DOT_SIZE * size.scale))
+
+        large = next(size for size in GENERATOR.SIZE_CHOICES if size.option_id == "large")
+        self.assertEqual(GENERATOR.bit_geometry(4, large), (25, (110, 178, 248, 316)))
+        self.assertEqual(GENERATOR.bit_geometry(5, large), (25, (110, 160, 212, 264, 316)))
+        self.assertEqual(GENERATOR.bit_geometry(6, large), (25, (110, 150, 192, 234, 274, 316)))
+
+    def test_display_size_scales_one_shared_row_tree(self) -> None:
+        self.assertEqual(
+            self.root.findall(
+                f"./Scene//ListConfiguration[@id='{GENERATOR.SIZE_ID}']"
+            ),
+            [],
+        )
+        expected_expression = GENERATOR.configuration_value_expression(
+            GENERATOR.SIZE_ID,
+            GENERATOR.DISPLAY_SIZE_VALUES,
+            GENERATOR.DEFAULT_SIZE_ID,
+        )
+        scaled_rows = [
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_scaled")
+        ]
+        self.assertTrue(scaled_rows)
+        for row in scaled_rows:
+            with self.subTest(row=row.get("name")):
+                transforms = {
+                    transform.get("target"): transform.get("value")
+                    for transform in row.findall("Transform")
+                }
+                self.assertEqual(
+                    transforms,
+                    {
+                        "scaleX": expected_expression,
+                        "scaleY": expected_expression,
+                    },
+                )
+                self.assertEqual(
+                    len(
+                        [
+                            group
+                            for group in row.iter("Group")
+                            if group.get("name", "").endswith("_scaled")
+                        ]
+                    ),
+                    1,
+                )
+
+    def test_battery_readout_defaults_to_decimal_and_supports_other_bases(self) -> None:
+        configuration = self.user_configuration(GENERATOR.BATTERY_DISPLAY_ID)
+        self.assertEqual(configuration.get("defaultValue"), "decimal")
+        self.assertEqual(
+            [option.get("id") for option in configuration.findall("ListOption")],
+            ["decimal", "hex", "binary", "off"],
+        )
+
+        scene_configuration = self.root.find(
+            f"./Scene/ListConfiguration[@id='{GENERATOR.BATTERY_DISPLAY_ID}']"
+        )
+        self.assertIsNotNone(scene_configuration)
+        assert scene_configuration is not None
+        hex_template = scene_configuration.find("./ListOption[@id='hex']/.//Template")
+        self.assertIsNotNone(hex_template)
+        assert hex_template is not None
+        self.assertEqual(hex_template.text, "0x%x")
+        binary_templates = {
+            template.text
+            for template in scene_configuration.findall("./ListOption[@id='binary']/.//Template")
+        }
+        self.assertIn("0b%d", binary_templates)
+        self.assertIn("0b%d%d%d%d%d%d%d", binary_templates)
+        battery_text = scene_configuration.findall(".//PartText")
+        self.assertTrue(battery_text)
+        self.assertTrue(
+            all(text.get("y") == str(GENERATOR.BATTERY_READOUT_Y) for text in battery_text)
+        )
+        lower_bottom = max(
+            slot.y + slot.size for slot in GENERATOR.COMPLICATION_SLOTS[:2]
+        )
+        self.assertGreaterEqual(GENERATOR.BATTERY_READOUT_Y - lower_bottom, 7)
+
+    def test_date_controls_cover_reference_formats_and_ambient_options(self) -> None:
+        date = self.user_configuration(GENERATOR.DATE_FORMAT_ID)
+        self.assertEqual(date.get("defaultValue"), "iso")
+        self.assertEqual(
+            [option.get("id") for option in date.findall("ListOption")],
+            [specification.option_id for specification in GENERATOR.DATE_FORMATS] + ["off"],
+        )
+        defaults = {
+            GENERATOR.SHOW_WEEKDAY_ID: "TRUE",
+            GENERATOR.UPPERCASE_DATE_ID: "FALSE",
+            GENERATOR.AMBIENT_INFO_ID: "off",
+            GENERATOR.AMBIENT_COLOR_ID: "TRUE",
+        }
+        for configuration_id, default in defaults.items():
+            self.assertEqual(self.user_configuration(configuration_id).get("defaultValue"), default)
+
+    def test_ambient_information_presets_control_date_weekday_and_watch_battery(self) -> None:
+        ambient_info = self.user_configuration(GENERATOR.AMBIENT_INFO_ID)
+        self.assertEqual(
+            [option.get("id") for option in ambient_info.findall("ListOption")],
+            [option_id for option_id, _ in GENERATOR.AMBIENT_INFO_OPTIONS],
+        )
+
+        date = self.root.find(
+            f"./Scene/ListConfiguration[@id='{GENERATOR.DATE_FORMAT_ID}']"
+        )
+        battery = self.root.find(
+            f"./Scene/ListConfiguration[@id='{GENERATOR.BATTERY_DISPLAY_ID}']"
+        )
+        self.assertIsNotNone(date)
+        self.assertIsNotNone(battery)
+        assert date is not None and battery is not None
+        date_expressions = {
+            expression.get("name"): expression.text
+            for expression in date.findall(".//Expression")
+            if expression.get("name", "").startswith("ambient_info_")
+        }
+        self.assertEqual(
+            set(date_expressions.values()),
+            {
+                GENERATOR.configuration_matches_expression(
+                    GENERATOR.AMBIENT_INFO_ID,
+                    GENERATOR.AMBIENT_DATE_OPTION_IDS,
+                ),
+                GENERATOR.configuration_matches_expression(
+                    GENERATOR.AMBIENT_INFO_ID,
+                    GENERATOR.AMBIENT_WEEKDAY_OPTION_IDS,
+                ),
+            },
+        )
+        expected_battery_visibility = (
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_BATTERY_OPTION_IDS)}) "
+            "? 255 : 0"
+        )
+        battery_visibility = [
+            transform.get("value")
+            for transform in battery.findall(".//Transform[@target='alpha']")
+            if "CONFIGURATION.ambientInfo" in transform.get("value", "")
+        ]
+        self.assertTrue(battery_visibility)
+        self.assertTrue(
+            all(value == expected_battery_visibility for value in battery_visibility)
+        )
 
     def test_complication_count_options_enable_exact_layouts(self) -> None:
         configuration = self.user_configuration(GENERATOR.COMPLICATION_COUNT_ID)
@@ -60,6 +437,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             for option in configuration.findall("ListOption")
         }
         self.assertEqual(options, GENERATOR.COMPLICATION_LAYOUTS)
+        self.assertEqual(options, {"2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)})
 
         declared = {
             int(slot.get("slotId", "-1"))
@@ -67,6 +445,78 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         }
         enabled = {slot_id for layout in options.values() for slot_id in layout}
         self.assertEqual(enabled, declared)
+
+    def test_complication_layout_preserves_large_lower_pair(self) -> None:
+        slots = {
+            int(slot.get("slotId", "-1")): slot
+            for slot in self.root.findall("./Scene/ComplicationSlot")
+        }
+        self.assertEqual(
+            tuple(slots[0].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
+            ("lower_left", "87", "277", "106", "106"),
+        )
+        self.assertEqual(
+            tuple(slots[1].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
+            ("lower_right", "257", "277", "106", "106"),
+        )
+        self.assertEqual(
+            tuple(slots[2].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
+            ("lower_center", "190", "264", "70", "70"),
+        )
+        self.assertEqual(
+            tuple(slots[3].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
+            ("middle_left", "0", "183", "84", "84"),
+        )
+        self.assertEqual(
+            tuple(slots[4].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
+            ("middle_right", "366", "183", "84", "84"),
+        )
+
+    def test_complication_slots_clear_the_largest_clock_and_each_other(self) -> None:
+        largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)
+        base = next(
+            size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID
+        )
+        dot_size, positions = GENERATOR.bit_geometry(len(GENERATOR.HOUR_24_WEIGHTS), base)
+        weight_width = dot_size + 14
+        left_weight = positions[0] - 7
+        right_weight = positions[-1] - 7 + weight_width
+        clock_center = GENERATOR.WATCH_SIZE / 2
+        scaled_left = clock_center + largest.scale * (left_weight - clock_center)
+        scaled_right = clock_center + largest.scale * (right_weight - clock_center)
+        side_left, side_right = GENERATOR.COMPLICATION_SLOTS[3:5]
+        self.assertLess(side_left.x + side_left.size, scaled_left)
+        self.assertGreater(side_right.x, scaled_right)
+        for side_slot in (side_left, side_right):
+            slot_center_x = side_slot.x + side_slot.size / 2
+            slot_center_y = side_slot.y + side_slot.size / 2
+            self.assertEqual(slot_center_y, clock_center)
+            distance_from_dial_center = math.hypot(
+                slot_center_x - clock_center,
+                slot_center_y - clock_center,
+            )
+            self.assertLessEqual(
+                distance_from_dial_center + side_slot.size / 2,
+                clock_center,
+            )
+
+        base_dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
+        lowest_row = GENERATOR.CLOCK_ROW_LAYOUT[True][-1]
+        row_center = lowest_row + base_dot_size / 2
+        scaled_dot_bottom = row_center + largest.scale * (
+            lowest_row + base_dot_size - row_center
+        )
+        center_slot = GENERATOR.COMPLICATION_SLOTS[2]
+        self.assertGreaterEqual(center_slot.y - scaled_dot_bottom, 20)
+
+        center_x = center_slot.x + center_slot.size / 2
+        center_y = center_slot.y + center_slot.size / 2
+        for lower_slot in GENERATOR.COMPLICATION_SLOTS[:2]:
+            lower_x = lower_slot.x + lower_slot.size / 2
+            lower_y = lower_slot.y + lower_slot.size / 2
+            center_distance = math.hypot(center_x - lower_x, center_y - lower_y)
+            radius_sum = (center_slot.size + lower_slot.size) / 2
+            self.assertGreater(center_distance, radius_sum)
 
     def test_every_complication_supports_the_promised_types(self) -> None:
         expected = {"SHORT_TEXT", "MONOCHROMATIC_IMAGE", "SMALL_IMAGE", "RANGED_VALUE", "EMPTY"}
@@ -78,11 +528,230 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_face_has_no_custom_launch_actions(self) -> None:
         self.assertEqual(self.root.findall(".//Launch"), [])
 
-    def test_ambient_mode_suppresses_high_activity_elements(self) -> None:
-        ambient_variants = self.root.findall(".//Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
-        self.assertGreater(len(ambient_variants), 0)
+    def test_ambient_mode_uses_dense_patterned_dots_and_suppresses_high_activity_elements(self) -> None:
+        self.assertEqual(GENERATOR.COLOR_AMBIENT_MONO, "#FFFFFF")
+        self.assertEqual(GENERATOR.AMBIENT_DOT_OUTLINE_ALPHA, 255)
+        self.assertEqual(GENERATOR.AMBIENT_TEXT_ALPHA, 255)
+        self.assertEqual(GENERATOR.AMBIENT_COMPLICATION_ALPHA, 255)
+
+        scene = self.root.find("Scene")
+        self.assertIsNotNone(scene)
+        assert scene is not None
+        self.assertIsNotNone(
+            scene.find("Variant[@mode='AMBIENT'][@target='backgroundColor'][@value='#000000']")
+        )
+
+        pattern = self.root.find(".//PartDraw[@name='ambient_dither']")
+        self.assertIsNotNone(pattern)
+        assert pattern is not None
+        lines = pattern.findall("Line")
+        self.assertEqual(len(lines), GENERATOR.AMBIENT_DITHER_ROW_COUNT)
+        first_stroke = lines[0].find("Stroke")
+        self.assertIsNotNone(first_stroke)
+        assert first_stroke is not None
+        expected_intervals = (
+            f"{int(first_stroke.get('thickness', '0')) * GENERATOR.AMBIENT_DITHER_DASH_MULTIPLIER} "
+            f"{GENERATOR.AMBIENT_DITHER_GAP}"
+        )
+        self.assertTrue(
+            all(
+                stroke is not None and stroke.get("dashIntervals") == expected_intervals
+                for stroke in (line.find("Stroke") for line in lines)
+            )
+        )
+
+        seconds_rows = [
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_second_row")
+        ]
+        self.assertGreater(len(seconds_rows), 0)
+        self.assertTrue(
+            all(row.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']") is not None for row in seconds_rows)
+        )
+
+        tick_groups = [
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").startswith("ticks_") and group.get("name") != "ticks_none"
+        ]
+        self.assertTrue(
+            all(group.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']") is not None for group in tick_groups)
+        )
+
         for slot in self.root.findall("./Scene/ComplicationSlot"):
-            self.assertIsNotNone(slot.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']"))
+            self.assertIsNotNone(slot.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='255']"))
+        for complication in self.root.findall(".//Complication[@type='SMALL_IMAGE']"):
+            active = next(
+                group
+                for group in complication.findall("Group")
+                if group.get("name", "").endswith("_small_image_active")
+            )
+            self.assertIsNotNone(
+                active.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
+            )
+            self.assertEqual(
+                active.find("./PartImage/Image").get("resource"),
+                "[COMPLICATION.SMALL_IMAGE]",
+            )
+
+            condition = complication.find("Condition")
+            self.assertIsNotNone(condition)
+            assert condition is not None
+            expression = condition.find("./Expressions/Expression")
+            self.assertIsNotNone(expression)
+            assert expression is not None
+            self.assertEqual(
+                expression.text,
+                "[COMPLICATION.SMALL_IMAGE_AMBIENT] != null",
+            )
+            compare = condition.find("Compare")
+            self.assertIsNotNone(compare)
+            assert compare is not None
+            ambient = compare.find("Group")
+            self.assertIsNotNone(ambient)
+            assert ambient is not None
+            self.assertIsNotNone(
+                ambient.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='255']")
+            )
+            self.assertEqual(
+                ambient.find("./PartImage/Image").get("resource"),
+                "[COMPLICATION.SMALL_IMAGE_AMBIENT]",
+            )
+            missing = condition.find("./Default/Group")
+            self.assertIsNotNone(missing)
+            assert missing is not None
+            self.assertEqual(missing.get("alpha"), "0")
+            self.assertEqual(missing.findall(".//PartDraw"), [])
+
+    def test_decimal_background_spans_the_full_dial(self) -> None:
+        active = self.root.find(".//PartText[@name='hour_decimal_backdrop_active']")
+        self.assertIsNotNone(active)
+        assert active is not None
+        self.assertEqual(
+            tuple(active.get(attribute) for attribute in ("x", "y", "width", "height")),
+            ("0", "0", "450", "225"),
+        )
+        font = active.find("./Text/Font")
+        self.assertIsNotNone(font)
+        assert font is not None
+        self.assertEqual(font.get("size"), "240")
+        self.assertEqual(font.findtext("Template"), "%02d")
+
+        ambient = self.root.find(".//PartText[@name='hour_decimal_backdrop_ambient']")
+        self.assertIsNotNone(ambient)
+        assert ambient is not None
+        self.assertIsNotNone(ambient.find("./Text/Font/Outline"))
+        self.assertEqual(ambient.findtext("./Text/Font/Outline/Template"), "%02d")
+        backdrop_templates = {
+            template.text
+            for part in self.root.iter("PartText")
+            if "_decimal_backdrop_" in part.get("name", "")
+            for template in part.findall(".//Template")
+        }
+        self.assertEqual(backdrop_templates, {"%02d"})
+
+        style = next(
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_active_backdrops_style")
+        )
+        self.assertEqual(
+            tuple(style.get(attribute) for attribute in ("pivotX", "pivotY")),
+            ("0.5", "0.5"),
+        )
+        transforms = {
+            transform.get("target"): transform.get("value")
+            for transform in style.findall("Transform")
+        }
+        self.assertEqual(
+            transforms["alpha"],
+            GENERATOR.configuration_value_expression(
+                GENERATOR.BACKDROP_OPACITY_ID,
+                GENERATOR.BACKDROP_OPACITY_VALUES,
+                GENERATOR.DEFAULT_BACKDROP_OPACITY_ID,
+            ),
+        )
+        size_expression = GENERATOR.configuration_value_expression(
+            GENERATOR.BACKDROP_LAYOUT_ID,
+            GENERATOR.BACKDROP_LAYOUT_SCALE_VALUES,
+            GENERATOR.DEFAULT_BACKDROP_LAYOUT_ID,
+        )
+        self.assertEqual(transforms["scaleX"], size_expression)
+        self.assertEqual(transforms["scaleY"], size_expression)
+        self.assertEqual(
+            transforms["y"],
+            GENERATOR.configuration_value_expression(
+                GENERATOR.BACKDROP_LAYOUT_ID,
+                GENERATOR.BACKDROP_LAYOUT_Y_VALUES,
+                GENERATOR.DEFAULT_BACKDROP_LAYOUT_ID,
+            ),
+        )
+
+    def test_active_and_ambient_decimal_backgrounds_are_independently_configurable(self) -> None:
+        expected_active_visibility = (
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.BACKDROP_VISIBILITY_ID, GENERATOR.BACKDROP_ACTIVE_OPTION_IDS)}) "
+            "? 255 : 0"
+        )
+        expected_ambient_visibility = (
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.BACKDROP_VISIBILITY_ID, GENERATOR.BACKDROP_AMBIENT_OPTION_IDS)}) "
+            "? 255 : 0"
+        )
+        active_visibility = [
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_active_backdrops_visibility")
+        ]
+        ambient_visibility = [
+            group
+            for group in self.root.iter("Group")
+            if group.get("name", "").endswith("_ambient_backdrops_color_visibility")
+        ]
+        self.assertTrue(active_visibility)
+        self.assertEqual(len(active_visibility), len(ambient_visibility))
+        self.assertTrue(
+            all(
+                group.find("Transform[@target='alpha']").get("value")
+                == expected_active_visibility
+                for group in active_visibility
+            )
+        )
+        self.assertTrue(
+            all(
+                group.find("Transform[@target='alpha']").get("value")
+                == expected_ambient_visibility
+                for group in ambient_visibility
+            )
+        )
+
+        active_group = next(
+            (
+                group
+                for group in self.root.iter("Group")
+                if group.get("name", "").endswith("without_seconds_active_backdrops")
+            ),
+            None,
+        )
+        ambient_group = next(
+            (
+                group
+                for group in self.root.iter("Group")
+                if group.get("name", "").endswith("without_seconds_ambient_backdrops_color")
+            ),
+            None,
+        )
+        self.assertIsNotNone(active_group)
+        self.assertIsNotNone(ambient_group)
+        assert active_group is not None and ambient_group is not None
+        self.assertIsNotNone(
+            active_group.find(".//Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
+        )
+        self.assertEqual(ambient_group.get("alpha"), "0")
+        self.assertIsNotNone(
+            ambient_group.find(
+                f"Variant[@mode='AMBIENT'][@target='alpha'][@value='{GENERATOR.AMBIENT_BACKDROP_ALPHA}']"
+            )
+        )
 
     def test_output_is_deterministic(self) -> None:
         self.assertEqual(self.xml, GENERATOR.render_watchface())

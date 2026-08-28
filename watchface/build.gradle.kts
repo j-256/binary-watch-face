@@ -4,11 +4,11 @@ plugins {
 
 android {
     enableKotlin = false
-    namespace = "com.j256.binarywatchface"
+    namespace = "dev.j256.binarywatchface"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.j256.binarywatchface"
+        applicationId = "dev.j256.binarywatchface"
         minSdk = 37
         targetSdk = 37
         versionCode = 1
