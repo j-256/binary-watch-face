@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="watch_face_name">Binary Watch Face</string>
+    <string name="setting_theme">Color</string>
+    <string name="theme_terminal">Terminal green</string>
+    <string name="theme_monochrome">Monochrome</string>
+    <string name="theme_amber">Amber</string>
+    <string name="theme_cyan">Cyan</string>
+    <string name="theme_red">Red</string>
+    <string name="theme_violet">Violet</string>
+    <string name="setting_clock_mode">Clock mode</string>
+    <string name="clock_mode_system">Use system setting</string>
+    <string name="clock_mode_12">12 hour</string>
+    <string name="clock_mode_24">24 hour</string>
+    <string name="setting_show_seconds">Show seconds row</string>
+    <string name="setting_show_decimal_hints">Show decimal hints</string>
+    <string name="setting_show_bit_weights">Show bit weights</string>
+    <string name="setting_date_format">Date format</string>
+    <string name="date_format_friendly">Weekday, day, month</string>
+    <string name="date_format_iso">ISO date</string>
+    <string name="date_format_unix">Unix timestamp</string>
+    <string name="date_format_off">Hidden</string>
+    <string name="setting_show_battery">Show battery</string>
+    <string name="setting_show_second_ticks">Show second ticks</string>
+    <string name="setting_complication_count">Complication count</string>
+    <string name="complication_count_2">Two complications</string>
+    <string name="complication_count_3">Three complications</string>
+    <string name="complication_count_4">Four complications</string>
+    <string name="slot_upper_left">Upper left</string>
+    <string name="slot_upper_right">Upper right</string>
+    <string name="slot_lower_center">Lower center</string>
+    <string name="slot_lower_left">Lower left</string>
+    <string name="slot_lower_right">Lower right</string>
 </resources>

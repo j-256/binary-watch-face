@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.j256.binarywatchface"
-        minSdk = 33
+        minSdk = 37
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
