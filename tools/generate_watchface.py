@@ -205,6 +205,8 @@ DEFAULT_BACKDROP_OPACITY_ID = "30"
 DEFAULT_BACKDROP_LAYOUT_ID = "normal_centered"
 DEFAULT_BACKDROP_VISIBILITY_ID = "active"
 BACKDROP_OPACITY_CHOICES = (
+    NumericChoice("5", "backdrop_opacity_5", 13),
+    NumericChoice("10", "backdrop_opacity_10", 26),
     NumericChoice("15", "backdrop_opacity_15", 38),
     NumericChoice("30", "backdrop_opacity_30", 77),
     NumericChoice("50", "backdrop_opacity_50", 128),

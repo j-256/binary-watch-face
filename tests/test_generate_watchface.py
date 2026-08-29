@@ -103,6 +103,18 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             GENERATOR.COLOR_BACKDROP,
             f"[CONFIGURATION.{GENERATOR.BACKDROP_COLOR_ID}.0]",
         )
+        self.assertEqual(
+            [(choice.option_id, choice.value) for choice in GENERATOR.BACKDROP_OPACITY_CHOICES],
+            [
+                ("5", 13),
+                ("10", 26),
+                ("15", 38),
+                ("30", 77),
+                ("50", 128),
+                ("75", 191),
+                ("100", 255),
+            ],
+        )
 
         for configuration_id, default, option_ids in (
             (

@@ -73,7 +73,7 @@ Long-press the active face and choose **Edit**. Every choice names both the sett
 | Text color | The same palette, selected independently and defaulting to terminal green |
 | Theme | Dark by default or light |
 | Backdrop color | The full palette, selected independently and defaulting to medium gray |
-| Backdrop opacity | 15%, 30% by default, 50%, 75%, or 100% |
+| Backdrop opacity | 5%, 10%, 15%, 30% by default, 50%, 75%, or 100% |
 | Backdrop layout | Small, normal, or large at a raised, centered, or lowered position |
 | Backdrop visibility | Active only by default, hidden, AOD only, or active and AOD |
 | Size | Tiny, small, normal, large by default, or huge |
