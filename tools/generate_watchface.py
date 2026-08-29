@@ -280,10 +280,10 @@ DATE_FORMATS = (
 
 COMPLICATION_SLOTS = (
     ComplicationSlotSpec(0, "lower_left", "slot_lower_left", 87, 277, 106, "STEP_COUNT", "SHORT_TEXT"),
-    ComplicationSlotSpec(1, "lower_right", "slot_lower_right", 257, 277, 106, "WATCH_BATTERY", "RANGED_VALUE"),
+    ComplicationSlotSpec(1, "lower_right", "slot_lower_right", 257, 277, 106, "HEART_RATE", "RANGED_VALUE"),
     ComplicationSlotSpec(2, "lower_center", "slot_lower_center", 190, 264, 70, "NEXT_EVENT", "SHORT_TEXT"),
-    ComplicationSlotSpec(3, "middle_left", "slot_middle_left", 0, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "STEP_COUNT", "SHORT_TEXT"),
-    ComplicationSlotSpec(4, "middle_right", "slot_middle_right", WATCH_SIZE - SIDE_COMPLICATION_SIZE, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "DATE", "SHORT_TEXT"),
+    ComplicationSlotSpec(3, "middle_left", "slot_middle_left", 0, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "SUNRISE_SUNSET", "SHORT_TEXT"),
+    ComplicationSlotSpec(4, "middle_right", "slot_middle_right", WATCH_SIZE - SIDE_COMPLICATION_SIZE, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "UNREAD_NOTIFICATION_COUNT", "SHORT_TEXT"),
 )
 
 COMPLICATION_LAYOUTS = {

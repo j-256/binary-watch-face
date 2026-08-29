@@ -537,6 +537,17 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             rendered = {complication.get("type") for complication in slot.findall("Complication")}
             self.assertEqual(rendered, expected)
 
+    def test_default_complications_are_distinct_from_face_readouts(self) -> None:
+        policies = self.root.findall("./Scene/ComplicationSlot/DefaultProviderPolicy")
+        providers = [policy.get("defaultSystemProvider") for policy in policies]
+        self.assertEqual(
+            providers,
+            [specification.provider for specification in GENERATOR.COMPLICATION_SLOTS],
+        )
+        self.assertEqual(len(providers), len(set(providers)))
+        self.assertNotIn("WATCH_BATTERY", providers)
+        self.assertNotIn("DATE", providers)
+
     def test_face_has_no_custom_launch_actions(self) -> None:
         self.assertEqual(self.root.findall(".//Launch"), [])
 

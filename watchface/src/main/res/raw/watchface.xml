@@ -11999,7 +11999,7 @@
         </ComplicationSlot>
         <ComplicationSlot x="257" y="277" width="106" height="106" slotId="1" name="lower_right" displayName="slot_lower_right" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
             <Variant mode="AMBIENT" target="alpha" value="255" />
-            <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
+            <DefaultProviderPolicy defaultSystemProvider="HEART_RATE" defaultSystemProviderType="RANGED_VALUE" />
             <BoundingOval x="0" y="0" width="106" height="106" outlinePadding="2" />
             <Complication type="SHORT_TEXT">
                 <PartDraw x="0" y="0" width="106" height="106">
@@ -12325,7 +12325,7 @@
         </ComplicationSlot>
         <ComplicationSlot x="0" y="183" width="84" height="84" slotId="3" name="middle_left" displayName="slot_middle_left" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
             <Variant mode="AMBIENT" target="alpha" value="255" />
-            <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+            <DefaultProviderPolicy defaultSystemProvider="SUNRISE_SUNSET" defaultSystemProviderType="SHORT_TEXT" />
             <BoundingOval x="0" y="0" width="84" height="84" outlinePadding="2" />
             <Complication type="SHORT_TEXT">
                 <PartDraw x="0" y="0" width="84" height="84">
@@ -12488,7 +12488,7 @@
         </ComplicationSlot>
         <ComplicationSlot x="366" y="183" width="84" height="84" slotId="4" name="middle_right" displayName="slot_middle_right" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
             <Variant mode="AMBIENT" target="alpha" value="255" />
-            <DefaultProviderPolicy defaultSystemProvider="DATE" defaultSystemProviderType="SHORT_TEXT" />
+            <DefaultProviderPolicy defaultSystemProvider="UNREAD_NOTIFICATION_COUNT" defaultSystemProviderType="SHORT_TEXT" />
             <BoundingOval x="0" y="0" width="84" height="84" outlinePadding="2" />
             <Complication type="SHORT_TEXT">
                 <PartDraw x="0" y="0" width="84" height="84">
