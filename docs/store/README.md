@@ -49,9 +49,14 @@ Requires Wear OS 7.
 
 - `app-icon.png`: 512 x 512 app icon derived from the terminal-green watch-face capture
 - `feature-graphic.png`: 1024 x 500 feature graphic using the terminal-green watch-face capture
-- `screenshot-terminal-green.png`: 24-hour terminal-green configuration with a decimal backdrop and two complications
-- `screenshot-seconds.png`: Yellow configuration with the optional seconds row visible
-- `screenshot-cyan-12h.png`: Cyan 12-hour configuration with an ISO date and hexadecimal watch battery
+
+| Screenshot | Clock and date | Binary styling | Layout and data |
+| --- | --- | --- | --- |
+| `screenshot-terminal-green.png` | 24-hour with uppercase dotted day-month and weekday | Weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal battery, two complications |
+| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, binary battery, three complications |
+| `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, hexadecimal battery, four complications |
+
+The screenshots use notification, heart-rate, sunrise/sunset, and app-shortcut complications. None uses a battery complication because each configuration already includes the watch face's native battery readout.
 
 ## Closed beta release
 

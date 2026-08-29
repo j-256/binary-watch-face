@@ -3,9 +3,9 @@
 Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, and optional seconds as true binary values. It is an independent implementation inspired by a retired face that no longer installs on newer watches.
 
 <p align="center">
-  <img src="docs/store/screenshot-terminal-green.png" alt="Terminal-green 24-hour Binary watch face" width="31%">
-  <img src="docs/store/screenshot-seconds.png" alt="Yellow Binary watch face with seconds" width="31%">
-  <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face" width="31%">
+  <img src="docs/store/screenshot-terminal-green.png" alt="Terminal-green 24-hour Binary watch face with weights and all ticks" width="31%">
+  <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with seconds and wave ticks" width="31%">
+  <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face with an ISO date and four complications" width="31%">
 </p>
 
 The leftmost dot in each row is the most significant bit. Add the weights above the lit dots to read the value. For example, `23` is `16 + 4 + 2 + 1`. Every row spans the same left and right endpoints while distributing its four, five, or six bits evenly between them.
