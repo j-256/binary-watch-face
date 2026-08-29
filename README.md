@@ -95,7 +95,25 @@ android --no-metrics install \
     --apks=watchface/build/outputs/apk/debug/watchface-debug.apk
 ```
 
-On the watch, long-press the active face, scroll to **Add new**, and select **Binary**. The release app bundle is written beneath `watchface/build/outputs/bundle/release/` and must be signed with a private release key before publication.
+On the watch, long-press the active face, scroll to **Add new**, and select **Binary**. The release app bundle is written beneath `watchface/build/outputs/bundle/release/`.
+
+### Play release signing
+
+Google Play App Signing owns the app-signing keys used on installed packages. Release bundles are signed locally with a separate, resettable upload key kept outside this repository. Set both signing variables to produce a signed upload bundle; leaving both unset preserves secret-free unsigned release builds for CI:
+
+```sh
+binary_watch_face_upload_password="$(security find-generic-password -a upload-keystore -s dev.j256.binarywatchface.upload -w)"
+export BINARY_WATCH_FACE_UPLOAD_STORE_FILE=/absolute/path/to/upload-keystore.p12
+export BINARY_WATCH_FACE_UPLOAD_PASSWORD="$binary_watch_face_upload_password"
+./gradlew --no-configuration-cache bundleRelease
+unset BINARY_WATCH_FACE_UPLOAD_STORE_FILE BINARY_WATCH_FACE_UPLOAD_PASSWORD binary_watch_face_upload_password
+```
+
+Verify the resulting upload bundle before submitting it to Play:
+
+```sh
+jarsigner -verify -verbose -certs watchface/build/outputs/bundle/release/watchface-release.aab
+```
 
 ## Verification
 

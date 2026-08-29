@@ -6,3 +6,6 @@
 captures/
 local.properties
 *.iml
+*.jks
+*.keystore
+*.p12
