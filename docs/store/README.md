@@ -1,0 +1,75 @@
+# Google Play listing
+
+This directory contains the source assets and copy for the Wear OS Google Play listing.
+
+## Default listing
+
+App name:
+
+```text
+Binary
+```
+
+Short description:
+
+```text
+A deeply customizable true-binary watch face for Wear OS 7.
+```
+
+Full description:
+
+```text
+Read time in true binary, with each bit aligned and clearly weighted. Binary is a deeply customizable watch face built for Wear OS 7.
+
+TRUE BINARY TIME
+- Choose 12-hour or 24-hour time
+- Show or hide a binary seconds row
+- Show bit weights for quick reading
+- Keep every row aligned across the dial
+
+MAKE IT YOURS
+- Pick independent dot, text, and decimal-backdrop colors
+- Adjust backdrop opacity, size, position, and active/AOD visibility
+- Choose tiny through huge display sizes
+- Select glow, bezel, and tick effects
+- Use ISO date or several regional date formats
+- Show the watch battery in decimal, hexadecimal, or binary
+- Configure two, three, or four complications
+
+ALWAYS-ON DISPLAY
+Keep the selected color with a dense, low-power dot pattern. Date, weekday, watch battery, and the decimal backdrop can each be included or omitted from the always-on display.
+
+PRIVATE BY DESIGN
+Binary is a resource-only Watch Face Format watch face. It has no executable app code, network access, analytics, advertising, accounts, or data collection. Time, battery, settings, and complication data remain on your watch.
+
+Requires Wear OS 7.
+```
+
+## Assets
+
+- `app-icon.png`: 512 x 512 app icon derived from the terminal-green watch-face capture
+- `feature-graphic.png`: 1024 x 500 feature graphic using the terminal-green watch-face capture
+- `screenshot-terminal-green.png`: 24-hour terminal-green configuration with a decimal backdrop and two complications
+- `screenshot-seconds.png`: Yellow configuration with the optional seconds row visible
+- `screenshot-cyan-12h.png`: Cyan 12-hour configuration with an ISO date and hexadecimal watch battery
+
+## Closed beta release
+
+Release name:
+
+```text
+0.1.0 - Closed beta 1
+```
+
+Release notes:
+
+```text
+<en-US>
+First closed beta of Binary, a configurable binary watch face for Wear OS 7.
+
+- Display time in 12- or 24-hour true binary
+- Customize colors, size, effects, ticks, date, battery, and backdrop
+- Choose two, three, or four complications
+- Use a configurable low-power always-on display
+</en-US>
+```
