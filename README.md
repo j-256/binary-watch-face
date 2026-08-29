@@ -24,7 +24,7 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 ## Compatibility
 
-The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Format 5 is required to let a setting enable exactly two, three, or four complication slots without leaving invisible tap targets. That compatibility choice favors Pixel Watch 5 and other Wear OS 7 watches over older devices.
+The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Format 5 is required to let a setting enable exactly two, three, or four complication slots without leaving invisible tap targets. Compatibility depends on the installed OS rather than model age: Pixel Watch 2 is supported after updating to Wear OS 7, while watches that remain on earlier releases are not supported.
 
 ## Install
 
