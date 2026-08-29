@@ -28,9 +28,14 @@ The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Fo
 
 ## Install
 
-### Google Play internal test
+### Google Play closed beta
 
-Eligible testers can [join the Google Play internal test](https://play.google.com/apps/internaltest/4699900314142063872) for Play-managed installation and updates.
+Use the same Google Account for both steps:
+
+1. Join the self-service [Binary Watch Face Testers group](https://groups.google.com/g/binary-watch-face-testers).
+2. [Opt in to the Google Play closed beta](https://play.google.com/apps/testing/dev.j256.binarywatchface).
+
+After Google approves the beta release, Play provides installation and updates to group members who opt in. The group exists only to control beta access; only its owner can post, view conversations, or view the member list. See the [privacy policy](PRIVACY.md) for the membership disclosure.
 
 ### GitHub
 
