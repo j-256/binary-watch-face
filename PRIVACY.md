@@ -14,7 +14,7 @@ Wear OS supplies time, battery, and user-selected complication data for local di
 
 ## Optional beta group
 
-Testers may voluntarily join the [Binary Watch Face Testers Google Group](https://binary.j256.dev/signup) to become eligible for the Google Play closed beta. Google records the membership and makes the member's Google Account email address and profile information available to the group owner. This information is used only to administer beta access. Posting, conversations, and the member list are restricted to the group owner. Google Groups is governed by Google's own privacy practices.
+Testers may voluntarily join the [Binary Watch Face Testers Google Group](https://groups.google.com/g/binary-watch-face-testers) to become eligible for the Google Play closed beta. Google records the membership and makes the member's Google Account email address and profile information available to the group owner. This information is used only to administer beta access. Posting, conversations, and the member list are restricted to the group owner. Google Groups is governed by Google's own privacy practices.
 
 ## Retention and deletion
 
