@@ -38,10 +38,6 @@ COLOR_BLACK = "#000000"
 COLOR_AMBIENT_MONO = "#FFFFFF"
 COLOR_BACKDROP_DARK = "#242424"
 COLOR_BACKDROP_LIGHT = "#E0E0E0"
-AMBIENT_DOT_OUTLINE_ALPHA = 255
-AMBIENT_TEXT_ALPHA = 255
-AMBIENT_BACKDROP_ALPHA = 255
-AMBIENT_COMPLICATION_ALPHA = 255
 AMBIENT_DITHER_ROW_COUNT = 7
 AMBIENT_DITHER_DASH_MULTIPLIER = 2
 AMBIENT_DITHER_GAP = 1
@@ -88,7 +84,6 @@ BINARY_SETTINGS = (
     (SHOW_WEIGHTS_ID, "setting_show_bit_weights", "TRUE", "bit_weights_shown", "bit_weights_hidden"),
     (SHOW_WEEKDAY_ID, "setting_show_weekday", "TRUE", "weekday_shown", "weekday_hidden"),
     (UPPERCASE_DATE_ID, "setting_uppercase_date", "FALSE", "date_case_uppercase", "date_case_mixed"),
-    (AMBIENT_COLOR_ID, "setting_ambient_color", "TRUE", "ambient_color_enabled", "ambient_color_disabled"),
 )
 
 HOUR_12_WEIGHTS = (8, 4, 2, 1)
@@ -132,6 +127,14 @@ class NumericChoice:
     option_id: str
     label: str
     value: int | float
+
+
+@dataclass(frozen=True)
+class AmbientAppearanceChoice:
+    option_id: str
+    label: str
+    alpha: int
+    uses_color: bool
 
 
 @dataclass(frozen=True)
@@ -247,6 +250,21 @@ AMBIENT_INFO_OPTIONS = (
     ("date_battery", "ambient_info_date_battery"),
     ("date_weekday_battery", "ambient_info_date_weekday_battery"),
 )
+DEFAULT_AMBIENT_APPEARANCE_ID = "TRUE"
+AMBIENT_APPEARANCE_CHOICES = (
+    AmbientAppearanceChoice("dim_color", "ambient_appearance_dim_color", 128, True),
+    AmbientAppearanceChoice("TRUE", "ambient_appearance_normal_color", 192, True),
+    AmbientAppearanceChoice("bright_color", "ambient_appearance_bright_color", 255, True),
+    AmbientAppearanceChoice("dim_mono", "ambient_appearance_dim_mono", 128, False),
+    AmbientAppearanceChoice("FALSE", "ambient_appearance_normal_mono", 192, False),
+    AmbientAppearanceChoice("bright_mono", "ambient_appearance_bright_mono", 255, False),
+)
+AMBIENT_BRIGHTNESS_VALUES = tuple(
+    (choice.option_id, choice.alpha) for choice in AMBIENT_APPEARANCE_CHOICES
+)
+AMBIENT_COLOR_OPTION_IDS = tuple(
+    choice.option_id for choice in AMBIENT_APPEARANCE_CHOICES if choice.uses_color
+)
 AMBIENT_DATE_OPTION_IDS = (
     "date",
     "date_weekday",
@@ -323,6 +341,36 @@ def configuration_matches_expression(
         f'[CONFIGURATION.{configuration_id}] == "{option_id}"'
         for option_id in option_ids
     )
+
+
+def ambient_brightness_expression() -> str:
+    return configuration_value_expression(
+        AMBIENT_COLOR_ID,
+        AMBIENT_BRIGHTNESS_VALUES,
+        DEFAULT_AMBIENT_APPEARANCE_ID,
+    )
+
+
+def add_ambient_color_condition(
+    parent: ET.Element,
+    *,
+    name: str,
+    color: str,
+    monochrome: str,
+    builder: Callable[[ET.Element, str, str], None],
+) -> None:
+    condition = element(parent, "Condition")
+    expressions = element(condition, "Expressions")
+    expression_name = f"{name}_uses_color"
+    expression = element(expressions, "Expression", name=expression_name)
+    expression.text = configuration_matches_expression(
+        AMBIENT_COLOR_ID,
+        AMBIENT_COLOR_OPTION_IDS,
+    )
+    compare = element(condition, "Compare", expression=expression_name)
+    builder(compare, color, "color")
+    default = element(condition, "Default")
+    builder(default, monochrome, "mono")
 
 
 def add_variant(parent: ET.Element, target: str, value: object) -> None:
@@ -604,6 +652,22 @@ def add_user_configurations(root: ET.Element) -> None:
                 screenReaderText=option_label,
             )
 
+    ambient_appearance = add_user_configuration(
+        configurations,
+        "ListConfiguration",
+        configuration_id=AMBIENT_COLOR_ID,
+        display_name="setting_ambient_appearance",
+        default_value=DEFAULT_AMBIENT_APPEARANCE_ID,
+    )
+    for choice in AMBIENT_APPEARANCE_CHOICES:
+        element(
+            ambient_appearance,
+            "ListOption",
+            id=choice.option_id,
+            displayName=choice.label,
+            screenReaderText=choice.label,
+        )
+
     ambient_info = add_user_configuration(
         configurations,
         "ListConfiguration",
@@ -831,12 +895,7 @@ def add_ambient_dot(
     source: str,
     bit: int,
 ) -> None:
-    configuration = element(parent, "ListConfiguration", id=AMBIENT_COLOR_ID)
-    for option_id, color, suffix in (
-        ("TRUE", COLOR_DOT_AMBIENT, "color"),
-        ("FALSE", COLOR_AMBIENT_MONO, "mono"),
-    ):
-        option = element(configuration, "ListOption", id=option_id)
+    def build_ambient(option: ET.Element, color: str, suffix: str) -> None:
         group = element(
             option,
             "Group",
@@ -847,7 +906,7 @@ def add_ambient_dot(
             height=WATCH_SIZE,
             alpha=0,
         )
-        add_variant(group, "alpha", 255)
+        add_variant(group, "alpha", ambient_brightness_expression())
 
         outline = element(
             group,
@@ -856,7 +915,7 @@ def add_ambient_dot(
             y=y,
             width=dot_size,
             height=dot_size,
-            alpha=AMBIENT_DOT_OUTLINE_ALPHA,
+            alpha=255,
         )
         outline_ellipse = element(outline, "Ellipse", x=1, y=1, width=dot_size - 2, height=dot_size - 2)
         element(outline_ellipse, "Stroke", color=color, thickness=max(1, round(dot_size / 12)))
@@ -886,6 +945,14 @@ def add_ambient_dot(
                 dashPhase=phase,
                 cap="BUTT",
             )
+
+    add_ambient_color_condition(
+        parent,
+        name=f"{name}_ambient",
+        color=COLOR_DOT_AMBIENT,
+        monochrome=COLOR_AMBIENT_MONO,
+        builder=build_ambient,
+    )
 
 
 def add_binary_dot(
@@ -1045,12 +1112,7 @@ def add_decimal_backdrops(parent: ET.Element, *, name: str, hour_source: str) ->
         ambient=False,
     )
 
-    colors = element(parent, "ListConfiguration", id=AMBIENT_COLOR_ID)
-    for option_id, color, suffix in (
-        ("TRUE", COLOR_BACKDROP, "color"),
-        ("FALSE", COLOR_AMBIENT_BACKDROP, "mono"),
-    ):
-        option = element(colors, "ListOption", id=option_id)
+    def build_ambient(option: ET.Element, color: str, suffix: str) -> None:
         ambient = element(
             option,
             "Group",
@@ -1061,7 +1123,7 @@ def add_decimal_backdrops(parent: ET.Element, *, name: str, hour_source: str) ->
             height=WATCH_SIZE,
             alpha=0,
         )
-        add_variant(ambient, "alpha", AMBIENT_BACKDROP_ALPHA)
+        add_variant(ambient, "alpha", ambient_brightness_expression())
         ambient_visibility = element(
             ambient,
             "Group",
@@ -1087,6 +1149,14 @@ def add_decimal_backdrops(parent: ET.Element, *, name: str, hour_source: str) ->
             color=color,
             ambient=True,
         )
+
+    add_ambient_color_condition(
+        parent,
+        name=f"{name}_ambient_backdrops",
+        color=COLOR_BACKDROP,
+        monochrome=COLOR_AMBIENT_BACKDROP,
+        builder=build_ambient,
+    )
 
 
 def add_binary_row(
@@ -1145,12 +1215,7 @@ def add_binary_row(
                 alpha=210,
             )
 
-        ambient_colors = element(weights_parent, "ListConfiguration", id=AMBIENT_COLOR_ID)
-        for option_id, color, suffix in (
-            ("TRUE", COLOR_TEXT_AMBIENT, "color"),
-            ("FALSE", COLOR_AMBIENT_MONO, "mono"),
-        ):
-            ambient_option = element(ambient_colors, "ListOption", id=option_id)
+        def build_ambient(ambient_option: ET.Element, color: str, suffix: str) -> None:
             ambient = element(
                 ambient_option,
                 "Group",
@@ -1161,7 +1226,7 @@ def add_binary_row(
                 height=WATCH_SIZE,
                 alpha=0,
             )
-            add_variant(ambient, "alpha", AMBIENT_TEXT_ALPHA)
+            add_variant(ambient, "alpha", ambient_brightness_expression())
             for x, bit in zip(positions, weights):
                 add_text(
                     ambient,
@@ -1173,6 +1238,14 @@ def add_binary_row(
                     color=color,
                     template=str(bit),
                 )
+
+        add_ambient_color_condition(
+            weights_parent,
+            name=f"{name}_weights_ambient",
+            color=COLOR_TEXT_AMBIENT,
+            monochrome=COLOR_AMBIENT_MONO,
+            builder=build_ambient,
+        )
 
     add_enabled_group(group, SHOW_WEIGHTS_ID, f"{name}_bit_weights", build_weights)
 
@@ -1448,12 +1521,7 @@ def add_date(scene: ET.Element) -> None:
         )
 
         def build_ambient(ambient_parent: ET.Element, date_specification: DateFormatSpec = specification) -> None:
-            colors = element(ambient_parent, "ListConfiguration", id=AMBIENT_COLOR_ID)
-            for option_id, color, suffix in (
-                ("TRUE", COLOR_TEXT_AMBIENT, "color"),
-                ("FALSE", COLOR_AMBIENT_MONO, "mono"),
-            ):
-                color_option = element(colors, "ListOption", id=option_id)
+            def build_color(color_option: ET.Element, color: str, suffix: str) -> None:
                 ambient = element(
                     color_option,
                     "Group",
@@ -1464,7 +1532,7 @@ def add_date(scene: ET.Element) -> None:
                     height=WATCH_SIZE,
                     alpha=0,
                 )
-                add_variant(ambient, "alpha", AMBIENT_TEXT_ALPHA)
+                add_variant(ambient, "alpha", ambient_brightness_expression())
                 add_configurable_date_text(
                     ambient,
                     name=f"date_{date_specification.option_id}_ambient_{suffix}",
@@ -1472,6 +1540,14 @@ def add_date(scene: ET.Element) -> None:
                     color=color,
                     weekday_configuration_id=None,
                 )
+
+            add_ambient_color_condition(
+                ambient_parent,
+                name=f"date_{date_specification.option_id}_ambient",
+                color=COLOR_TEXT_AMBIENT,
+                monochrome=COLOR_AMBIENT_MONO,
+                builder=build_color,
+            )
 
         build_ambient(option_group)
 
@@ -1502,12 +1578,7 @@ def add_battery_readout(
     )
     add_screen_reader(active_text, "Battery %d percent", ("[BATTERY_PERCENT]",))
 
-    colors = element(parent, "ListConfiguration", id=AMBIENT_COLOR_ID)
-    for option_id, color, suffix in (
-        ("TRUE", COLOR_TEXT_AMBIENT, "color"),
-        ("FALSE", COLOR_AMBIENT_MONO, "mono"),
-    ):
-        color_option = element(colors, "ListOption", id=option_id)
+    def build_ambient(color_option: ET.Element, color: str, suffix: str) -> None:
         ambient = element(
             color_option,
             "Group",
@@ -1518,7 +1589,7 @@ def add_battery_readout(
             height=WATCH_SIZE,
             alpha=0,
         )
-        add_variant(ambient, "alpha", AMBIENT_TEXT_ALPHA)
+        add_variant(ambient, "alpha", ambient_brightness_expression())
         visibility = element(
             ambient,
             "Group",
@@ -1549,6 +1620,14 @@ def add_battery_readout(
             template=template,
             parameters=parameters,
         )
+
+    add_ambient_color_condition(
+        parent,
+        name=f"{name}_ambient",
+        color=COLOR_TEXT_AMBIENT,
+        monochrome=COLOR_AMBIENT_MONO,
+        builder=build_ambient,
+    )
 
 
 def add_battery(scene: ET.Element) -> None:
@@ -1741,7 +1820,7 @@ def add_image_complications(slot: ET.Element, size: int, name: str) -> None:
         height=size,
         alpha=0,
     )
-    add_variant(ambient, "alpha", AMBIENT_COMPLICATION_ALPHA)
+    add_variant(ambient, "alpha", 255)
     add_complication_shell(ambient, size)
     ambient_image = element(
         ambient,
@@ -1872,7 +1951,7 @@ def add_complications(scene: ET.Element) -> None:
             supportedTypes=supported,
             isCustomizable="TRUE",
         )
-        add_variant(slot, "alpha", AMBIENT_COMPLICATION_ALPHA)
+        add_variant(slot, "alpha", ambient_brightness_expression())
         element(
             slot,
             "DefaultProviderPolicy",

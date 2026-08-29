@@ -116,9 +116,13 @@
     <string name="ambient_info_battery">AOD info: Watch battery</string>
     <string name="ambient_info_date_battery">AOD info: Date and watch battery</string>
     <string name="ambient_info_date_weekday_battery">AOD info: Date, weekday, and watch battery</string>
-    <string name="setting_ambient_color">Use color in AOD</string>
-    <string name="ambient_color_enabled">AOD color: Color</string>
-    <string name="ambient_color_disabled">AOD color: Monochrome</string>
+    <string name="setting_ambient_appearance">AOD brightness and color</string>
+    <string name="ambient_appearance_dim_color">AOD brightness: Dim, color</string>
+    <string name="ambient_appearance_normal_color">AOD brightness: Normal, color</string>
+    <string name="ambient_appearance_bright_color">AOD brightness: Bright, color</string>
+    <string name="ambient_appearance_dim_mono">AOD brightness: Dim, monochrome</string>
+    <string name="ambient_appearance_normal_mono">AOD brightness: Normal, monochrome</string>
+    <string name="ambient_appearance_bright_mono">AOD brightness: Bright, monochrome</string>
     <string name="setting_date_format">Date format</string>
     <string name="date_format_month_day">Date: Nov 26</string>
     <string name="date_format_month_day_numeric">Date: 11/26</string>

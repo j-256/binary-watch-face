@@ -553,13 +553,72 @@ class WatchFaceGeneratorTest(unittest.TestCase):
 
     def test_ambient_mode_uses_dense_patterned_dots_and_suppresses_high_activity_elements(self) -> None:
         self.assertEqual(GENERATOR.COLOR_AMBIENT_MONO, "#FFFFFF")
-        self.assertEqual(GENERATOR.AMBIENT_DOT_OUTLINE_ALPHA, 255)
-        self.assertEqual(GENERATOR.AMBIENT_TEXT_ALPHA, 255)
-        self.assertEqual(GENERATOR.AMBIENT_COMPLICATION_ALPHA, 255)
+
+        brightness = self.user_configuration(GENERATOR.AMBIENT_COLOR_ID)
+        self.assertEqual(
+            brightness.get("defaultValue"),
+            GENERATOR.DEFAULT_AMBIENT_APPEARANCE_ID,
+        )
+        self.assertEqual(
+            [option.get("id") for option in brightness.findall("ListOption")],
+            [choice.option_id for choice in GENERATOR.AMBIENT_APPEARANCE_CHOICES],
+        )
+        self.assertEqual(
+            [
+                (choice.option_id, choice.alpha, choice.uses_color)
+                for choice in GENERATOR.AMBIENT_APPEARANCE_CHOICES
+            ],
+            [
+                ("dim_color", 128, True),
+                ("TRUE", 192, True),
+                ("bright_color", 255, True),
+                ("dim_mono", 128, False),
+                ("FALSE", 192, False),
+                ("bright_mono", 255, False),
+            ],
+        )
+        self.assertEqual(
+            GENERATOR.AMBIENT_COLOR_OPTION_IDS,
+            ("dim_color", "TRUE", "bright_color"),
+        )
+        brightness_expression = GENERATOR.ambient_brightness_expression()
+        self.assertEqual(
+            brightness_expression,
+            GENERATOR.configuration_value_expression(
+                GENERATOR.AMBIENT_COLOR_ID,
+                GENERATOR.AMBIENT_BRIGHTNESS_VALUES,
+                GENERATOR.DEFAULT_AMBIENT_APPEARANCE_ID,
+            ),
+        )
 
         scene = self.root.find("Scene")
         self.assertIsNotNone(scene)
         assert scene is not None
+        self.assertEqual(
+            scene.findall(
+                f".//ListConfiguration[@id='{GENERATOR.AMBIENT_COLOR_ID}']"
+            ),
+            [],
+        )
+        expected_color_expression = GENERATOR.configuration_matches_expression(
+            GENERATOR.AMBIENT_COLOR_ID,
+            GENERATOR.AMBIENT_COLOR_OPTION_IDS,
+        )
+        ambient_color_conditions = [
+            condition
+            for condition in scene.iter("Condition")
+            if any(
+                f"CONFIGURATION.{GENERATOR.AMBIENT_COLOR_ID}" in (expression.text or "")
+                for expression in condition.findall("./Expressions/Expression")
+            )
+        ]
+        self.assertTrue(ambient_color_conditions)
+        for condition in ambient_color_conditions:
+            expressions = condition.findall("./Expressions/Expression")
+            self.assertEqual(len(expressions), 1)
+            self.assertEqual(expressions[0].text, expected_color_expression)
+            self.assertIsNotNone(condition.find("Compare/Group"))
+            self.assertIsNotNone(condition.find("Default/Group"))
         self.assertIsNotNone(
             scene.find("Variant[@mode='AMBIENT'][@target='backgroundColor'][@value='#000000']")
         )
@@ -603,7 +662,27 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         )
 
         for slot in self.root.findall("./Scene/ComplicationSlot"):
-            self.assertIsNotNone(slot.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='255']"))
+            self.assertIsNotNone(
+                slot.find(
+                    f"Variant[@mode='AMBIENT'][@target='alpha'][@value='{brightness_expression}']"
+                )
+            )
+
+        ambient_face_groups = [
+            group
+            for group in self.root.iter("Group")
+            if "ambient" in group.get("name", "")
+            and not group.get("name", "").endswith("_small_image_ambient")
+            and group.find("Variant[@mode='AMBIENT'][@target='alpha']") is not None
+        ]
+        self.assertTrue(ambient_face_groups)
+        self.assertTrue(
+            all(
+                group.find("Variant[@mode='AMBIENT'][@target='alpha']").get("value")
+                == brightness_expression
+                for group in ambient_face_groups
+            )
+        )
         for complication in self.root.findall(".//Complication[@type='SMALL_IMAGE']"):
             active = next(
                 group
@@ -772,7 +851,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertEqual(ambient_group.get("alpha"), "0")
         self.assertIsNotNone(
             ambient_group.find(
-                f"Variant[@mode='AMBIENT'][@target='alpha'][@value='{GENERATOR.AMBIENT_BACKDROP_ALPHA}']"
+                f"Variant[@mode='AMBIENT'][@target='alpha'][@value='{GENERATOR.ambient_brightness_expression()}']"
             )
         )
 

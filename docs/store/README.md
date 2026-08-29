@@ -37,7 +37,7 @@ MAKE IT YOURS
 - Configure two, three, or four complications
 
 ALWAYS-ON DISPLAY
-Keep the selected color with a dense, low-power dot pattern. Date, weekday, watch battery, and the decimal backdrop can each be included or omitted from the always-on display.
+Keep the selected color with a dense, low-power dot pattern. Choose dim, normal, or bright rendering. Date, weekday, watch battery, and the decimal backdrop can each be included or omitted from the always-on display.
 
 PRIVATE BY DESIGN
 Binary is a resource-only Watch Face Format watch face. It has no executable app code, network access, analytics, advertising, accounts, or data collection. Time, battery, settings, and complication data remain on your watch.

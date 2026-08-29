@@ -20,7 +20,7 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable two-, three-, and four-slot layouts
 - Preserves normal provider actions on complications without defining any whole-face or custom tap actions
-- Uses dense patterned dots and the selected color in always-on display mode by default, with optional decimal values, date, weekday, and watch battery while keeping complications legible
+- Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, and watch battery while keeping complications legible
 
 ## Compatibility
 
@@ -89,7 +89,7 @@ Long-press the active face and choose **Edit**. Every choice names both the sett
 | Date | Nov 26, 11/26, 26 Nov, 26/11, 26.11, ISO, Unix timestamp, or hidden, with independent weekday and uppercase controls |
 | Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden |
 | Complications | Two by default, three, or four |
-| Always-on display | Optional date, weekday, and watch-battery presets, plus optional monochrome rendering |
+| Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, and watch-battery presets; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
 
