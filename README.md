@@ -22,6 +22,43 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Format 5 is required to let a setting enable exactly two, three, or four complication slots without leaving invisible tap targets. That compatibility choice favors Pixel Watch 5 and other Wear OS 7 watches over older devices.
 
+## Install
+
+### Google Play internal test
+
+Eligible testers can [join the Google Play internal test](https://play.google.com/apps/internaltest/4699900314142063872) for Play-managed installation and updates.
+
+### GitHub
+
+Download `binary-watch-face.apk` and `binary-watch-face.apk.sha256` from the [GitHub releases](https://github.com/j-256/binary-watch-face/releases) page. Release APKs are exported from Google Play and carry the same app-signing certificate as Play-installed builds.
+
+Verify the download:
+
+```sh
+shasum -a 256 -c binary-watch-face.apk.sha256
+```
+
+Install the latest [Android SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools), then follow Google's [Wear OS debugging instructions](https://developer.android.com/training/wearables/get-started/debugging) to enable ADB debugging and connect the watch over USB or Wi-Fi. Install the APK directly on the watch:
+
+```sh
+adb install binary-watch-face.apk
+```
+
+Install later GitHub updates without clearing the watch-face configuration:
+
+```sh
+adb install -r binary-watch-face.apk
+```
+
+A locally built debug copy uses a different signing certificate. If ADB reports incompatible certificates, remove that copy before installing the release APK. Uninstalling clears its configuration:
+
+```sh
+adb uninstall dev.j256.binarywatchface
+adb install binary-watch-face.apk
+```
+
+After installation, long-press the active watch face, scroll to **Add new**, and select **Binary**.
+
 ## Customize
 
 Long-press the active face and choose **Edit**. Every choice names both the setting and selected value, such as **Dots: Terminal green** or **Seconds: Hidden**, and the package supplies a matching highlight overlay for editors that support it. Each enabled complication can be assigned through the normal Wear OS complication picker.
