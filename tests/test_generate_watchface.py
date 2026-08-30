@@ -17,6 +17,7 @@ GENERATOR_PATH = PROJECT_ROOT / "tools/generate_watchface.py"
 STRINGS_PATH = PROJECT_ROOT / "watchface/src/main/res/values/strings.xml"
 WATCH_FACE_INFO_PATH = PROJECT_ROOT / "watchface/src/main/res/xml/watch_face_info.xml"
 USER_CONFIGURATION_TAGS = {"BooleanConfiguration", "ColorConfiguration", "ListConfiguration"}
+MIN_VISIBLE_TICK_LENGTH = 8
 MODULE_SPEC = importlib.util.spec_from_file_location("generate_watchface", GENERATOR_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"Unable to load {GENERATOR_PATH}")
@@ -385,8 +386,8 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         no_seconds_bottom = GENERATOR.CLOCK_ROW_LAYOUT[False][-1] + large_dot_size
         seconds_bottom = GENERATOR.CLOCK_ROW_LAYOUT[True][-1] + large_dot_size
         complication_top = min(slot.y for slot in GENERATOR.COMPLICATION_SLOTS[:2])
-        self.assertLessEqual(complication_top - no_seconds_bottom, 42)
-        self.assertLessEqual(complication_top - seconds_bottom, 34)
+        self.assertLessEqual(complication_top - no_seconds_bottom, 52)
+        self.assertLessEqual(complication_top - seconds_bottom, 44)
 
     def test_ticks_render_above_the_clock_and_below_complications(self) -> None:
         scene = self.root.find("Scene")
@@ -585,18 +586,18 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         enabled = {slot_id for layout in options.values() for slot_id in layout}
         self.assertEqual(enabled, declared)
 
-    def test_complication_layout_preserves_large_lower_pair(self) -> None:
+    def test_complication_layout_preserves_prioritized_lower_pair(self) -> None:
         slots = {
             int(slot.get("slotId", "-1")): slot
             for slot in self.root.findall("./Scene/ComplicationSlot")
         }
         self.assertEqual(
             tuple(slots[0].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("lower_left", "87", "277", "106", "106"),
+            ("lower_left", "100", "287", "96", "96"),
         )
         self.assertEqual(
             tuple(slots[1].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("lower_right", "257", "277", "106", "106"),
+            ("lower_right", "254", "287", "96", "96"),
         )
         self.assertEqual(
             tuple(slots[2].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
@@ -604,53 +605,90 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         )
         self.assertEqual(
             tuple(slots[3].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("middle_left", "16", "191", "68", "68"),
+            ("middle_left", "24", "218", "76", "76"),
         )
         self.assertEqual(
             tuple(slots[4].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("middle_right", "366", "191", "68", "68"),
+            ("middle_right", "350", "218", "76", "76"),
         )
 
-    def test_side_complications_leave_outer_ticks_visible(self) -> None:
+        lower_left, lower_right, lower_center, side_left, side_right = (
+            GENERATOR.COMPLICATION_SLOTS
+        )
+        self.assertGreater(lower_left.size, side_left.size)
+        self.assertGreater(side_left.size, lower_center.size)
+        self.assertEqual(lower_left.size, lower_right.size)
+        self.assertEqual(side_left.size, side_right.size)
+        self.assertEqual(lower_left.x, GENERATOR.WATCH_SIZE - lower_right.x - lower_right.size)
+        self.assertEqual(side_left.x, GENERATOR.WATCH_SIZE - side_right.x - side_right.size)
+        self.assertEqual(
+            lower_right.x - lower_left.x - lower_left.size,
+            GENERATOR.LOWER_COMPLICATION_PAIR_GAP,
+        )
+        self.assertEqual(
+            side_left.y + side_left.size - lower_left.y,
+            GENERATOR.SIDE_COMPLICATION_VERTICAL_OVERLAP,
+        )
+
+    def test_every_tick_position_remains_visible_beyond_complications(self) -> None:
         tick_configuration = self.root.find(
             f"./Scene/ListConfiguration[@id='{GENERATOR.TICK_STYLE_ID}']"
         )
         self.assertIsNotNone(tick_configuration)
         assert tick_configuration is not None
-        tick_outer_insets = [
-            float(marker.get("y", "0"))
-            for marker in tick_configuration.findall(".//RoundRectangle")
-        ]
-        self.assertTrue(tick_outer_insets)
+        dial_center = GENERATOR.WATCH_SIZE / 2
+        tick_markers = tick_configuration.findall(".//PartDraw/RoundRectangle")
+        self.assertTrue(tick_markers)
+        for marker in tick_markers:
+            marker_x = float(marker.get("x", "0"))
+            marker_width = float(marker.get("width", "0"))
+            self.assertAlmostEqual(marker_x + marker_width / 2, dial_center)
 
-        side_left, side_right = GENERATOR.COMPLICATION_SLOTS[3:5]
-        outer_margins = (
-            side_left.x,
-            GENERATOR.WATCH_SIZE - side_right.x - side_right.size,
+        minimum_tick_outer_radius = min(
+            dial_center - float(marker.get("y", "0")) for marker in tick_markers
         )
-        self.assertTrue(
-            all(margin > max(tick_outer_insets) for margin in outer_margins)
+        complication_outer_radii = []
+        for slot in self.root.findall("./Scene/ComplicationSlot"):
+            bounding_oval = slot.find("BoundingOval")
+            self.assertIsNotNone(bounding_oval)
+            assert bounding_oval is not None
+            oval_width = float(bounding_oval.get("width", "0"))
+            oval_height = float(bounding_oval.get("height", "0"))
+            self.assertEqual(oval_width, oval_height)
+            oval_center_x = (
+                float(slot.get("x", "0"))
+                + float(bounding_oval.get("x", "0"))
+                + oval_width / 2
+            )
+            oval_center_y = (
+                float(slot.get("y", "0"))
+                + float(bounding_oval.get("y", "0"))
+                + oval_height / 2
+            )
+            complication_outer_radii.append(
+                math.hypot(
+                    oval_center_x - dial_center,
+                    oval_center_y - dial_center,
+                )
+                + oval_width / 2
+            )
+        self.assertTrue(complication_outer_radii)
+
+        visible_annulus_width = (
+            minimum_tick_outer_radius - max(complication_outer_radii)
         )
+        self.assertGreaterEqual(visible_annulus_width, MIN_VISIBLE_TICK_LENGTH)
 
     def test_complication_slots_clear_the_largest_clock_and_each_other(self) -> None:
         largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)
         base = next(
             size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID
         )
-        dot_size, positions = GENERATOR.bit_geometry(len(GENERATOR.HOUR_24_WEIGHTS), base)
-        weight_width = dot_size + 14
-        left_weight = positions[0] - 7
-        right_weight = positions[-1] - 7 + weight_width
         clock_center = GENERATOR.WATCH_SIZE / 2
-        scaled_left = clock_center + largest.scale * (left_weight - clock_center)
-        scaled_right = clock_center + largest.scale * (right_weight - clock_center)
         side_left, side_right = GENERATOR.COMPLICATION_SLOTS[3:5]
-        self.assertLess(side_left.x + side_left.size, scaled_left)
-        self.assertGreater(side_right.x, scaled_right)
         for side_slot in (side_left, side_right):
             slot_center_x = side_slot.x + side_slot.size / 2
             slot_center_y = side_slot.y + side_slot.size / 2
-            self.assertEqual(slot_center_y, clock_center)
             distance_from_dial_center = math.hypot(
                 slot_center_x - clock_center,
                 slot_center_y - clock_center,
@@ -659,6 +697,31 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                 distance_from_dial_center + side_slot.size / 2,
                 clock_center,
             )
+
+        dot_size, positions = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
+        scaled_dot_radius = dot_size * largest.scale / 2
+        for row_positions in GENERATOR.CLOCK_ROW_LAYOUT.values():
+            for row_y in row_positions:
+                row_center_y = row_y + dot_size / 2
+                scaled_weight_bottom = row_center_y + largest.scale * (
+                    row_y - 23 + 18 - row_center_y
+                )
+                for side_slot in (side_left, side_right):
+                    self.assertGreaterEqual(side_slot.y, scaled_weight_bottom)
+                    side_center_x = side_slot.x + side_slot.size / 2
+                    side_center_y = side_slot.y + side_slot.size / 2
+                    for dot_x in positions:
+                        dot_center_x = clock_center + largest.scale * (
+                            dot_x + dot_size / 2 - clock_center
+                        )
+                        center_distance = math.hypot(
+                            side_center_x - dot_center_x,
+                            side_center_y - row_center_y,
+                        )
+                        self.assertGreaterEqual(
+                            center_distance,
+                            side_slot.size / 2 + scaled_dot_radius,
+                        )
 
         base_dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
         lowest_row = GENERATOR.CLOCK_ROW_LAYOUT[True][-1]
@@ -671,6 +734,16 @@ class WatchFaceGeneratorTest(unittest.TestCase):
 
         center_x = center_slot.x + center_slot.size / 2
         center_y = center_slot.y + center_slot.size / 2
+        for side_slot, lower_slot in zip(
+            (side_left, side_right), GENERATOR.COMPLICATION_SLOTS[:2]
+        ):
+            side_x = side_slot.x + side_slot.size / 2
+            side_y = side_slot.y + side_slot.size / 2
+            lower_x = lower_slot.x + lower_slot.size / 2
+            lower_y = lower_slot.y + lower_slot.size / 2
+            center_distance = math.hypot(side_x - lower_x, side_y - lower_y)
+            radius_sum = (side_slot.size + lower_slot.size) / 2
+            self.assertGreater(center_distance, radius_sum)
         for lower_slot in GENERATOR.COMPLICATION_SLOTS[:2]:
             lower_x = lower_slot.x + lower_slot.size / 2
             lower_y = lower_slot.y + lower_slot.size / 2
