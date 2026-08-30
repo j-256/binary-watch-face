@@ -12700,20 +12700,20 @@
             </Complication>
             <Complication type="EMPTY" />
         </ComplicationSlot>
-        <ComplicationSlot x="0" y="183" width="84" height="84" slotId="3" name="middle_left" displayName="slot_middle_left" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
+        <ComplicationSlot x="16" y="191" width="68" height="68" slotId="3" name="middle_left" displayName="slot_middle_left" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
             <DefaultProviderPolicy defaultSystemProvider="SUNRISE_SUNSET" defaultSystemProviderType="SHORT_TEXT" />
-            <BoundingOval x="0" y="0" width="84" height="84" outlinePadding="2" />
+            <BoundingOval x="0" y="0" width="68" height="68" outlinePadding="2" />
             <Complication type="SHORT_TEXT">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
@@ -12722,13 +12722,13 @@
                         <Expression name="short_text_has_icon">[COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
                     </Expressions>
                     <Compare expression="short_text_has_icon">
-                        <Group name="short_text_with_icon" x="0" y="0" width="84" height="84">
-                            <PartImage x="28" y="11" width="27" height="27" tintColor="[CONFIGURATION.dotColor.0]">
+                        <Group name="short_text_with_icon" x="0" y="0" width="68" height="68">
+                            <PartImage x="23" y="9" width="22" height="22" tintColor="[CONFIGURATION.dotColor.0]">
                                 <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
                             </PartImage>
-                            <PartText x="8" y="43" width="68" height="27" alpha="255">
+                            <PartText x="6" y="35" width="56" height="22" alpha="255">
                                 <Text align="CENTER" ellipsis="TRUE">
-                                    <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                    <Font family="SYNC_TO_DEVICE" size="15" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                         <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                         </Template>
                                     </Font>
@@ -12737,9 +12737,9 @@
                         </Group>
                     </Compare>
                     <Default>
-                        <PartText x="8" y="28" width="68" height="31" alpha="255">
+                        <PartText x="6" y="22" width="56" height="25" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                     </Template>
                                 </Font>
@@ -12749,21 +12749,21 @@
                 </Condition>
             </Complication>
             <Complication type="SMALL_IMAGE">
-                <Group name="middle_left_small_image_active" x="0" y="0" width="84" height="84">
+                <Group name="middle_left_small_image_active" x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <PartDraw x="0" y="0" width="84" height="84">
+                    <PartDraw x="0" y="0" width="68" height="68">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Ellipse x="2" y="2" width="80" height="80">
+                        <Ellipse x="2" y="2" width="64" height="64">
                             <Fill color="[CONFIGURATION.appearance.2]" />
                         </Ellipse>
                     </PartDraw>
-                    <PartDraw x="0" y="0" width="84" height="84">
+                    <PartDraw x="0" y="0" width="68" height="68">
                         <Variant mode="AMBIENT" target="alpha" value="150" />
-                        <Ellipse x="2" y="2" width="80" height="80">
+                        <Ellipse x="2" y="2" width="64" height="64">
                             <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                         </Ellipse>
                     </PartDraw>
-                    <PartImage name="middle_left_small_image_active_part" x="15" y="15" width="54" height="54">
+                    <PartImage name="middle_left_small_image_active_part" x="12" y="12" width="44" height="44">
                         <Image resource="[COMPLICATION.SMALL_IMAGE]" />
                     </PartImage>
                 </Group>
@@ -12772,65 +12772,65 @@
                         <Expression name="middle_left_small_image_has_ambient">[COMPLICATION.SMALL_IMAGE_AMBIENT] != null</Expression>
                     </Expressions>
                     <Compare expression="middle_left_small_image_has_ambient">
-                        <Group name="middle_left_small_image_ambient" x="0" y="0" width="84" height="84" alpha="0">
+                        <Group name="middle_left_small_image_ambient" x="0" y="0" width="68" height="68" alpha="0">
                             <Variant mode="AMBIENT" target="alpha" value="255" />
-                            <PartDraw x="0" y="0" width="84" height="84">
+                            <PartDraw x="0" y="0" width="68" height="68">
                                 <Variant mode="AMBIENT" target="alpha" value="0" />
-                                <Ellipse x="2" y="2" width="80" height="80">
+                                <Ellipse x="2" y="2" width="64" height="64">
                                     <Fill color="[CONFIGURATION.appearance.2]" />
                                 </Ellipse>
                             </PartDraw>
-                            <PartDraw x="0" y="0" width="84" height="84">
+                            <PartDraw x="0" y="0" width="68" height="68">
                                 <Variant mode="AMBIENT" target="alpha" value="150" />
-                                <Ellipse x="2" y="2" width="80" height="80">
+                                <Ellipse x="2" y="2" width="64" height="64">
                                     <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                                 </Ellipse>
                             </PartDraw>
-                            <PartImage name="middle_left_small_image_ambient_part" x="15" y="15" width="54" height="54">
+                            <PartImage name="middle_left_small_image_ambient_part" x="12" y="12" width="44" height="44">
                                 <Image resource="[COMPLICATION.SMALL_IMAGE_AMBIENT]" />
                             </PartImage>
                         </Group>
                     </Compare>
                     <Default>
-                        <Group name="middle_left_small_image_ambient_missing" x="0" y="0" width="84" height="84" alpha="0" />
+                        <Group name="middle_left_small_image_ambient_missing" x="0" y="0" width="68" height="68" alpha="0" />
                     </Default>
                 </Condition>
             </Complication>
             <Complication type="MONOCHROMATIC_IMAGE">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
-                <PartImage x="20" y="20" width="44" height="44" tintColor="[CONFIGURATION.textColor.0]">
+                <PartImage x="16" y="16" width="36" height="36" tintColor="[CONFIGURATION.textColor.0]">
                     <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
                 </PartImage>
             </Complication>
             <Complication type="RANGED_VALUE">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
-                    <Arc centerX="42.0" centerY="42.0" width="71" height="71" startAngle="-150" endAngle="150">
+                <PartDraw x="0" y="0" width="68" height="68">
+                    <Arc centerX="34.0" centerY="34.0" width="57" height="57" startAngle="-150" endAngle="150">
                         <Stroke color="[CONFIGURATION.dotColor.1]" thickness="4" cap="ROUND" />
                     </Arc>
-                    <Arc centerX="42.0" centerY="42.0" width="71" height="71" startAngle="-150" endAngle="150">
+                    <Arc centerX="34.0" centerY="34.0" width="57" height="57" startAngle="-150" endAngle="150">
                         <Stroke color="[CONFIGURATION.dotColor.0]" thickness="4" cap="ROUND" />
                         <Transform target="endAngle" value="-150 + (((clamp([COMPLICATION.RANGED_VALUE_VALUE], [COMPLICATION.RANGED_VALUE_MIN], [COMPLICATION.RANGED_VALUE_MAX]) - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN])) * 300)" />
                     </Arc>
@@ -12840,9 +12840,9 @@
                         <Expression name="ranged_value_has_text">[COMPLICATION.TEXT] != null</Expression>
                     </Expressions>
                     <Compare expression="ranged_value_has_text">
-                        <PartText x="11" y="28" width="62" height="30" alpha="255">
+                        <PartText x="9" y="22" width="50" height="24" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                     </Template>
                                 </Font>
@@ -12850,9 +12850,9 @@
                         </PartText>
                     </Compare>
                     <Default>
-                        <PartText x="11" y="28" width="62" height="30" alpha="255">
+                        <PartText x="9" y="22" width="50" height="24" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%.0f<Parameter expression="[COMPLICATION.RANGED_VALUE_VALUE]" />
                                     </Template>
                                 </Font>
@@ -12863,20 +12863,20 @@
             </Complication>
             <Complication type="EMPTY" />
         </ComplicationSlot>
-        <ComplicationSlot x="366" y="183" width="84" height="84" slotId="4" name="middle_right" displayName="slot_middle_right" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
+        <ComplicationSlot x="366" y="191" width="68" height="68" slotId="4" name="middle_right" displayName="slot_middle_right" supportedTypes="SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE RANGED_VALUE EMPTY" isCustomizable="TRUE">
             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
             <DefaultProviderPolicy defaultSystemProvider="UNREAD_NOTIFICATION_COUNT" defaultSystemProviderType="SHORT_TEXT" />
-            <BoundingOval x="0" y="0" width="84" height="84" outlinePadding="2" />
+            <BoundingOval x="0" y="0" width="68" height="68" outlinePadding="2" />
             <Complication type="SHORT_TEXT">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
@@ -12885,13 +12885,13 @@
                         <Expression name="short_text_has_icon">[COMPLICATION.MONOCHROMATIC_IMAGE] != null</Expression>
                     </Expressions>
                     <Compare expression="short_text_has_icon">
-                        <Group name="short_text_with_icon" x="0" y="0" width="84" height="84">
-                            <PartImage x="28" y="11" width="27" height="27" tintColor="[CONFIGURATION.dotColor.0]">
+                        <Group name="short_text_with_icon" x="0" y="0" width="68" height="68">
+                            <PartImage x="23" y="9" width="22" height="22" tintColor="[CONFIGURATION.dotColor.0]">
                                 <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
                             </PartImage>
-                            <PartText x="8" y="43" width="68" height="27" alpha="255">
+                            <PartText x="6" y="35" width="56" height="22" alpha="255">
                                 <Text align="CENTER" ellipsis="TRUE">
-                                    <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                    <Font family="SYNC_TO_DEVICE" size="15" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                         <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                         </Template>
                                     </Font>
@@ -12900,9 +12900,9 @@
                         </Group>
                     </Compare>
                     <Default>
-                        <PartText x="8" y="28" width="68" height="31" alpha="255">
+                        <PartText x="6" y="22" width="56" height="25" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="18" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                     </Template>
                                 </Font>
@@ -12912,21 +12912,21 @@
                 </Condition>
             </Complication>
             <Complication type="SMALL_IMAGE">
-                <Group name="middle_right_small_image_active" x="0" y="0" width="84" height="84">
+                <Group name="middle_right_small_image_active" x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <PartDraw x="0" y="0" width="84" height="84">
+                    <PartDraw x="0" y="0" width="68" height="68">
                         <Variant mode="AMBIENT" target="alpha" value="0" />
-                        <Ellipse x="2" y="2" width="80" height="80">
+                        <Ellipse x="2" y="2" width="64" height="64">
                             <Fill color="[CONFIGURATION.appearance.2]" />
                         </Ellipse>
                     </PartDraw>
-                    <PartDraw x="0" y="0" width="84" height="84">
+                    <PartDraw x="0" y="0" width="68" height="68">
                         <Variant mode="AMBIENT" target="alpha" value="150" />
-                        <Ellipse x="2" y="2" width="80" height="80">
+                        <Ellipse x="2" y="2" width="64" height="64">
                             <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                         </Ellipse>
                     </PartDraw>
-                    <PartImage name="middle_right_small_image_active_part" x="15" y="15" width="54" height="54">
+                    <PartImage name="middle_right_small_image_active_part" x="12" y="12" width="44" height="44">
                         <Image resource="[COMPLICATION.SMALL_IMAGE]" />
                     </PartImage>
                 </Group>
@@ -12935,65 +12935,65 @@
                         <Expression name="middle_right_small_image_has_ambient">[COMPLICATION.SMALL_IMAGE_AMBIENT] != null</Expression>
                     </Expressions>
                     <Compare expression="middle_right_small_image_has_ambient">
-                        <Group name="middle_right_small_image_ambient" x="0" y="0" width="84" height="84" alpha="0">
+                        <Group name="middle_right_small_image_ambient" x="0" y="0" width="68" height="68" alpha="0">
                             <Variant mode="AMBIENT" target="alpha" value="255" />
-                            <PartDraw x="0" y="0" width="84" height="84">
+                            <PartDraw x="0" y="0" width="68" height="68">
                                 <Variant mode="AMBIENT" target="alpha" value="0" />
-                                <Ellipse x="2" y="2" width="80" height="80">
+                                <Ellipse x="2" y="2" width="64" height="64">
                                     <Fill color="[CONFIGURATION.appearance.2]" />
                                 </Ellipse>
                             </PartDraw>
-                            <PartDraw x="0" y="0" width="84" height="84">
+                            <PartDraw x="0" y="0" width="68" height="68">
                                 <Variant mode="AMBIENT" target="alpha" value="150" />
-                                <Ellipse x="2" y="2" width="80" height="80">
+                                <Ellipse x="2" y="2" width="64" height="64">
                                     <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                                 </Ellipse>
                             </PartDraw>
-                            <PartImage name="middle_right_small_image_ambient_part" x="15" y="15" width="54" height="54">
+                            <PartImage name="middle_right_small_image_ambient_part" x="12" y="12" width="44" height="44">
                                 <Image resource="[COMPLICATION.SMALL_IMAGE_AMBIENT]" />
                             </PartImage>
                         </Group>
                     </Compare>
                     <Default>
-                        <Group name="middle_right_small_image_ambient_missing" x="0" y="0" width="84" height="84" alpha="0" />
+                        <Group name="middle_right_small_image_ambient_missing" x="0" y="0" width="68" height="68" alpha="0" />
                     </Default>
                 </Condition>
             </Complication>
             <Complication type="MONOCHROMATIC_IMAGE">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
-                <PartImage x="20" y="20" width="44" height="44" tintColor="[CONFIGURATION.textColor.0]">
+                <PartImage x="16" y="16" width="36" height="36" tintColor="[CONFIGURATION.textColor.0]">
                     <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
                 </PartImage>
             </Complication>
             <Complication type="RANGED_VALUE">
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="0" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Fill color="[CONFIGURATION.appearance.2]" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
+                <PartDraw x="0" y="0" width="68" height="68">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
-                    <Ellipse x="2" y="2" width="80" height="80">
+                    <Ellipse x="2" y="2" width="64" height="64">
                         <Stroke color="[CONFIGURATION.textColor.1]" thickness="2" />
                     </Ellipse>
                 </PartDraw>
-                <PartDraw x="0" y="0" width="84" height="84">
-                    <Arc centerX="42.0" centerY="42.0" width="71" height="71" startAngle="-150" endAngle="150">
+                <PartDraw x="0" y="0" width="68" height="68">
+                    <Arc centerX="34.0" centerY="34.0" width="57" height="57" startAngle="-150" endAngle="150">
                         <Stroke color="[CONFIGURATION.dotColor.1]" thickness="4" cap="ROUND" />
                     </Arc>
-                    <Arc centerX="42.0" centerY="42.0" width="71" height="71" startAngle="-150" endAngle="150">
+                    <Arc centerX="34.0" centerY="34.0" width="57" height="57" startAngle="-150" endAngle="150">
                         <Stroke color="[CONFIGURATION.dotColor.0]" thickness="4" cap="ROUND" />
                         <Transform target="endAngle" value="-150 + (((clamp([COMPLICATION.RANGED_VALUE_VALUE], [COMPLICATION.RANGED_VALUE_MIN], [COMPLICATION.RANGED_VALUE_MAX]) - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN])) * 300)" />
                     </Arc>
@@ -13003,9 +13003,9 @@
                         <Expression name="ranged_value_has_text">[COMPLICATION.TEXT] != null</Expression>
                     </Expressions>
                     <Compare expression="ranged_value_has_text">
-                        <PartText x="11" y="28" width="62" height="30" alpha="255">
+                        <PartText x="9" y="22" width="50" height="24" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%s<Parameter expression="[COMPLICATION.TEXT]" />
                                     </Template>
                                 </Font>
@@ -13013,9 +13013,9 @@
                         </PartText>
                     </Compare>
                     <Default>
-                        <PartText x="11" y="28" width="62" height="30" alpha="255">
+                        <PartText x="9" y="22" width="50" height="24" alpha="255">
                             <Text align="CENTER" ellipsis="TRUE">
-                                <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
+                                <Font family="SYNC_TO_DEVICE" size="16" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
                                     <Template>%.0f<Parameter expression="[COMPLICATION.RANGED_VALUE_VALUE]" />
                                     </Template>
                                 </Font>

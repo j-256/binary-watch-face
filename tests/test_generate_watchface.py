@@ -528,11 +528,32 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         )
         self.assertEqual(
             tuple(slots[3].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("middle_left", "0", "183", "84", "84"),
+            ("middle_left", "16", "191", "68", "68"),
         )
         self.assertEqual(
             tuple(slots[4].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("middle_right", "366", "183", "84", "84"),
+            ("middle_right", "366", "191", "68", "68"),
+        )
+
+    def test_side_complications_leave_outer_ticks_visible(self) -> None:
+        tick_configuration = self.root.find(
+            f"./Scene/ListConfiguration[@id='{GENERATOR.TICK_STYLE_ID}']"
+        )
+        self.assertIsNotNone(tick_configuration)
+        assert tick_configuration is not None
+        tick_outer_insets = [
+            float(marker.get("y", "0"))
+            for marker in tick_configuration.findall(".//RoundRectangle")
+        ]
+        self.assertTrue(tick_outer_insets)
+
+        side_left, side_right = GENERATOR.COMPLICATION_SLOTS[3:5]
+        outer_margins = (
+            side_left.x,
+            GENERATOR.WATCH_SIZE - side_right.x - side_right.size,
+        )
+        self.assertTrue(
+            all(margin > max(tick_outer_insets) for margin in outer_margins)
         )
 
     def test_complication_slots_clear_the_largest_clock_and_each_other(self) -> None:
