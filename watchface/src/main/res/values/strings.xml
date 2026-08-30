@@ -101,7 +101,8 @@
     <string name="seconds_shown">Seconds: Shown</string>
     <string name="seconds_hidden">Seconds: Hidden</string>
     <string name="setting_show_bit_weights">Show bit weights</string>
-    <string name="bit_weights_shown">Weights: Shown</string>
+    <string name="bit_weights_shown">Weights: Active and AOD</string>
+    <string name="bit_weights_active_only">Weights: Active only</string>
     <string name="bit_weights_hidden">Weights: Hidden</string>
     <string name="setting_show_weekday">Show weekday</string>
     <string name="weekday_shown">Weekday: Shown</string>

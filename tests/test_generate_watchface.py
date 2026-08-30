@@ -182,18 +182,69 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                 drawable = PROJECT_ROOT / f"watchface/src/main/res/drawable/{drawable_name}.xml"
                 self.assertTrue(drawable.is_file())
 
-    def test_binary_settings_are_visible_two_choice_lists(self) -> None:
-        expected_ids = {setting_id for setting_id, *_ in GENERATOR.BINARY_SETTINGS}
-        for setting_id in expected_ids:
+    def test_simple_settings_are_visible_list_configurations(self) -> None:
+        for setting_id, _, default, options in GENERATOR.SIMPLE_LIST_SETTINGS:
             with self.subTest(setting_id=setting_id):
                 setting = self.user_configuration(setting_id)
                 self.assertEqual(setting.tag, "ListConfiguration")
+                self.assertEqual(setting.get("defaultValue"), default)
                 self.assertEqual(
                     [option.get("id") for option in setting.findall("ListOption")],
-                    ["TRUE", "FALSE"],
+                    [option_id for option_id, _ in options],
                 )
         self.assertNotIn("BooleanConfiguration", self.xml)
         self.assertNotIn("BooleanOption", self.xml)
+
+    def test_bit_weights_can_be_limited_to_active_mode(self) -> None:
+        setting = self.user_configuration(GENERATOR.SHOW_WEIGHTS_ID)
+        self.assertEqual(
+            [option.get("id") for option in setting.findall("ListOption")],
+            [
+                GENERATOR.WEIGHTS_SHOWN_ID,
+                GENERATOR.WEIGHTS_ACTIVE_ONLY_ID,
+                GENERATOR.WEIGHTS_HIDDEN_ID,
+            ],
+        )
+
+        expected_visibility = GENERATOR.configuration_matches_expression(
+            GENERATOR.SHOW_WEIGHTS_ID,
+            GENERATOR.WEIGHT_VISIBLE_OPTION_IDS,
+        )
+        conditions = [
+            condition
+            for condition in self.root.findall("./Scene//Condition")
+            if any(
+                f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}" in (expression.text or "")
+                for expression in condition.findall("./Expressions/Expression")
+            )
+        ]
+        self.assertTrue(conditions)
+        for condition in conditions:
+            expressions = condition.findall("./Expressions/Expression")
+            self.assertEqual(len(expressions), 1)
+            self.assertEqual(expressions[0].text, expected_visibility)
+
+            weights = condition.find("Compare/Group")
+            self.assertIsNotNone(weights)
+            assert weights is not None
+            active = next(
+                group
+                for group in weights.findall("Group")
+                if group.get("name", "").endswith("_weights_active")
+            )
+            self.assertIsNotNone(
+                active.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
+            )
+            ambient = weights.find(
+                f"ListConfiguration[@id='{GENERATOR.SHOW_WEIGHTS_ID}']"
+            )
+            self.assertIsNotNone(ambient)
+            assert ambient is not None
+            self.assertEqual(
+                [option.get("id") for option in ambient.findall("ListOption")],
+                [GENERATOR.WEIGHTS_SHOWN_ID],
+            )
+            self.assertIsNotNone(condition.find("Default/Group"))
 
     def test_reference_appearance_size_effect_and_tick_options_are_available(self) -> None:
         expected = (

@@ -47,6 +47,9 @@ SIZE_ID = "displaySize"
 DOT_EFFECT_ID = "dotEffect"
 SHOW_SECONDS_ID = "showSeconds"
 SHOW_WEIGHTS_ID = "showBitWeights"
+WEIGHTS_SHOWN_ID = "TRUE"
+WEIGHTS_ACTIVE_ONLY_ID = "active"
+WEIGHTS_HIDDEN_ID = "FALSE"
 DATE_FORMAT_ID = "dateFormat"
 SHOW_WEEKDAY_ID = "showWeekday"
 UPPERCASE_DATE_ID = "uppercaseDate"
@@ -79,11 +82,37 @@ CONFIGURATION_HIGHLIGHTS = {
     COMPLICATION_COUNT_ID: "@drawable/highlight_complications",
 }
 
-BINARY_SETTINGS = (
-    (SHOW_SECONDS_ID, "setting_show_seconds", "FALSE", "seconds_shown", "seconds_hidden"),
-    (SHOW_WEIGHTS_ID, "setting_show_bit_weights", "TRUE", "bit_weights_shown", "bit_weights_hidden"),
-    (SHOW_WEEKDAY_ID, "setting_show_weekday", "TRUE", "weekday_shown", "weekday_hidden"),
-    (UPPERCASE_DATE_ID, "setting_uppercase_date", "FALSE", "date_case_uppercase", "date_case_mixed"),
+WEIGHT_VISIBILITY_OPTIONS = (
+    (WEIGHTS_SHOWN_ID, "bit_weights_shown"),
+    (WEIGHTS_ACTIVE_ONLY_ID, "bit_weights_active_only"),
+    (WEIGHTS_HIDDEN_ID, "bit_weights_hidden"),
+)
+WEIGHT_VISIBLE_OPTION_IDS = (WEIGHTS_SHOWN_ID, WEIGHTS_ACTIVE_ONLY_ID)
+SIMPLE_LIST_SETTINGS = (
+    (
+        SHOW_SECONDS_ID,
+        "setting_show_seconds",
+        "FALSE",
+        (("TRUE", "seconds_shown"), ("FALSE", "seconds_hidden")),
+    ),
+    (
+        SHOW_WEIGHTS_ID,
+        "setting_show_bit_weights",
+        WEIGHTS_SHOWN_ID,
+        WEIGHT_VISIBILITY_OPTIONS,
+    ),
+    (
+        SHOW_WEEKDAY_ID,
+        "setting_show_weekday",
+        "TRUE",
+        (("TRUE", "weekday_shown"), ("FALSE", "weekday_hidden")),
+    ),
+    (
+        UPPERCASE_DATE_ID,
+        "setting_uppercase_date",
+        "FALSE",
+        (("TRUE", "date_case_uppercase"), ("FALSE", "date_case_mixed")),
+    ),
 )
 
 HOUR_12_WEIGHTS = (8, 4, 2, 1)
@@ -635,7 +664,7 @@ def add_user_configurations(root: ET.Element) -> None:
     ):
         element(tick_style, "ListOption", id=option_id, displayName=label, screenReaderText=label)
 
-    for setting_id, label, default, enabled_label, disabled_label in BINARY_SETTINGS:
+    for setting_id, label, default, options in SIMPLE_LIST_SETTINGS:
         setting = add_user_configuration(
             configurations,
             "ListConfiguration",
@@ -643,7 +672,7 @@ def add_user_configurations(root: ET.Element) -> None:
             display_name=label,
             default_value=default,
         )
-        for option_id, option_label in (("TRUE", enabled_label), ("FALSE", disabled_label)):
+        for option_id, option_label in options:
             element(
                 setting,
                 "ListOption",
@@ -1239,15 +1268,51 @@ def add_binary_row(
                     template=str(bit),
                 )
 
-        add_ambient_color_condition(
+        def build_ambient_enabled(ambient_parent: ET.Element) -> None:
+            add_ambient_color_condition(
+                ambient_parent,
+                name=f"{name}_weights_ambient",
+                color=COLOR_TEXT_AMBIENT,
+                monochrome=COLOR_AMBIENT_MONO,
+                builder=build_ambient,
+            )
+
+        add_enabled_group(
             weights_parent,
-            name=f"{name}_weights_ambient",
-            color=COLOR_TEXT_AMBIENT,
-            monochrome=COLOR_AMBIENT_MONO,
-            builder=build_ambient,
+            SHOW_WEIGHTS_ID,
+            f"{name}_weights_ambient_enabled",
+            build_ambient_enabled,
         )
 
-    add_enabled_group(group, SHOW_WEIGHTS_ID, f"{name}_bit_weights", build_weights)
+    weights_condition = element(group, "Condition")
+    weights_expressions = element(weights_condition, "Expressions")
+    weights_expression_name = f"{name}_bit_weights_visible"
+    weights_expression = element(
+        weights_expressions,
+        "Expression",
+        name=weights_expression_name,
+    )
+    weights_expression.text = configuration_matches_expression(
+        SHOW_WEIGHTS_ID,
+        WEIGHT_VISIBLE_OPTION_IDS,
+    )
+    weights_compare = element(
+        weights_condition,
+        "Compare",
+        expression=weights_expression_name,
+    )
+    weights_group = element(
+        weights_compare,
+        "Group",
+        name=f"{name}_bit_weights",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    build_weights(weights_group)
+    weights_default = element(weights_condition, "Default")
+    add_empty_group(weights_default, f"{name}_bit_weights_hidden")
 
     for x, bit in zip(positions, weights):
         add_binary_dot(

@@ -85,7 +85,7 @@ Long-press the active face and choose **Edit**. Every choice names both the sett
 | Clock mode | 24-hour by default or 12-hour |
 | Effect | None, glow by default, or bezel |
 | Ticks | None, single, wave, boost, or all by default |
-| Binary display | Optional seconds row and bit weights |
+| Binary display | Optional seconds row; bit weights in active and AOD modes by default, active only, or hidden |
 | Date | Nov 26, 11/26, 26 Nov, 26/11, 26.11, ISO, Unix timestamp, or hidden, with independent weekday and uppercase controls |
 | Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden |
 | Complications | Two by default, three, or four |

@@ -24,7 +24,7 @@ Read time in true binary, with each bit aligned and clearly weighted. Binary is 
 TRUE BINARY TIME
 - Choose 12-hour or 24-hour time
 - Show or hide a binary seconds row
-- Show bit weights for quick reading
+- Show bit weights in active and AOD modes or only while active
 - Keep every row aligned across the dial
 
 MAKE IT YOURS
