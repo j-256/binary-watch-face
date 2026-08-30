@@ -15,6 +15,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 GENERATOR_PATH = PROJECT_ROOT / "tools/generate_watchface.py"
 STRINGS_PATH = PROJECT_ROOT / "watchface/src/main/res/values/strings.xml"
+WATCH_FACE_INFO_PATH = PROJECT_ROOT / "watchface/src/main/res/xml/watch_face_info.xml"
+USER_CONFIGURATION_TAGS = {"BooleanConfiguration", "ColorConfiguration", "ListConfiguration"}
 MODULE_SPEC = importlib.util.spec_from_file_location("generate_watchface", GENERATOR_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"Unable to load {GENERATOR_PATH}")
@@ -32,12 +34,20 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             string.get("name"): string.text
             for string in ET.parse(STRINGS_PATH).getroot().findall("string")
         }
+        cls.watch_face_info = ET.parse(WATCH_FACE_INFO_PATH).getroot()
 
-    def user_configuration(self, configuration_id: str) -> ET.Element:
+    def user_configurations(self) -> tuple[ET.Element, ...]:
         configurations = self.root.find("UserConfigurations")
         self.assertIsNotNone(configurations)
         assert configurations is not None
-        for configuration in configurations:
+        return tuple(
+            configuration
+            for configuration in configurations
+            if configuration.tag in USER_CONFIGURATION_TAGS
+        )
+
+    def user_configuration(self, configuration_id: str) -> ET.Element:
+        for configuration in self.user_configurations():
             if configuration.get("id") == configuration_id:
                 return configuration
         self.fail(f"Missing user configuration: {configuration_id}")
@@ -58,20 +68,90 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             GENERATOR.SHOW_SECONDS_ID,
             GENERATOR.SHOW_WEIGHTS_ID,
             GENERATOR.SHOW_WEEKDAY_ID,
-            GENERATOR.UPPERCASE_DATE_ID,
             GENERATOR.AMBIENT_INFO_ID,
             GENERATOR.AMBIENT_COLOR_ID,
             GENERATOR.DATE_FORMAT_ID,
             GENERATOR.BATTERY_DISPLAY_ID,
             GENERATOR.COMPLICATION_COUNT_ID,
         }
-        configurations = self.root.find("UserConfigurations")
-        self.assertIsNotNone(configurations)
-        assert configurations is not None
+        configurations = self.user_configurations()
         actual = {configuration.get("id") for configuration in configurations}
         self.assertEqual(actual, expected)
-        self.assertEqual(len(configurations), 20)
+        self.assertEqual(len(configurations), 19)
+        configurations_container = self.root.find("UserConfigurations")
+        self.assertIsNotNone(configurations_container)
+        assert configurations_container is not None
+        self.assertLessEqual(len(configurations_container), 20)
         self.assertFalse(any("touch" in str(configuration_id).lower() for configuration_id in actual))
+
+    def test_flavors_cover_every_setting_and_match_the_default(self) -> None:
+        configurations = self.user_configurations()
+        configurations_by_id = {
+            configuration.get("id"): configuration
+            for configuration in configurations
+        }
+        flavors = self.root.find("./UserConfigurations/Flavors")
+        self.assertIsNotNone(flavors)
+        assert flavors is not None
+        self.assertEqual(flavors.get("defaultValue"), GENERATOR.DEFAULT_FLAVOR_ID)
+        self.assertEqual(
+            [flavor.get("id") for flavor in flavors.findall("Flavor")],
+            [choice.option_id for choice in GENERATOR.FLAVOR_CHOICES],
+        )
+
+        for choice, flavor in zip(GENERATOR.FLAVOR_CHOICES, flavors.findall("Flavor")):
+            with self.subTest(flavor=choice.option_id):
+                self.assertEqual(flavor.get("displayName"), choice.label)
+                self.assertEqual(flavor.get("screenReaderText"), choice.label)
+                self.assertIn(choice.label, self.strings)
+                selected = tuple(
+                    (configuration.get("id"), configuration.get("optionId"))
+                    for configuration in flavor.findall("Configuration")
+                )
+                self.assertEqual(selected, choice.configurations)
+                self.assertEqual(
+                    {configuration_id for configuration_id, _ in selected},
+                    set(configurations_by_id),
+                )
+                for configuration_id, option_id in selected:
+                    configuration = configurations_by_id[configuration_id]
+                    valid_option_ids = {
+                        option.get("id")
+                        for option in configuration
+                        if option.tag.endswith("Option")
+                    }
+                    self.assertIn(option_id, valid_option_ids)
+
+                complication_count = dict(selected)[GENERATOR.COMPLICATION_COUNT_ID]
+                flavor_slots = flavor.findall("ComplicationSlot")
+                self.assertEqual(
+                    [int(slot.get("slotId", "-1")) for slot in flavor_slots],
+                    list(GENERATOR.COMPLICATION_LAYOUTS[complication_count]),
+                )
+                slots_by_id = {
+                    slot.slot_id: slot for slot in GENERATOR.COMPLICATION_SLOTS
+                }
+                for flavor_slot in flavor_slots:
+                    slot = slots_by_id[int(flavor_slot.get("slotId", "-1"))]
+                    policy = flavor_slot.find("DefaultProviderPolicy")
+                    self.assertIsNotNone(policy)
+                    assert policy is not None
+                    self.assertEqual(policy.get("defaultSystemProvider"), slot.provider)
+                    self.assertEqual(policy.get("defaultSystemProviderType"), slot.provider_type)
+
+        defaults = tuple(
+            (configuration.get("id"), configuration.get("defaultValue"))
+            for configuration in configurations
+        )
+        terminal = next(
+            choice
+            for choice in GENERATOR.FLAVOR_CHOICES
+            if choice.option_id == GENERATOR.DEFAULT_FLAVOR_ID
+        )
+        self.assertEqual(terminal.configurations, defaults)
+        self.assertIsNotNone(
+            self.watch_face_info.find("FlavorsSupported[@value='true']")
+        )
 
     def test_terminal_green_is_the_default_dot_and_text_color(self) -> None:
         expected_options = [choice.option_id for choice in GENERATOR.COLOR_CHOICES]
@@ -142,10 +222,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                 )
 
     def test_editor_values_identify_the_setting_they_change(self) -> None:
-        configurations = self.root.find("UserConfigurations")
-        self.assertIsNotNone(configurations)
-        assert configurations is not None
-        for configuration in configurations:
+        for configuration in self.user_configurations():
             for option in configuration:
                 with self.subTest(configuration=configuration.get("id"), option=option.get("id")):
                     label_id = option.get("displayName")
@@ -153,10 +230,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                     self.assertIn(":", self.strings[label_id])
 
     def test_editor_labels_escape_android_format_characters(self) -> None:
-        configurations = self.root.find("UserConfigurations")
-        self.assertIsNotNone(configurations)
-        assert configurations is not None
-        for configuration in configurations:
+        for configuration in self.user_configurations():
             for option in configuration:
                 label_id = option.get("displayName")
                 label = self.strings[label_id]
@@ -167,9 +241,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                     self.assertNotIn("%", label.replace("%%", ""))
 
     def test_every_editor_setting_has_an_existing_highlight(self) -> None:
-        configurations = self.root.find("UserConfigurations")
-        self.assertIsNotNone(configurations)
-        assert configurations is not None
+        configurations = self.user_configurations()
         self.assertEqual(
             {configuration.get("id") for configuration in configurations},
             set(GENERATOR.CONFIGURATION_HIGHLIGHTS),
@@ -438,12 +510,16 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         )
         defaults = {
             GENERATOR.SHOW_WEEKDAY_ID: "TRUE",
-            GENERATOR.UPPERCASE_DATE_ID: "FALSE",
             GENERATOR.AMBIENT_INFO_ID: "off",
             GENERATOR.AMBIENT_COLOR_ID: "TRUE",
         }
         for configuration_id, default in defaults.items():
             self.assertEqual(self.user_configuration(configuration_id).get("defaultValue"), default)
+        date_style = self.user_configuration(GENERATOR.SHOW_WEEKDAY_ID)
+        self.assertEqual(
+            [option.get("id") for option in date_style.findall("ListOption")],
+            [choice.option_id for choice in GENERATOR.DATE_STYLE_CHOICES],
+        )
 
     def test_ambient_information_presets_control_date_weekday_and_watch_battery(self) -> None:
         ambient_info = self.user_configuration(GENERATOR.AMBIENT_INFO_ID)
@@ -691,8 +767,16 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             self.assertEqual(expressions[0].text, expected_color_expression)
             self.assertIsNotNone(condition.find("Compare/Group"))
             self.assertIsNotNone(condition.find("Default/Group"))
+        self.assertEqual(scene.get("backgroundColor"), GENERATOR.COLOR_BLACK)
+        active_background = scene.find("Group[@name='active_background']")
+        self.assertIsNotNone(active_background)
+        assert active_background is not None
         self.assertIsNotNone(
-            scene.find("Variant[@mode='AMBIENT'][@target='backgroundColor'][@value='#000000']")
+            active_background.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
+        )
+        self.assertEqual(
+            active_background.find("PartDraw/Rectangle/Fill").get("color"),
+            GENERATOR.COLOR_BACKGROUND,
         )
 
         pattern = self.root.find(".//PartDraw[@name='ambient_dither']")

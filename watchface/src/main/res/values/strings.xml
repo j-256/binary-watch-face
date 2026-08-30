@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="watch_face_name">Binary</string>
+    <string name="flavor_terminal">Preset: Terminal</string>
+    <string name="flavor_seconds">Preset: Seconds</string>
+    <string name="flavor_cyan_dashboard">Preset: Cyan dashboard</string>
+    <string name="flavor_light">Preset: Light</string>
     <string name="setting_dot_color">Dots color</string>
     <string name="setting_text_color">Text color</string>
     <string name="dots_color_terminal">Dots: Terminal green</string>
@@ -104,12 +108,11 @@
     <string name="bit_weights_shown">Weights: Active and AOD</string>
     <string name="bit_weights_active_only">Weights: Active only</string>
     <string name="bit_weights_hidden">Weights: Hidden</string>
-    <string name="setting_show_weekday">Show weekday</string>
-    <string name="weekday_shown">Weekday: Shown</string>
-    <string name="weekday_hidden">Weekday: Hidden</string>
-    <string name="setting_uppercase_date">Uppercase date</string>
-    <string name="date_case_uppercase">Date case: Uppercase</string>
-    <string name="date_case_mixed">Date case: Mixed</string>
+    <string name="setting_show_weekday">Date style</string>
+    <string name="weekday_shown">Date style: Weekday, mixed case</string>
+    <string name="weekday_hidden">Date style: Date only, mixed case</string>
+    <string name="date_style_uppercase_weekday">Date style: Weekday, uppercase</string>
+    <string name="date_style_uppercase_date">Date style: Date only, uppercase</string>
     <string name="setting_ambient_info">AOD information</string>
     <string name="ambient_info_off">AOD info: Hidden</string>
     <string name="ambient_info_date">AOD info: Date</string>

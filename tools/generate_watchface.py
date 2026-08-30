@@ -52,7 +52,6 @@ WEIGHTS_ACTIVE_ONLY_ID = "active"
 WEIGHTS_HIDDEN_ID = "FALSE"
 DATE_FORMAT_ID = "dateFormat"
 SHOW_WEEKDAY_ID = "showWeekday"
-UPPERCASE_DATE_ID = "uppercaseDate"
 AMBIENT_INFO_ID = "ambientInfo"
 AMBIENT_COLOR_ID = "ambientColor"
 BATTERY_DISPLAY_ID = "batteryDisplay"
@@ -74,7 +73,6 @@ CONFIGURATION_HIGHLIGHTS = {
     SHOW_WEIGHTS_ID: "@drawable/highlight_weights",
     DATE_FORMAT_ID: "@drawable/highlight_date",
     SHOW_WEEKDAY_ID: "@drawable/highlight_date",
-    UPPERCASE_DATE_ID: "@drawable/highlight_date",
     AMBIENT_INFO_ID: "@drawable/highlight_date_battery",
     AMBIENT_COLOR_ID: "@drawable/highlight_full_face",
     BATTERY_DISPLAY_ID: "@drawable/highlight_battery",
@@ -105,13 +103,12 @@ SIMPLE_LIST_SETTINGS = (
         SHOW_WEEKDAY_ID,
         "setting_show_weekday",
         "TRUE",
-        (("TRUE", "weekday_shown"), ("FALSE", "weekday_hidden")),
-    ),
-    (
-        UPPERCASE_DATE_ID,
-        "setting_uppercase_date",
-        "FALSE",
-        (("TRUE", "date_case_uppercase"), ("FALSE", "date_case_mixed")),
+        (
+            ("TRUE", "weekday_shown"),
+            ("FALSE", "weekday_hidden"),
+            ("uppercase_weekday", "date_style_uppercase_weekday"),
+            ("uppercase_date", "date_style_uppercase_date"),
+        ),
     ),
 )
 
@@ -185,6 +182,13 @@ class DateFormatSpec:
 
 
 @dataclass(frozen=True)
+class DateStyleChoice:
+    option_id: str
+    uppercase: bool
+    include_weekday: bool
+
+
+@dataclass(frozen=True)
 class ComplicationSlotSpec:
     slot_id: int
     name: str
@@ -194,6 +198,13 @@ class ComplicationSlotSpec:
     size: int
     provider: str
     provider_type: str
+
+
+@dataclass(frozen=True)
+class FlavorChoice:
+    option_id: str
+    label: str
+    configurations: tuple[tuple[str, str], ...]
 
 
 COLOR_CHOICES = (
@@ -326,6 +337,13 @@ DATE_FORMATS = (
     DateFormatSpec("unix", "date_format_unix", "%d", ("floor([UTC_TIMESTAMP] / 1000)",), 18),
 )
 
+DATE_STYLE_CHOICES = (
+    DateStyleChoice("TRUE", False, True),
+    DateStyleChoice("FALSE", False, False),
+    DateStyleChoice("uppercase_weekday", True, True),
+    DateStyleChoice("uppercase_date", True, False),
+)
+
 COMPLICATION_SLOTS = (
     ComplicationSlotSpec(0, "lower_left", "slot_lower_left", 87, 277, 106, "STEP_COUNT", "SHORT_TEXT"),
     ComplicationSlotSpec(1, "lower_right", "slot_lower_right", 257, 277, 106, "HEART_RATE", "RANGED_VALUE"),
@@ -339,6 +357,101 @@ COMPLICATION_LAYOUTS = {
     "3": (0, 1, 2),
     "4": (0, 1, 3, 4),
 }
+
+DEFAULT_FLAVOR_ID = "terminal"
+DEFAULT_CONFIGURATION_VALUES = (
+    (DOT_COLOR_ID, "terminal"),
+    (TEXT_COLOR_ID, "terminal"),
+    (APPEARANCE_ID, "dark"),
+    (BACKDROP_COLOR_ID, DEFAULT_BACKDROP_COLOR_ID),
+    (BACKDROP_OPACITY_ID, DEFAULT_BACKDROP_OPACITY_ID),
+    (BACKDROP_LAYOUT_ID, DEFAULT_BACKDROP_LAYOUT_ID),
+    (BACKDROP_VISIBILITY_ID, DEFAULT_BACKDROP_VISIBILITY_ID),
+    (SIZE_ID, DEFAULT_SIZE_ID),
+    (CLOCK_MODE_ID, "24"),
+    (DOT_EFFECT_ID, "glow"),
+    (TICK_STYLE_ID, "all"),
+    (SHOW_SECONDS_ID, "FALSE"),
+    (SHOW_WEIGHTS_ID, WEIGHTS_SHOWN_ID),
+    (SHOW_WEEKDAY_ID, "TRUE"),
+    (AMBIENT_COLOR_ID, DEFAULT_AMBIENT_APPEARANCE_ID),
+    (AMBIENT_INFO_ID, "off"),
+    (DATE_FORMAT_ID, "iso"),
+    (BATTERY_DISPLAY_ID, "decimal"),
+    (COMPLICATION_COUNT_ID, "2"),
+)
+
+
+def flavor_configuration_values(**overrides: str) -> tuple[tuple[str, str], ...]:
+    configuration_ids = {configuration_id for configuration_id, _ in DEFAULT_CONFIGURATION_VALUES}
+    unknown_ids = set(overrides) - configuration_ids
+    if unknown_ids:
+        raise ValueError(f"Unknown flavor configuration IDs: {sorted(unknown_ids)}")
+    return tuple(
+        (configuration_id, overrides.get(configuration_id, default_value))
+        for configuration_id, default_value in DEFAULT_CONFIGURATION_VALUES
+    )
+
+
+FLAVOR_CHOICES = (
+    FlavorChoice(
+        DEFAULT_FLAVOR_ID,
+        "flavor_terminal",
+        flavor_configuration_values(),
+    ),
+    FlavorChoice(
+        "seconds",
+        "flavor_seconds",
+        flavor_configuration_values(
+            dotColor="yellow",
+            textColor="white",
+            backdropOpacity="15",
+            backdropLayout="normal_lowered",
+            displaySize="normal",
+            dotEffect="bezel",
+            tickStyle="wave",
+            showSeconds="TRUE",
+            showBitWeights=WEIGHTS_HIDDEN_ID,
+            showWeekday="FALSE",
+            ambientColor="dim_mono",
+            dateFormat="day_month",
+            batteryDisplay="binary",
+            complicationCount="3",
+        ),
+    ),
+    FlavorChoice(
+        "cyan_dashboard",
+        "flavor_cyan_dashboard",
+        flavor_configuration_values(
+            dotColor="cyan",
+            textColor="white",
+            backdropVisibility="off",
+            displaySize="small",
+            clockMode="12",
+            dotEffect="none",
+            tickStyle="single",
+            showBitWeights=WEIGHTS_HIDDEN_ID,
+            showWeekday="FALSE",
+            ambientInfo="date_battery",
+            batteryDisplay="hex",
+            complicationCount="4",
+        ),
+    ),
+    FlavorChoice(
+        "light",
+        "flavor_light",
+        flavor_configuration_values(
+            dotColor="dark_gray",
+            textColor="dark_gray",
+            appearance="light",
+            backdropOpacity="15",
+            dotEffect="bezel",
+            showBitWeights=WEIGHTS_ACTIVE_ONLY_ID,
+            ambientColor="FALSE",
+            ambientInfo="date_battery",
+        ),
+    ),
+)
 
 
 def element(parent: ET.Element, tag: str, **attributes: object) -> ET.Element:
@@ -763,6 +876,35 @@ def add_user_configurations(root: ET.Element) -> None:
             screenReaderText=label,
             complicationSlotIds=" ".join(str(slot_id) for slot_id in slot_ids),
         )
+
+    flavors = element(configurations, "Flavors", defaultValue=DEFAULT_FLAVOR_ID)
+    slots_by_id = {slot.slot_id: slot for slot in COMPLICATION_SLOTS}
+    for choice in FLAVOR_CHOICES:
+        flavor = element(
+            flavors,
+            "Flavor",
+            id=choice.option_id,
+            displayName=choice.label,
+            screenReaderText=choice.label,
+        )
+        for configuration_id, option_id in choice.configurations:
+            element(
+                flavor,
+                "Configuration",
+                id=configuration_id,
+                optionId=option_id,
+            )
+        selected_configuration = dict(choice.configurations)
+        complication_count = selected_configuration[COMPLICATION_COUNT_ID]
+        for slot_id in COMPLICATION_LAYOUTS[complication_count]:
+            slot = slots_by_id[slot_id]
+            flavor_slot = element(flavor, "ComplicationSlot", slotId=slot.slot_id)
+            element(
+                flavor_slot,
+                "DefaultProviderPolicy",
+                defaultSystemProvider=slot.provider,
+                defaultSystemProviderType=slot.provider_type,
+            )
 
 
 def add_static_ticks(parent: ET.Element, *, every: int, alpha: int) -> None:
@@ -1425,13 +1567,44 @@ def add_clock(scene: ET.Element) -> None:
     add_clock_modes(scene, name="clock", row_layouts=CLOCK_ROW_LAYOUT)
 
 
+def add_background(scene: ET.Element) -> None:
+    active = element(
+        scene,
+        "Group",
+        name="active_background",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    add_variant(active, "alpha", 0)
+    draw = element(
+        active,
+        "PartDraw",
+        name="active_background_fill",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    rectangle = element(
+        draw,
+        "Rectangle",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    element(rectangle, "Fill", color=COLOR_BACKGROUND)
+
+
 def add_configurable_date_text(
     parent: ET.Element,
     *,
     name: str,
     specification: DateFormatSpec,
     color: str,
-    weekday_configuration_id: str | None,
+    weekday_from_ambient_info: bool,
 ) -> None:
     def add_date_value_text(
         text_parent: ET.Element,
@@ -1466,46 +1639,35 @@ def add_configurable_date_text(
         )
         add_screen_reader(text, template, parameters)
 
-    uppercase_configuration = element(parent, "ListConfiguration", id=UPPERCASE_DATE_ID)
-    for uppercase_id, uppercase, uppercase_suffix in (
-        ("TRUE", True, "uppercase"),
-        ("FALSE", False, "mixed_case"),
-    ):
-        uppercase_option = element(uppercase_configuration, "ListOption", id=uppercase_id)
-        uppercase_group = element(
-            uppercase_option,
+    date_style_configuration = element(parent, "ListConfiguration", id=SHOW_WEEKDAY_ID)
+    for choice in DATE_STYLE_CHOICES:
+        uppercase_suffix = "uppercase" if choice.uppercase else "mixed_case"
+        weekday_suffix = "weekday" if choice.include_weekday else "date_only"
+        style_option = element(
+            date_style_configuration,
+            "ListOption",
+            id=choice.option_id,
+        )
+        style_group = element(
+            style_option,
             "Group",
-            name=f"{name}_{uppercase_suffix}",
+            name=f"{name}_{uppercase_suffix}_{weekday_suffix}_style",
             x=0,
             y=0,
             width=WATCH_SIZE,
             height=WATCH_SIZE,
         )
-        if weekday_configuration_id is not None:
-            weekday_configuration = element(
-                uppercase_group,
-                "ListConfiguration",
-                id=weekday_configuration_id,
+        if not weekday_from_ambient_info:
+            add_date_value_text(
+                style_group,
+                uppercase=choice.uppercase,
+                uppercase_suffix=uppercase_suffix,
+                include_weekday=choice.include_weekday,
+                weekday_suffix=weekday_suffix,
             )
-            for weekday_id, include_weekday, weekday_suffix in (
-                ("TRUE", True, "weekday"),
-                ("FALSE", False, "date_only"),
-            ):
-                weekday_option = element(
-                    weekday_configuration,
-                    "ListOption",
-                    id=weekday_id,
-                )
-                add_date_value_text(
-                    weekday_option,
-                    uppercase=uppercase,
-                    uppercase_suffix=uppercase_suffix,
-                    include_weekday=include_weekday,
-                    weekday_suffix=weekday_suffix,
-                )
             continue
 
-        condition = element(uppercase_group, "Condition")
+        condition = element(style_group, "Condition")
         expressions = element(condition, "Expressions")
         weekday_expression = element(
             expressions,
@@ -1533,7 +1695,7 @@ def add_configurable_date_text(
         )
         add_date_value_text(
             weekday_compare,
-            uppercase=uppercase,
+            uppercase=choice.uppercase,
             uppercase_suffix=uppercase_suffix,
             include_weekday=True,
             weekday_suffix="weekday",
@@ -1545,7 +1707,7 @@ def add_configurable_date_text(
         )
         add_date_value_text(
             date_compare,
-            uppercase=uppercase,
+            uppercase=choice.uppercase,
             uppercase_suffix=uppercase_suffix,
             include_weekday=False,
             weekday_suffix="date_only",
@@ -1583,7 +1745,7 @@ def add_date(scene: ET.Element) -> None:
             name=f"date_{specification.option_id}_active",
             specification=specification,
             color=COLOR_TEXT_ACTIVE,
-            weekday_configuration_id=SHOW_WEEKDAY_ID,
+            weekday_from_ambient_info=False,
         )
 
         def build_ambient(ambient_parent: ET.Element, date_specification: DateFormatSpec = specification) -> None:
@@ -1604,7 +1766,7 @@ def add_date(scene: ET.Element) -> None:
                     name=f"date_{date_specification.option_id}_ambient_{suffix}",
                     specification=date_specification,
                     color=color,
-                    weekday_configuration_id=None,
+                    weekday_from_ambient_info=True,
                 )
 
             add_ambient_color_condition(
@@ -2046,8 +2208,8 @@ def build_watchface() -> ET.Element:
     element(root, "Metadata", key="PREVIEW_TIME", value="15:23:37")
     add_user_configurations(root)
 
-    scene = element(root, "Scene", backgroundColor=COLOR_BACKGROUND)
-    add_variant(scene, "backgroundColor", COLOR_BLACK)
+    scene = element(root, "Scene", backgroundColor=COLOR_BLACK)
+    add_background(scene)
     add_clock(scene)
     add_tick_ring(scene)
     add_date(scene)
