@@ -28,11 +28,12 @@ TRUE BINARY TIME
 - Keep every row aligned across the dial
 
 MAKE IT YOURS
+- Start with Terminal, Seconds, Cyan dashboard, or Light presets
 - Pick independent dot, text, and decimal-backdrop colors
 - Adjust backdrop opacity, size, position, and active/AOD visibility
 - Choose tiny through huge display sizes
 - Select glow, bezel, and tick effects
-- Use ISO date or several regional date formats
+- Use ISO 8601 by default or choose a regional date format
 - Show the watch battery in decimal, hexadecimal, or binary
 - Configure two, three, or four complications
 
@@ -47,14 +48,18 @@ Requires Wear OS 7.
 
 ## Assets
 
-- `app-icon.png`: 512 x 512 app icon derived from the terminal-green watch-face capture
-- `feature-graphic.png`: 1024 x 500 feature graphic using the terminal-green watch-face capture
+- `app-icon.png`: 512 x 512 app icon derived from the exact default watch-face capture
+- `feature-graphic.png`: 1024 x 500 feature graphic using the exact default watch-face capture
+
+Upload screenshots in the table order. Keep `screenshot-terminal-green.png` first because it shows the exact factory defaults and is also the lead image on GitHub.
 
 | Screenshot | Clock and date | Binary styling | Layout and data |
 | --- | --- | --- | --- |
-| `screenshot-terminal-green.png` | 24-hour with uppercase dotted day-month and weekday | Weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal battery, two complications |
+| `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal battery, two complications |
+| `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, decimal battery, two complications |
 | `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, binary battery, three complications |
 | `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, hexadecimal battery, four complications |
+| `screenshot-aod.png` | ISO date in always-on display mode | Bright monochrome patterned dots with active-only weights hidden | Watch battery and enabled complications remain available at low power |
 
 The screenshots use notification, heart-rate, sunrise/sunset, and app-shortcut complications. None uses a battery complication because each configuration already includes the watch face's native battery readout.
 
@@ -63,17 +68,20 @@ The screenshots use notification, heart-rate, sunrise/sunset, and app-shortcut c
 Release name:
 
 ```text
-0.1.0 - Closed beta 1
+0.2.0 - Closed beta 2
 ```
 
 Release notes:
 
 ```text
 <en-US>
-First closed beta of Binary, a configurable binary watch face for Wear OS 7.
+Polish update for Binary, a configurable binary watch face for Wear OS 7.
 
 - Display time in 12- or 24-hour true binary
-- Customize colors, size, effects, ticks, date, battery, and backdrop
+- Start from curated presets or customize every setting
+- Use ISO 8601 as the default date format
+- Keep the live tick visible beside side complications
+- Render the Light theme across the full dial
 - Choose two, three, or four complications
 - Use a configurable low-power always-on display
 </en-US>

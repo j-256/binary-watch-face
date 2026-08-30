@@ -3,7 +3,12 @@
 Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, and optional seconds as true binary values. It is an independent implementation inspired by a retired face that no longer installs on newer watches.
 
 <p align="center">
-  <img src="docs/store/screenshot-terminal-green.png" alt="Terminal-green 24-hour Binary watch face with weights and all ticks" width="31%">
+  <img src="docs/store/screenshot-terminal-green.png" alt="Default terminal-green 24-hour Binary watch face with an ISO date, weights, and all ticks" width="31%">
+  <img src="docs/store/screenshot-light.png" alt="Light Binary watch face with dark-gray bezel dots" width="31%">
+  <img src="docs/store/screenshot-aod.png" alt="Monochrome always-on Binary watch face with an ISO date and watch battery" width="31%">
+</p>
+
+<p align="center">
   <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with seconds and wave ticks" width="31%">
   <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face with an ISO date and four complications" width="31%">
 </p>
@@ -16,6 +21,7 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 - Uses four hour bits in 12-hour mode, five in 24-hour mode, and six for minutes and seconds
 - Offers optional full-dial decimal values, bit weights, a seconds row, multiple date formats, and decimal, hexadecimal, or binary watch-battery readouts
 - Defaults dots and text independently to phosphor terminal green, with a broad palette and dark or light appearance
+- Includes curated Terminal, Seconds, Cyan dashboard, and Light presets in companion apps that support WFF flavors
 - Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable two-, three-, and four-slot layouts
@@ -70,7 +76,7 @@ After installation, long-press the active watch face, scroll to **Add new**, and
 
 ## Customize
 
-Long-press the active face and choose **Edit**. Every choice names both the setting and selected value, such as **Dots: Terminal green** or **Seconds: Hidden**, and the package supplies a matching highlight overlay for editors that support it. Each enabled complication can be assigned through the normal Wear OS complication picker.
+Choose a curated preset from the companion app, or long-press the active face and choose **Edit** to tune every setting individually. Every choice names both the setting and selected value, such as **Dots: Terminal green** or **Seconds: Hidden**, and the package supplies a matching highlight overlay for editors that support it. Each enabled complication can be assigned through the normal Wear OS complication picker.
 
 | Setting | Options |
 | --- | --- |
@@ -86,7 +92,7 @@ Long-press the active face and choose **Edit**. Every choice names both the sett
 | Effect | None, glow by default, or bezel |
 | Ticks | None, single, wave, boost, or all by default |
 | Binary display | Optional seconds row; bit weights in active and AOD modes by default, active only, or hidden |
-| Date | Nov 26, 11/26, 26 Nov, 26/11, 26.11, ISO, Unix timestamp, or hidden, with independent weekday and uppercase controls |
+| Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden |
 | Complications | Two by default, three, or four |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, and watch-battery presets; and optional monochrome rendering |
