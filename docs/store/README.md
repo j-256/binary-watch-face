@@ -55,13 +55,13 @@ Upload screenshots in the table order. Keep `screenshot-terminal-green.png` firs
 
 | Screenshot | Clock and date | Binary styling | Layout and data |
 | --- | --- | --- | --- |
-| `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal battery, two complications |
-| `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, decimal battery, two complications |
-| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, binary battery, three complications |
-| `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, hexadecimal battery, four complications |
-| `screenshot-aod.png` | ISO date in always-on display mode | Bright monochrome patterned dots with active-only weights hidden | Watch battery and enabled complications remain available at low power |
+| `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal watch battery; step count and heart rate |
+| `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, decimal watch battery; London world clock and Find Hub shortcut |
+| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, binary watch battery; notifications, media controls, and heart rate |
+| `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, hexadecimal watch battery; sunrise/sunset, notifications, heart rate, and app shortcut |
+| `screenshot-aod.png` | Terminal time with supplemental AOD information hidden | Normal-color patterned dots with weights retained | Step count and heart rate remain available at low power |
 
-The screenshots use notification, heart-rate, sunrise/sunset, and app-shortcut complications. None uses a battery complication because each configuration already includes the watch face's native battery readout.
+No screenshot uses a battery complication because each active configuration already includes the watch face's native battery readout. The Terminal and AOD captures intentionally retain the same step-count and heart-rate providers to demonstrate complication continuity at low power; the other active captures vary the providers shown.
 
 ## Closed beta release
 

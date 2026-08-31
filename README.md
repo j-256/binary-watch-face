@@ -3,13 +3,13 @@
 Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, and optional seconds as true binary values. It is an independent implementation inspired by a retired face that no longer installs on newer watches.
 
 <p align="center">
-  <img src="docs/store/screenshot-terminal-green.png" alt="Default terminal-green 24-hour Binary watch face with an ISO date, weights, and all ticks" width="31%">
-  <img src="docs/store/screenshot-light.png" alt="Light Binary watch face with dark-gray bezel dots" width="31%">
-  <img src="docs/store/screenshot-aod.png" alt="Monochrome always-on Binary watch face with an ISO date and watch battery" width="31%">
+  <img src="docs/store/screenshot-terminal-green.png" alt="Default terminal-green 24-hour Binary watch face with step-count and heart-rate complications" width="31%">
+  <img src="docs/store/screenshot-light.png" alt="Light Binary watch face with London world time and a Find Hub shortcut" width="31%">
+  <img src="docs/store/screenshot-aod.png" alt="Always-on Binary watch face retaining step-count and heart-rate complications" width="31%">
 </p>
 
 <p align="center">
-  <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with seconds and wave ticks" width="31%">
+  <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with notifications, media controls, and heart rate" width="31%">
   <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face with an ISO date and four complications" width="31%">
 </p>
 
