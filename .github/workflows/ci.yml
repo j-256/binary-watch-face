@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  schedule:
+    - cron: '20 5 * * 1'
+  workflow_dispatch:
   push:
   pull_request:
 
@@ -14,6 +17,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -45,3 +49,51 @@ jobs:
 
       - name: Build the APK and app bundle
         run: ./gradlew --no-daemon check assembleDebug bundleRelease
+
+      - name: Install the isolated cover emulator
+        run: android --no-metrics --sdk="$ANDROID_HOME" sdk install platform-tools cmdline-tools/latest emulator system-images/android-37.0/android-wear-signed/x86_64
+
+      - name: Enable emulator acceleration
+        run: sudo chmod a+rw /dev/kvm
+
+      - name: Build and capture the project cover
+        run: python3 tools/capture_cover.py
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: project-cover
+          path: docs/screenshots/cover.png
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-cover:
+    name: Publish project cover
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    needs: [verify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: project-cover
+          path: docs/screenshots
+      - name: Commit changed cover from this build
+        run: |
+          set -eu
+          git fetch origin main
+          if [ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]; then
+            echo "A newer source commit superseded this cover; its build owns publication."
+            exit 0
+          fi
+          if git diff --quiet -- docs/screenshots/cover.png; then
+            echo "Project cover is unchanged."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- docs/screenshots/cover.png
+          git commit -m 'docs: refresh generated project cover' -- docs/screenshots/cover.png
+          git push origin HEAD:main
