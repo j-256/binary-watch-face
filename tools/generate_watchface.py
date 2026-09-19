@@ -122,32 +122,31 @@ SIX_BIT_WEIGHTS = (32, 16, 8, 4, 2, 1)
 REFERENCE_ROW_SPAN = 188
 REFERENCE_DOT_SIZE = 23
 DECIMAL_BACKDROP_SIZE = 240
-BOTTOM_READOUT_Y = 382
-BOTTOM_READOUT_WIDTH = 120
-BOTTOM_READOUT_HORIZONTAL_OVERLAP = 10
-BOTTOM_READOUT_HEIGHT = 28
-BOTTOM_READOUT_TEXT_SIZE = 20
+NATIVE_READOUT_Y = 250
+NATIVE_READOUT_WIDTH = 120
+NATIVE_READOUT_HORIZONTAL_OVERLAP = 10
+NATIVE_READOUT_HEIGHT = 28
+NATIVE_READOUT_TEXT_SIZE = 20
 HEART_RATE_READOUT_X = (
-    WATCH_SIZE - 2 * BOTTOM_READOUT_WIDTH + BOTTOM_READOUT_HORIZONTAL_OVERLAP
+    WATCH_SIZE - 2 * NATIVE_READOUT_WIDTH + NATIVE_READOUT_HORIZONTAL_OVERLAP
 ) // 2
 BATTERY_READOUT_X = (
-    HEART_RATE_READOUT_X + BOTTOM_READOUT_WIDTH - BOTTOM_READOUT_HORIZONTAL_OVERLAP
+    HEART_RATE_READOUT_X + NATIVE_READOUT_WIDTH - NATIVE_READOUT_HORIZONTAL_OVERLAP
 )
-BOTTOM_READOUT_BOX_OVERLAP = 1
-LOWER_COMPLICATION_SIZE = 96
-LOWER_COMPLICATION_PAIR_GAP = 58
+SYSTEM_INDICATOR_BOUNDS = (140, 380, 310, WATCH_SIZE)
+SYSTEM_INDICATOR_CLEARANCE = 4
+COMPLICATION_OUTLINE_PADDING = 2
+LOWER_COMPLICATION_SIZE = 92
+LOWER_COMPLICATION_PAIR_GAP = 120
 LOWER_COMPLICATION_LEFT_X = (
     WATCH_SIZE - 2 * LOWER_COMPLICATION_SIZE - LOWER_COMPLICATION_PAIR_GAP
 ) // 2
-LOWER_COMPLICATION_Y = (
-    BOTTOM_READOUT_Y + BOTTOM_READOUT_BOX_OVERLAP - LOWER_COMPLICATION_SIZE
-)
+LOWER_COMPLICATION_Y = 286
+CENTER_COMPLICATION_SIZE = 70
+CENTER_COMPLICATION_Y = 290
 SIDE_COMPLICATION_SIZE = 76
 SIDE_COMPLICATION_OUTER_MARGIN = 24
-SIDE_COMPLICATION_VERTICAL_OVERLAP = 7
-SIDE_COMPLICATION_Y = (
-    LOWER_COMPLICATION_Y - SIDE_COMPLICATION_SIZE + SIDE_COMPLICATION_VERTICAL_OVERLAP
-)
+SIDE_COMPLICATION_Y = 218
 CLOCK_ROW_LAYOUT = {
     False: (150, 210),
     True: (106, 162, 218),
@@ -339,7 +338,7 @@ AMBIENT_DATE_OPTION_IDS = (
     "date_weekday_battery",
 )
 AMBIENT_WEEKDAY_OPTION_IDS = ("date_weekday", "date_weekday_battery")
-AMBIENT_BOTTOM_READOUT_OPTION_IDS = (
+AMBIENT_NATIVE_READOUT_OPTION_IDS = (
     "battery",
     "date_battery",
     "date_weekday_battery",
@@ -377,7 +376,7 @@ DATE_STYLE_CHOICES = (
 COMPLICATION_SLOTS = (
     ComplicationSlotSpec(0, "lower_left", "slot_lower_left", LOWER_COMPLICATION_LEFT_X, LOWER_COMPLICATION_Y, LOWER_COMPLICATION_SIZE, "STEP_COUNT", "SHORT_TEXT"),
     ComplicationSlotSpec(1, "lower_right", "slot_lower_right", WATCH_SIZE - LOWER_COMPLICATION_LEFT_X - LOWER_COMPLICATION_SIZE, LOWER_COMPLICATION_Y, LOWER_COMPLICATION_SIZE, "UNREAD_NOTIFICATION_COUNT", "SHORT_TEXT"),
-    ComplicationSlotSpec(2, "lower_center", "slot_lower_center", 190, 264, 70, "NEXT_EVENT", "SHORT_TEXT"),
+    ComplicationSlotSpec(2, "lower_center", "slot_lower_center", (WATCH_SIZE - CENTER_COMPLICATION_SIZE) // 2, CENTER_COMPLICATION_Y, CENTER_COMPLICATION_SIZE, "NEXT_EVENT", "SHORT_TEXT"),
     ComplicationSlotSpec(3, "middle_left", "slot_middle_left", SIDE_COMPLICATION_OUTER_MARGIN, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "SUNRISE_SUNSET", "SHORT_TEXT"),
     ComplicationSlotSpec(4, "middle_right", "slot_middle_right", WATCH_SIZE - SIDE_COMPLICATION_OUTER_MARGIN - SIDE_COMPLICATION_SIZE, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "WORLD_CLOCK", "SHORT_TEXT"),
 )
@@ -1826,10 +1825,10 @@ def add_battery_readout(
         active,
         name=f"{name}_active_text",
         x=BATTERY_READOUT_X,
-        y=BOTTOM_READOUT_Y,
-        width=BOTTOM_READOUT_WIDTH,
-        height=BOTTOM_READOUT_HEIGHT,
-        size=BOTTOM_READOUT_TEXT_SIZE,
+        y=NATIVE_READOUT_Y,
+        width=NATIVE_READOUT_WIDTH,
+        height=NATIVE_READOUT_HEIGHT,
+        size=NATIVE_READOUT_TEXT_SIZE,
         color=COLOR_TEXT_ACTIVE,
         template=template,
         parameters=parameters,
@@ -1862,7 +1861,7 @@ def add_battery_readout(
             "Transform",
             target="alpha",
             value=(
-                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
+                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
                 "? 255 : 0"
             ),
         )
@@ -1870,10 +1869,10 @@ def add_battery_readout(
             visibility,
             name=f"{name}_ambient_{suffix}_text",
             x=BATTERY_READOUT_X,
-            y=BOTTOM_READOUT_Y,
-            width=BOTTOM_READOUT_WIDTH,
-            height=BOTTOM_READOUT_HEIGHT,
-            size=BOTTOM_READOUT_TEXT_SIZE,
+            y=NATIVE_READOUT_Y,
+            width=NATIVE_READOUT_WIDTH,
+            height=NATIVE_READOUT_HEIGHT,
+            size=NATIVE_READOUT_TEXT_SIZE,
             color=color,
             template=template,
             parameters=parameters,
@@ -1985,10 +1984,10 @@ def add_heart_rate_text(
         compare,
         name=f"{name}_value",
         x=HEART_RATE_READOUT_X,
-        y=BOTTOM_READOUT_Y,
-        width=BOTTOM_READOUT_WIDTH,
-        height=BOTTOM_READOUT_HEIGHT,
-        size=BOTTOM_READOUT_TEXT_SIZE,
+        y=NATIVE_READOUT_Y,
+        width=NATIVE_READOUT_WIDTH,
+        height=NATIVE_READOUT_HEIGHT,
+        size=NATIVE_READOUT_TEXT_SIZE,
         color=color,
         template=f"%d{glyph}",
         parameters=(heart_rate_expression,),
@@ -2004,10 +2003,10 @@ def add_heart_rate_text(
         default,
         name=f"{name}_unavailable",
         x=HEART_RATE_READOUT_X,
-        y=BOTTOM_READOUT_Y,
-        width=BOTTOM_READOUT_WIDTH,
-        height=BOTTOM_READOUT_HEIGHT,
-        size=BOTTOM_READOUT_TEXT_SIZE,
+        y=NATIVE_READOUT_Y,
+        width=NATIVE_READOUT_WIDTH,
+        height=NATIVE_READOUT_HEIGHT,
+        size=NATIVE_READOUT_TEXT_SIZE,
         color=color,
         template=f"--{glyph}",
     )
@@ -2059,7 +2058,7 @@ def add_heart_rate(scene: ET.Element, *, heart_rate: int | None) -> None:
             "Transform",
             target="alpha",
             value=(
-                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
+                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
                 "? 255 : 0"
             ),
         )
@@ -2339,7 +2338,7 @@ def add_complications(scene: ET.Element) -> None:
             y=0,
             width=specification.size,
             height=specification.size,
-            outlinePadding=2,
+            outlinePadding=COMPLICATION_OUTLINE_PADDING,
         )
         add_short_text_complication(slot, specification.size)
         add_image_complications(slot, specification.size, specification.name)

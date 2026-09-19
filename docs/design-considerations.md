@@ -1,0 +1,52 @@
+# Design considerations
+
+Binary is a watch first. Its true-binary time display is the primary content; date, native readouts, complications, and perimeter ticks support that purpose. Use these constraints when changing the generator, editor highlights, or screenshots.
+
+## Time remains the focus
+
+Keep the binary rows horizontally centered and preserve their shared left and right endpoints. Complication count must not move or shrink the clock. The time rows retain their established vertical positions, including the layout that expands into the space available when seconds are hidden. Adjust supplemental information around the time before considering a change to the time itself.
+
+Keep the decimal backdrop subordinate through its independent appearance controls. Readouts and complication labels should remain visually secondary to the binary field. Verify both a restrained preset and the largest clock with seconds and weights enabled; a layout that only works with small dots is insufficient.
+
+## System indicators own the bottom center
+
+Wear OS draws a notification dot and a larger, tappable ongoing-activity indicator over the watch face. Stopwatch, timer, media, and workout activity can occupy more space than the dot. A dot-only screenshot does not establish clearance. See Google's [ongoing-activity documentation](https://developer.android.com/training/wearables/notifications/ongoing-activity).
+
+Reserve a permanent bottom-center region for system indicators. Keep native readouts and complication tap targets outside that region with padding. Decorative ticks and the decimal backdrop may extend behind system UI, but no essential value may depend on that UI being absent. The reserved region is a project design constraint, not a universal Wear OS guarantee; device and OS changes require rendered verification.
+
+On the 450-unit design canvas, reserve `x=140..310` and `y=380..450`, with an additional four units of clearance from essential content and complication outlines. This intentionally exceeds the narrow activity icon observed on the Wear OS 7 emulator. Device-specific pills can be wider; retain a physical-watch check when changing this region.
+
+Use named geometry in `tools/generate_watchface.py` and enforce separation in the generator tests. Check the full readout rectangles and complication ovals, including their editor outline padding. Do not replace these constraints with a small gap around the notification dot or a single default-preset screenshot.
+
+## Readouts and complications
+
+Heart rate and watch battery are native readouts, not complication slots. Place them together between the binary field and the lower complications, with heart rate on the left and battery on the right. Keep this row stable across complication counts and active/AOD modes. Preserve room for a three-digit heart rate, its heart glyph, and the longest binary battery value.
+
+The larger lower-left and lower-right complications retain their slot IDs, size, and position when the count changes. Smaller side complications flank the readout row in the four-slot layout. In the three-slot layout, the center complication sits below the readouts, between the lower pair. Preserve usable separation between circles, readable provider text, and visible perimeter ticks.
+
+Native readouts must not look like labels belonging to unrelated complication providers. Complications retain their standard provider actions; do not add whole-face tap actions or invisible complication targets. Keep editor highlights aligned with the actual content.
+
+## Verification and release checkpoints
+
+Geometry tests protect the reserved system region, readout separation, clock clearance, and complication separation. They complement rendered checks because glyphs, provider content, system overlays, and device scaling are not fully represented by simple bounds.
+
+For a layout change, inspect active and always-on rendering for the following cases:
+
+| Case | What to check |
+| --- | --- |
+| Two complications | Clear hierarchy between time, native readouts, and the lower pair |
+| Three complications | Center slot clears both readouts and neighboring complications |
+| Four complications | Side slots clear the time at every size; lower slots remain balanced |
+| Huge size, seconds, and weights | Time remains readable without collisions or a count-dependent shift |
+| Binary battery and three-digit heart rate | Full values and glyphs fit without touching providers |
+| Notification dot and ongoing activity | Readouts remain visible and the system return action remains tappable |
+| Dark, light, and AOD | Contrast, placement, and the system reserve remain valid |
+
+The following Wear OS 7 emulator captures exercise the four-slot layout with Huge dots, seconds, bit weights, a three-digit sample heart rate, and a full binary battery value. The white or gray stopwatch icon is system UI supplied by an isolated ongoing-activity test app. The AOD capture retains the readouts while hiding the seconds row.
+
+<p align="center">
+  <img src="screenshots/layout-four-ongoing.png" alt="Four complications with large binary time, native readouts, and a clear system activity indicator" width="45%">
+  <img src="screenshots/layout-four-ambient.png" alt="The same layout in always-on mode with the system activity indicator clear of native readouts and complications" width="45%">
+</p>
+
+Before a release checkpoint, run the generator tests, generated-file consistency check, normal Gradle checks, and official WFF validator and memory evaluator. Preserve a versioned checkpoint before a substantial visual redesign so its behavior and artifacts remain available for comparison. A local version or tag does not publish to GitHub or change the Play testing track.

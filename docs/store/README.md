@@ -57,31 +57,31 @@ Upload screenshots in the table order. Keep `screenshot-terminal-green.png` firs
 | --- | --- | --- | --- |
 | `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, paired decimal battery and native heart rate; step count and unread notifications |
 | `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, paired decimal battery and native heart rate; step count and unread notifications |
-| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, paired binary battery and native heart rate; step count, unread notifications, and next event |
+| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, paired binary battery and native heart rate; step count, unread notifications, and world clock |
 | `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, paired hexadecimal battery and native heart rate; sunrise/sunset, world clock, step count, and unread notifications |
 | `screenshot-aod.png` | Terminal time with supplemental AOD information hidden | Normal-color patterned dots with weights retained | Step count and unread notifications remain available at low power |
 
-No screenshot uses a battery or heart-rate complication because each active configuration already includes the watch face's native paired readouts. The Terminal and AOD captures intentionally retain the same step-count and unread-notification providers to demonstrate complication continuity at low power; the other active captures show the providers supplied by their preset layouts.
+No screenshot uses a battery or heart-rate complication because each active configuration already includes the watch face's native paired readouts. The Terminal and AOD captures intentionally retain the same step-count and unread-notification providers to demonstrate complication continuity at low power. The Seconds capture selects a world clock in its center slot to show populated content without a calendar account; the preset's default provider remains the next event.
 
-Store and documentation renders use the screenshot-only build's fixed 72 BPM heart rate. Production builds continue to use the native WFF heart-rate source.
+Store screenshots use the screenshot-only build's fixed 72 BPM heart rate. Layout diagnostic images use a higher fixed value to verify three-digit clearance. Production builds continue to use the native WFF heart-rate source.
 
 ## Closed beta release
 
 Release name:
 
 ```text
-0.3.0 - Native readouts
+0.4.0 - Readout and complication layout
 ```
 
 Release notes:
 
 ```text
 <en-US>
-Native readouts for Binary, a configurable binary watch face for Wear OS 7.
+Layout update for Binary, a configurable binary watch face for Wear OS 7.
 
-- Show native heart rate beside the watch battery
-- Keep complications available for other providers
-- Choose decimal, hexadecimal, or binary battery values
-- Configure paired readouts in the always-on display
+- Move heart rate and battery above the lower complications
+- Reserve bottom-center space for system activity indicators
+- Balance the two-, three-, and four-complication layouts
+- Keep the binary time in its established position
 </en-US>
 ```

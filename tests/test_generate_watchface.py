@@ -18,6 +18,7 @@ STRINGS_PATH = PROJECT_ROOT / "watchface/src/main/res/values/strings.xml"
 WATCH_FACE_INFO_PATH = PROJECT_ROOT / "watchface/src/main/res/xml/watch_face_info.xml"
 USER_CONFIGURATION_TAGS = {"BooleanConfiguration", "ColorConfiguration", "ListConfiguration"}
 MIN_VISIBLE_TICK_LENGTH = 8
+MIN_CONTENT_GAP = 6
 MODULE_SPEC = importlib.util.spec_from_file_location("generate_watchface", GENERATOR_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"Unable to load {GENERATOR_PATH}")
@@ -498,17 +499,10 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             all(text.get("x") == str(GENERATOR.BATTERY_READOUT_X) for text in battery_text)
         )
         self.assertTrue(
-            all(text.get("y") == str(GENERATOR.BOTTOM_READOUT_Y) for text in battery_text)
-        )
-        lower_bottom = max(
-            slot.y + slot.size for slot in GENERATOR.COMPLICATION_SLOTS[:2]
-        )
-        self.assertEqual(
-            lower_bottom - GENERATOR.BOTTOM_READOUT_Y,
-            GENERATOR.BOTTOM_READOUT_BOX_OVERLAP,
+            all(text.get("y") == str(GENERATOR.NATIVE_READOUT_Y) for text in battery_text)
         )
 
-    def test_native_heart_rate_balances_battery_around_system_indicator(self) -> None:
+    def test_native_heart_rate_balances_battery_above_complications(self) -> None:
         active = self.root.find("./Scene/Group[@name='heart_rate_active']")
         self.assertIsNotNone(active)
         assert active is not None
@@ -525,8 +519,8 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         assert value is not None and unavailable is not None
         for text in (value, unavailable):
             self.assertEqual(text.get("x"), str(GENERATOR.HEART_RATE_READOUT_X))
-            self.assertEqual(text.get("y"), str(GENERATOR.BOTTOM_READOUT_Y))
-            self.assertEqual(text.get("width"), str(GENERATOR.BOTTOM_READOUT_WIDTH))
+            self.assertEqual(text.get("y"), str(GENERATOR.NATIVE_READOUT_Y))
+            self.assertEqual(text.get("width"), str(GENERATOR.NATIVE_READOUT_WIDTH))
 
         value_template = value.find(".//Template")
         self.assertIsNotNone(value_template)
@@ -576,16 +570,16 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             )
         )
 
-        battery_center = GENERATOR.BATTERY_READOUT_X + GENERATOR.BOTTOM_READOUT_WIDTH / 2
+        battery_center = GENERATOR.BATTERY_READOUT_X + GENERATOR.NATIVE_READOUT_WIDTH / 2
         heart_rate_center = (
-            GENERATOR.HEART_RATE_READOUT_X + GENERATOR.BOTTOM_READOUT_WIDTH / 2
+            GENERATOR.HEART_RATE_READOUT_X + GENERATOR.NATIVE_READOUT_WIDTH / 2
         )
         self.assertEqual(battery_center + heart_rate_center, GENERATOR.WATCH_SIZE)
         self.assertEqual(
             GENERATOR.HEART_RATE_READOUT_X
-            + GENERATOR.BOTTOM_READOUT_WIDTH
+            + GENERATOR.NATIVE_READOUT_WIDTH
             - GENERATOR.BATTERY_READOUT_X,
-            GENERATOR.BOTTOM_READOUT_HORIZONTAL_OVERLAP,
+            GENERATOR.NATIVE_READOUT_HORIZONTAL_OVERLAP,
         )
 
     def test_date_controls_cover_reference_formats_and_ambient_options(self) -> None:
@@ -643,7 +637,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             },
         )
         expected_battery_visibility = (
-            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
             "? 255 : 0"
         )
         battery_visibility = [
@@ -691,15 +685,15 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         }
         self.assertEqual(
             tuple(slots[0].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("lower_left", "100", "287", "96", "96"),
+            ("lower_left", "73", "286", "92", "92"),
         )
         self.assertEqual(
             tuple(slots[1].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("lower_right", "254", "287", "96", "96"),
+            ("lower_right", "285", "286", "92", "92"),
         )
         self.assertEqual(
             tuple(slots[2].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
-            ("lower_center", "190", "264", "70", "70"),
+            ("lower_center", "190", "290", "70", "70"),
         )
         self.assertEqual(
             tuple(slots[3].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
@@ -723,10 +717,86 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             lower_right.x - lower_left.x - lower_left.size,
             GENERATOR.LOWER_COMPLICATION_PAIR_GAP,
         )
-        self.assertEqual(
-            side_left.y + side_left.size - lower_left.y,
-            GENERATOR.SIDE_COMPLICATION_VERTICAL_OVERLAP,
-        )
+
+    @staticmethod
+    def complication_circle(slot: ET.Element) -> tuple[float, float, float]:
+        oval = slot.find("BoundingOval")
+        assert oval is not None
+        width = float(oval.get("width", "0"))
+        assert width == float(oval.get("height", "0"))
+        center_x = float(slot.get("x", "0")) + float(oval.get("x", "0")) + width / 2
+        center_y = float(slot.get("y", "0")) + float(oval.get("y", "0")) + width / 2
+        radius = width / 2 + float(oval.get("outlinePadding", "0"))
+        return center_x, center_y, radius
+
+    @classmethod
+    def circle_rectangle_gap(cls, slot: ET.Element, bounds: tuple[float, float, float, float]) -> float:
+        left, top, right, bottom = bounds
+        center_x, center_y, radius = cls.complication_circle(slot)
+        return math.hypot(
+            max(left - center_x, 0, center_x - right),
+            max(top - center_y, 0, center_y - bottom),
+        ) - radius
+
+    def native_readout_bounds(self) -> list[tuple[float, float, float, float]]:
+        bounds = []
+        for text in self.root.findall(".//PartText"):
+            if text.get("name", "").startswith(("battery_", "heart_rate_")):
+                x, y, width, height = (
+                    float(text.get(attribute, "0"))
+                    for attribute in ("x", "y", "width", "height")
+                )
+                bounds.append((x, y, x + width, y + height))
+        self.assertTrue(bounds)
+        return bounds
+
+    def test_native_readouts_clear_the_largest_clock_and_every_complication(self) -> None:
+        largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)
+        base = next(size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID)
+        dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
+        clock_bottom = max(max(rows) for rows in GENERATOR.CLOCK_ROW_LAYOUT.values()) + dot_size / 2 * (1 + largest.scale)
+        slots = self.root.findall("./Scene/ComplicationSlot")
+        for bounds in self.native_readout_bounds():
+            with self.subTest(bounds=bounds):
+                self.assertGreaterEqual(bounds[1] - clock_bottom, MIN_CONTENT_GAP)
+                for slot in slots:
+                    self.assertGreaterEqual(
+                        self.circle_rectangle_gap(slot, bounds),
+                        MIN_CONTENT_GAP,
+                        slot.get("name"),
+                    )
+
+    def test_system_indicator_region_clears_readouts_and_complication_outlines(self) -> None:
+        bounds = GENERATOR.SYSTEM_INDICATOR_BOUNDS
+        left, top, right, bottom = bounds
+        margin = GENERATOR.SYSTEM_INDICATOR_CLEARANCE
+        self.assertEqual(left + right, GENERATOR.WATCH_SIZE)
+        self.assertEqual(bottom, GENERATOR.WATCH_SIZE)
+        self.assertGreater(right - left, GENERATOR.NATIVE_READOUT_WIDTH)
+        for readout_left, readout_top, readout_right, readout_bottom in self.native_readout_bounds():
+            self.assertTrue(
+                readout_right <= left - margin
+                or readout_left >= right + margin
+                or readout_bottom <= top - margin
+                or readout_top >= bottom + margin
+            )
+        for slot in self.root.findall("./Scene/ComplicationSlot"):
+            with self.subTest(slot=slot.get("name")):
+                self.assertGreaterEqual(self.circle_rectangle_gap(slot, bounds), margin)
+
+    def test_enabled_complications_keep_space_between_their_outlines(self) -> None:
+        slots = {
+            int(slot.get("slotId", "-1")): slot
+            for slot in self.root.findall("./Scene/ComplicationSlot")
+        }
+        for count, ids in GENERATOR.COMPLICATION_LAYOUTS.items():
+            for index, slot_id in enumerate(ids):
+                center_x, center_y, radius = self.complication_circle(slots[slot_id])
+                for other_id in ids[index + 1:]:
+                    other_x, other_y, other_radius = self.complication_circle(slots[other_id])
+                    gap = math.hypot(center_x - other_x, center_y - other_y) - radius - other_radius
+                    with self.subTest(count=count, slots=(slot_id, other_id)):
+                        self.assertGreaterEqual(gap, MIN_CONTENT_GAP)
 
     def test_every_tick_position_remains_visible_beyond_complications(self) -> None:
         tick_configuration = self.root.find(

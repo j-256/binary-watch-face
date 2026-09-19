@@ -15,6 +15,8 @@ Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, 
 
 The leftmost dot in each row is the most significant bit. Add the weights above the lit dots to read the value. For example, `23` is `16 + 4 + 2 + 1`. Every row spans the same left and right endpoints while distributing its four, five, or six bits evenly between them.
 
+See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
+
 ## Features
 
 - Offers direct 12- or 24-hour clock selection, defaulting to 24-hour mode
@@ -93,16 +95,18 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Ticks | None, single, wave, boost, or all by default |
 | Binary display | Optional seconds row; bit weights in active and AOD modes by default, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
-| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; positioned left of the system status area |
-| Heart rate | Native beats-per-minute readout positioned right of the system status area, with an unavailable placeholder |
+| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; positioned above the lower-right complication |
+| Heart rate | Native beats-per-minute readout above the lower-left complication, with an unavailable placeholder |
 | Complications | Two by default, three, or four |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, paired battery and heart-rate presets; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
 
 - Two: lower left and lower right
-- Three: the lower pair plus a smaller lower center slot
-- Four: the lower pair plus upper left and upper right
+- Three: the lower pair plus a smaller slot between them
+- Four: the lower pair plus side slots flanking the native readout row
+
+The binary time keeps the same position and size across complication layouts. Native readouts sit above the lower complications, leaving the bottom center available for Wear OS notification and ongoing-activity indicators.
 
 ## Toolchain
 
@@ -151,6 +155,8 @@ android --no-metrics install \
 On the watch, long-press the active face, scroll to **Add new**, and select **Binary**. The release app bundle is written beneath `watchface/build/outputs/bundle/release/`.
 
 ### Play release signing
+
+The [release process](docs/releasing.md) keeps local version checkpoints, GitHub prereleases, and Play closed-beta updates separate.
 
 Google Play App Signing owns the app-signing keys used on installed packages. Release bundles are signed locally with a separate, resettable upload key kept outside this repository. Set both signing variables to produce a signed upload bundle; leaving both unset preserves secret-free unsigned release builds for CI:
 
