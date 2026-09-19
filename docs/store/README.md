@@ -70,21 +70,18 @@ Store and documentation renders use the screenshot-only build's fixed 72 BPM hea
 Release name:
 
 ```text
-0.2.0 - Closed beta 2
+0.3.0 - Native readouts
 ```
 
 Release notes:
 
 ```text
 <en-US>
-Polish update for Binary, a configurable binary watch face for Wear OS 7.
+Native readouts for Binary, a configurable binary watch face for Wear OS 7.
 
-- Display time in 12- or 24-hour true binary
-- Start from curated presets or customize every setting
-- Use ISO 8601 as the default date format
-- Keep the live tick visible beside side complications
-- Render the Light theme across the full dial
-- Choose two, three, or four complications
-- Use a configurable low-power always-on display
+- Show native heart rate beside the watch battery
+- Keep complications available for other providers
+- Choose decimal, hexadecimal, or binary battery values
+- Configure paired readouts in the always-on display
 </en-US>
 ```
