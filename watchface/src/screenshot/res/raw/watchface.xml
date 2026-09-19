@@ -13627,18 +13627,18 @@
             <Variant mode="AMBIENT" target="alpha" value="0" />
             <Condition>
                 <Expressions>
-                    <Expression name="heart_rate_active_available">round([HEART_RATE]) &gt; 0</Expression>
+                    <Expression name="heart_rate_active_available">72 &gt; 0</Expression>
                 </Expressions>
                 <Compare expression="heart_rate_active_available">
                     <PartText x="110" y="382" width="120" height="28" alpha="255" name="heart_rate_active_value">
                         <Text align="CENTER" ellipsis="TRUE">
                             <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
-                                <Template>%d♥︎<Parameter expression="round([HEART_RATE])" />
+                                <Template>%d♥︎<Parameter expression="72" />
                                 </Template>
                             </Font>
                         </Text>
                         <ScreenReader stringId="Heart rate %d beats per minute">
-                            <Parameter expression="round([HEART_RATE])" />
+                            <Parameter expression="72" />
                         </ScreenReader>
                     </PartText>
                 </Compare>
@@ -13663,18 +13663,18 @@
                         <Transform target="alpha" value="([CONFIGURATION.ambientInfo] == &quot;battery&quot; || [CONFIGURATION.ambientInfo] == &quot;date_battery&quot; || [CONFIGURATION.ambientInfo] == &quot;date_weekday_battery&quot;) ? 255 : 0" />
                         <Condition>
                             <Expressions>
-                                <Expression name="heart_rate_ambient_color_available">round([HEART_RATE]) &gt; 0</Expression>
+                                <Expression name="heart_rate_ambient_color_available">72 &gt; 0</Expression>
                             </Expressions>
                             <Compare expression="heart_rate_ambient_color_available">
                                 <PartText x="110" y="382" width="120" height="28" alpha="255" name="heart_rate_ambient_color_value">
                                     <Text align="CENTER" ellipsis="TRUE">
                                         <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.2]">
-                                            <Template>%d♡<Parameter expression="round([HEART_RATE])" />
+                                            <Template>%d♡<Parameter expression="72" />
                                             </Template>
                                         </Font>
                                     </Text>
                                     <ScreenReader stringId="Heart rate %d beats per minute">
-                                        <Parameter expression="round([HEART_RATE])" />
+                                        <Parameter expression="72" />
                                     </ScreenReader>
                                 </PartText>
                             </Compare>
@@ -13697,18 +13697,18 @@
                         <Transform target="alpha" value="([CONFIGURATION.ambientInfo] == &quot;battery&quot; || [CONFIGURATION.ambientInfo] == &quot;date_battery&quot; || [CONFIGURATION.ambientInfo] == &quot;date_weekday_battery&quot;) ? 255 : 0" />
                         <Condition>
                             <Expressions>
-                                <Expression name="heart_rate_ambient_mono_available">round([HEART_RATE]) &gt; 0</Expression>
+                                <Expression name="heart_rate_ambient_mono_available">72 &gt; 0</Expression>
                             </Expressions>
                             <Compare expression="heart_rate_ambient_mono_available">
                                 <PartText x="110" y="382" width="120" height="28" alpha="255" name="heart_rate_ambient_mono_value">
                                     <Text align="CENTER" ellipsis="TRUE">
                                         <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="#FFFFFF">
-                                            <Template>%d♡<Parameter expression="round([HEART_RATE])" />
+                                            <Template>%d♡<Parameter expression="72" />
                                             </Template>
                                         </Font>
                                     </Text>
                                     <ScreenReader stringId="Heart rate %d beats per minute">
-                                        <Parameter expression="round([HEART_RATE])" />
+                                        <Parameter expression="72" />
                                     </ScreenReader>
                                 </PartText>
                             </Compare>

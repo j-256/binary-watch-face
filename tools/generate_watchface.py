@@ -15,6 +15,10 @@ WATCH_SIZE = 450
 WFF_VERSION = 5
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "watchface/src/main/res/raw/watchface.xml"
+SCREENSHOT_OUTPUT = PROJECT_ROOT / "watchface/src/screenshot/res/raw/watchface.xml"
+SCREENSHOT_HEART_RATE = 72
+HEART_RATE_ACTIVE_GLYPH = "\u2665\ufe0e"
+HEART_RATE_AMBIENT_GLYPH = "\u2661"
 XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>\n'
 
 DOT_COLOR_ID = "dotColor"
@@ -118,15 +122,25 @@ SIX_BIT_WEIGHTS = (32, 16, 8, 4, 2, 1)
 REFERENCE_ROW_SPAN = 188
 REFERENCE_DOT_SIZE = 23
 DECIMAL_BACKDROP_SIZE = 240
-BATTERY_READOUT_Y = 390
-BATTERY_READOUT_CLEARANCE = 7
+BOTTOM_READOUT_Y = 382
+BOTTOM_READOUT_WIDTH = 120
+BOTTOM_READOUT_HORIZONTAL_OVERLAP = 10
+BOTTOM_READOUT_HEIGHT = 28
+BOTTOM_READOUT_TEXT_SIZE = 20
+HEART_RATE_READOUT_X = (
+    WATCH_SIZE - 2 * BOTTOM_READOUT_WIDTH + BOTTOM_READOUT_HORIZONTAL_OVERLAP
+) // 2
+BATTERY_READOUT_X = (
+    HEART_RATE_READOUT_X + BOTTOM_READOUT_WIDTH - BOTTOM_READOUT_HORIZONTAL_OVERLAP
+)
+BOTTOM_READOUT_BOX_OVERLAP = 1
 LOWER_COMPLICATION_SIZE = 96
 LOWER_COMPLICATION_PAIR_GAP = 58
 LOWER_COMPLICATION_LEFT_X = (
     WATCH_SIZE - 2 * LOWER_COMPLICATION_SIZE - LOWER_COMPLICATION_PAIR_GAP
 ) // 2
 LOWER_COMPLICATION_Y = (
-    BATTERY_READOUT_Y - BATTERY_READOUT_CLEARANCE - LOWER_COMPLICATION_SIZE
+    BOTTOM_READOUT_Y + BOTTOM_READOUT_BOX_OVERLAP - LOWER_COMPLICATION_SIZE
 )
 SIDE_COMPLICATION_SIZE = 76
 SIDE_COMPLICATION_OUTER_MARGIN = 24
@@ -325,7 +339,11 @@ AMBIENT_DATE_OPTION_IDS = (
     "date_weekday_battery",
 )
 AMBIENT_WEEKDAY_OPTION_IDS = ("date_weekday", "date_weekday_battery")
-AMBIENT_BATTERY_OPTION_IDS = ("battery", "date_battery", "date_weekday_battery")
+AMBIENT_BOTTOM_READOUT_OPTION_IDS = (
+    "battery",
+    "date_battery",
+    "date_weekday_battery",
+)
 BACKDROP_ACTIVE_OPTION_IDS = ("active", "both")
 BACKDROP_AMBIENT_OPTION_IDS = ("ambient", "both")
 
@@ -358,10 +376,10 @@ DATE_STYLE_CHOICES = (
 
 COMPLICATION_SLOTS = (
     ComplicationSlotSpec(0, "lower_left", "slot_lower_left", LOWER_COMPLICATION_LEFT_X, LOWER_COMPLICATION_Y, LOWER_COMPLICATION_SIZE, "STEP_COUNT", "SHORT_TEXT"),
-    ComplicationSlotSpec(1, "lower_right", "slot_lower_right", WATCH_SIZE - LOWER_COMPLICATION_LEFT_X - LOWER_COMPLICATION_SIZE, LOWER_COMPLICATION_Y, LOWER_COMPLICATION_SIZE, "HEART_RATE", "RANGED_VALUE"),
+    ComplicationSlotSpec(1, "lower_right", "slot_lower_right", WATCH_SIZE - LOWER_COMPLICATION_LEFT_X - LOWER_COMPLICATION_SIZE, LOWER_COMPLICATION_Y, LOWER_COMPLICATION_SIZE, "UNREAD_NOTIFICATION_COUNT", "SHORT_TEXT"),
     ComplicationSlotSpec(2, "lower_center", "slot_lower_center", 190, 264, 70, "NEXT_EVENT", "SHORT_TEXT"),
     ComplicationSlotSpec(3, "middle_left", "slot_middle_left", SIDE_COMPLICATION_OUTER_MARGIN, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "SUNRISE_SUNSET", "SHORT_TEXT"),
-    ComplicationSlotSpec(4, "middle_right", "slot_middle_right", WATCH_SIZE - SIDE_COMPLICATION_OUTER_MARGIN - SIDE_COMPLICATION_SIZE, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "UNREAD_NOTIFICATION_COUNT", "SHORT_TEXT"),
+    ComplicationSlotSpec(4, "middle_right", "slot_middle_right", WATCH_SIZE - SIDE_COMPLICATION_OUTER_MARGIN - SIDE_COMPLICATION_SIZE, SIDE_COMPLICATION_Y, SIDE_COMPLICATION_SIZE, "WORLD_CLOCK", "SHORT_TEXT"),
 )
 
 COMPLICATION_LAYOUTS = {
@@ -1807,11 +1825,11 @@ def add_battery_readout(
     active_text = add_text(
         active,
         name=f"{name}_active_text",
-        x=135,
-        y=BATTERY_READOUT_Y,
-        width=180,
-        height=28,
-        size=20,
+        x=BATTERY_READOUT_X,
+        y=BOTTOM_READOUT_Y,
+        width=BOTTOM_READOUT_WIDTH,
+        height=BOTTOM_READOUT_HEIGHT,
+        size=BOTTOM_READOUT_TEXT_SIZE,
         color=COLOR_TEXT_ACTIVE,
         template=template,
         parameters=parameters,
@@ -1844,18 +1862,18 @@ def add_battery_readout(
             "Transform",
             target="alpha",
             value=(
-                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BATTERY_OPTION_IDS)}) "
+                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
                 "? 255 : 0"
             ),
         )
         add_text(
             visibility,
             name=f"{name}_ambient_{suffix}_text",
-            x=135,
-            y=BATTERY_READOUT_Y,
-            width=180,
-            height=28,
-            size=20,
+            x=BATTERY_READOUT_X,
+            y=BOTTOM_READOUT_Y,
+            width=BOTTOM_READOUT_WIDTH,
+            height=BOTTOM_READOUT_HEIGHT,
+            size=BOTTOM_READOUT_TEXT_SIZE,
             color=color,
             template=template,
             parameters=parameters,
@@ -1944,6 +1962,122 @@ def add_battery(scene: ET.Element) -> None:
 
     off = element(battery, "ListOption", id="off")
     add_empty_group(off, "battery_hidden")
+
+
+def add_heart_rate_text(
+    parent: ET.Element,
+    *,
+    name: str,
+    color: str,
+    glyph: str,
+    heart_rate: int | None,
+) -> None:
+    heart_rate_expression = (
+        "round([HEART_RATE])" if heart_rate is None else str(heart_rate)
+    )
+    condition = element(parent, "Condition")
+    expressions = element(condition, "Expressions")
+    available = element(expressions, "Expression", name=f"{name}_available")
+    available.text = f"{heart_rate_expression} > 0"
+
+    compare = element(condition, "Compare", expression=f"{name}_available")
+    heart_rate_text = add_text(
+        compare,
+        name=f"{name}_value",
+        x=HEART_RATE_READOUT_X,
+        y=BOTTOM_READOUT_Y,
+        width=BOTTOM_READOUT_WIDTH,
+        height=BOTTOM_READOUT_HEIGHT,
+        size=BOTTOM_READOUT_TEXT_SIZE,
+        color=color,
+        template=f"%d{glyph}",
+        parameters=(heart_rate_expression,),
+    )
+    add_screen_reader(
+        heart_rate_text,
+        "Heart rate %d beats per minute",
+        (heart_rate_expression,),
+    )
+
+    default = element(condition, "Default")
+    unavailable = add_text(
+        default,
+        name=f"{name}_unavailable",
+        x=HEART_RATE_READOUT_X,
+        y=BOTTOM_READOUT_Y,
+        width=BOTTOM_READOUT_WIDTH,
+        height=BOTTOM_READOUT_HEIGHT,
+        size=BOTTOM_READOUT_TEXT_SIZE,
+        color=color,
+        template=f"--{glyph}",
+    )
+    add_screen_reader(unavailable, "Heart rate unavailable")
+
+
+def add_heart_rate(scene: ET.Element, *, heart_rate: int | None) -> None:
+    active = element(
+        scene,
+        "Group",
+        name="heart_rate_active",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    add_variant(active, "alpha", 0)
+    add_heart_rate_text(
+        active,
+        name="heart_rate_active",
+        color=COLOR_TEXT_ACTIVE,
+        glyph=HEART_RATE_ACTIVE_GLYPH,
+        heart_rate=heart_rate,
+    )
+
+    def build_ambient(color_option: ET.Element, color: str, suffix: str) -> None:
+        ambient = element(
+            color_option,
+            "Group",
+            name=f"heart_rate_ambient_{suffix}",
+            x=0,
+            y=0,
+            width=WATCH_SIZE,
+            height=WATCH_SIZE,
+            alpha=0,
+        )
+        add_variant(ambient, "alpha", ambient_brightness_expression())
+        visibility = element(
+            ambient,
+            "Group",
+            name=f"heart_rate_ambient_{suffix}_visibility",
+            x=0,
+            y=0,
+            width=WATCH_SIZE,
+            height=WATCH_SIZE,
+        )
+        element(
+            visibility,
+            "Transform",
+            target="alpha",
+            value=(
+                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
+                "? 255 : 0"
+            ),
+        )
+        add_heart_rate_text(
+            visibility,
+            name=f"heart_rate_ambient_{suffix}",
+            color=color,
+            glyph=HEART_RATE_AMBIENT_GLYPH,
+            heart_rate=heart_rate,
+        )
+
+    add_ambient_color_condition(
+        scene,
+        name="heart_rate_ambient",
+        color=COLOR_TEXT_AMBIENT,
+        monochrome=COLOR_AMBIENT_MONO,
+        builder=build_ambient,
+    )
 
 
 def add_complication_shell(parent: ET.Element, size: int) -> None:
@@ -2213,7 +2347,7 @@ def add_complications(scene: ET.Element) -> None:
         element(slot, "Complication", type="EMPTY")
 
 
-def build_watchface() -> ET.Element:
+def build_watchface(*, heart_rate: int | None = None) -> ET.Element:
     root = ET.Element("WatchFace", {"width": str(WATCH_SIZE), "height": str(WATCH_SIZE), "clipShape": "CIRCLE"})
     root.append(ET.Comment(f" Generated by tools/generate_watchface.py for WFF {WFF_VERSION} "))
     element(root, "Metadata", key="CLOCK_TYPE", value="DIGITAL")
@@ -2226,12 +2360,13 @@ def build_watchface() -> ET.Element:
     add_tick_ring(scene)
     add_date(scene)
     add_battery(scene)
+    add_heart_rate(scene, heart_rate=heart_rate)
     add_complications(scene)
     return root
 
 
-def render_watchface() -> str:
-    root = build_watchface()
+def render_watchface(*, heart_rate: int | None = None) -> str:
+    root = build_watchface(heart_rate=heart_rate)
     ET.indent(root, space="    ")
     return XML_HEADER + ET.tostring(root, encoding="unicode", short_empty_elements=True) + "\n"
 
@@ -2251,32 +2386,56 @@ def parse_arguments(arguments: Sequence[str]) -> argparse.Namespace:
         "-o",
         "--output",
         type=Path,
-        default=DEFAULT_OUTPUT,
-        help="write to this path instead of the project watchface.xml",
+        help="write only the selected definition to this path",
+    )
+    parser.add_argument(
+        "-r",
+        "--heart-rate",
+        type=int,
+        choices=range(1, 241),
+        metavar="BPM",
+        help=(
+            "replace the native heart-rate source with 1 to 240 BPM in an explicit "
+            "--output file"
+        ),
     )
     parser.add_argument("_positional", nargs="*", help=argparse.SUPPRESS)
     options = parser.parse_args(arguments)
     if options._positional:
         parser.error(f"unrecognized arguments: {' '.join(options._positional)}")
     del options._positional
+    if options.heart_rate is not None and options.output is None:
+        parser.error("--heart-rate requires --output")
     return options
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
     options = parse_arguments(arguments if arguments is not None else sys.argv[1:])
-    generated = render_watchface()
-    output = options.output
+    targets = (
+        ((options.output, options.heart_rate),)
+        if options.output is not None
+        else (
+            (DEFAULT_OUTPUT, None),
+            (SCREENSHOT_OUTPUT, SCREENSHOT_HEART_RATE),
+        )
+    )
 
     if options.check:
-        if not output.exists() or output.read_text(encoding="utf-8") != generated:
+        stale = []
+        for output, heart_rate in targets:
+            generated = render_watchface(heart_rate=heart_rate)
+            if not output.exists() or output.read_text(encoding="utf-8") != generated:
+                stale.append(output)
+            else:
+                print(f"Generated watch face is up to date: {output}")
+        for output in stale:
             print(f"Generated watch face differs from {output}", file=sys.stderr)
-            return 1
-        print(f"Generated watch face is up to date: {output}")
-        return 0
+        return 1 if stale else 0
 
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(generated, encoding="utf-8")
-    print(f"Wrote {output}")
+    for output, heart_rate in targets:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(render_watchface(heart_rate=heart_rate), encoding="utf-8")
+        print(f"Wrote {output}")
     return 0
 
 

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Effective date: 2026-08-29
+Effective date: 2026-09-19
 
 Binary Watch Face, shown as **Binary** on Wear OS, is developed and published by **j-256**. This policy describes how Binary handles user and device data.
 
@@ -10,7 +10,7 @@ Binary does not collect, store, share, sell, or transmit personal or sensitive u
 
 ## On-device information
 
-Wear OS supplies time, battery, and user-selected complication data for local display on the watch. Binary Watch Face does not retain or transmit that data. A complication provider selected by the user is a separate application or system service and is governed by its own privacy practices.
+Wear OS supplies time, battery, heart rate, and user-selected complication data for local display on the watch. Binary Watch Face does not retain or transmit that data. A complication provider selected by the user is a separate application or system service and is governed by its own privacy practices.
 
 ## Optional beta group
 

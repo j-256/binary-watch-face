@@ -1,6 +1,6 @@
 # Project cover
 
-The project cover is rendered from the built Binary APK on a fresh Wear OS 7 emulator at 454 by 454 pixels. The capture verifies that the APK contains the checked-out watch-face XML and that the active renderer is displaying Binary before replacing `cover.png`.
+The project cover is rendered from the screenshot-only Binary APK on a fresh Wear OS 7 emulator at 454 by 454 pixels. This variant fixes heart rate at 72 BPM because the emulator does not provide passive heart-rate history to the native WFF data source. Production builds continue to use the native source. The capture verifies that the APK contains the generated screenshot watch-face XML and that the active renderer is displaying Binary before replacing `cover.png`.
 
 ```sh
 python3 tools/capture_cover.py

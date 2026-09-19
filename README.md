@@ -3,14 +3,14 @@
 Binary Watch Face is a resource-only Wear OS face that presents hours, minutes, and optional seconds as true binary values. It is an independent implementation inspired by a retired face that no longer installs on newer watches.
 
 <p align="center">
-  <img src="docs/store/screenshot-terminal-green.png" alt="Default terminal-green 24-hour Binary watch face with step-count and heart-rate complications" width="31%">
-  <img src="docs/store/screenshot-light.png" alt="Light Binary watch face with London world time and a Find Hub shortcut" width="31%">
-  <img src="docs/store/screenshot-aod.png" alt="Always-on Binary watch face retaining step-count and heart-rate complications" width="31%">
+  <img src="docs/store/screenshot-terminal-green.png" alt="Default terminal-green 24-hour Binary watch face with native battery and heart-rate readouts" width="31%">
+  <img src="docs/store/screenshot-light.png" alt="Light Binary watch face with native battery and heart-rate readouts" width="31%">
+  <img src="docs/store/screenshot-aod.png" alt="Always-on Binary watch face retaining step-count and notification complications" width="31%">
 </p>
 
 <p align="center">
-  <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with notifications, media controls, and heart rate" width="31%">
-  <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face with an ISO date and four complications" width="31%">
+  <img src="docs/store/screenshot-seconds.png" alt="Yellow 24-hour Binary watch face with seconds and native heart rate" width="31%">
+  <img src="docs/store/screenshot-cyan-12h.png" alt="Cyan 12-hour Binary watch face with native heart rate and four complications" width="31%">
 </p>
 
 The leftmost dot in each row is the most significant bit. Add the weights above the lit dots to read the value. For example, `23` is `16 + 4 + 2 + 1`. Every row spans the same left and right endpoints while distributing its four, five, or six bits evenly between them.
@@ -19,14 +19,14 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 - Offers direct 12- or 24-hour clock selection, defaulting to 24-hour mode
 - Uses four hour bits in 12-hour mode, five in 24-hour mode, and six for minutes and seconds
-- Offers optional full-dial decimal values, bit weights, a seconds row, multiple date formats, and decimal, hexadecimal, or binary watch-battery readouts
+- Offers optional full-dial decimal values, bit weights, a seconds row, multiple date formats, native heart rate, and decimal, hexadecimal, or binary watch-battery readouts
 - Defaults dots and text independently to phosphor terminal green, with a broad palette and dark or light appearance
 - Includes curated Terminal, Seconds, Cyan dashboard, and Light presets in companion apps that support WFF flavors
 - Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable two-, three-, and four-slot layouts
 - Preserves normal provider actions on complications without defining any whole-face or custom tap actions
-- Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, and watch battery while keeping complications legible
+- Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, battery, and heart rate while keeping complications legible
 
 ## Compatibility
 
@@ -93,9 +93,10 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Ticks | None, single, wave, boost, or all by default |
 | Binary display | Optional seconds row; bit weights in active and AOD modes by default, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
-| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden |
+| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; positioned left of the system status area |
+| Heart rate | Native beats-per-minute readout positioned right of the system status area, with an unavailable placeholder |
 | Complications | Two by default, three, or four |
-| Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, and watch-battery presets; and optional monochrome rendering |
+| Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, paired battery and heart-rate presets; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
 

@@ -495,12 +495,98 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         battery_text = scene_configuration.findall(".//PartText")
         self.assertTrue(battery_text)
         self.assertTrue(
-            all(text.get("y") == str(GENERATOR.BATTERY_READOUT_Y) for text in battery_text)
+            all(text.get("x") == str(GENERATOR.BATTERY_READOUT_X) for text in battery_text)
+        )
+        self.assertTrue(
+            all(text.get("y") == str(GENERATOR.BOTTOM_READOUT_Y) for text in battery_text)
         )
         lower_bottom = max(
             slot.y + slot.size for slot in GENERATOR.COMPLICATION_SLOTS[:2]
         )
-        self.assertGreaterEqual(GENERATOR.BATTERY_READOUT_Y - lower_bottom, 7)
+        self.assertEqual(
+            lower_bottom - GENERATOR.BOTTOM_READOUT_Y,
+            GENERATOR.BOTTOM_READOUT_BOX_OVERLAP,
+        )
+
+    def test_native_heart_rate_balances_battery_around_system_indicator(self) -> None:
+        active = self.root.find("./Scene/Group[@name='heart_rate_active']")
+        self.assertIsNotNone(active)
+        assert active is not None
+
+        available = active.find(".//Expression[@name='heart_rate_active_available']")
+        self.assertIsNotNone(available)
+        assert available is not None
+        self.assertEqual(available.text, "round([HEART_RATE]) > 0")
+
+        value = active.find(".//PartText[@name='heart_rate_active_value']")
+        unavailable = active.find(".//PartText[@name='heart_rate_active_unavailable']")
+        self.assertIsNotNone(value)
+        self.assertIsNotNone(unavailable)
+        assert value is not None and unavailable is not None
+        for text in (value, unavailable):
+            self.assertEqual(text.get("x"), str(GENERATOR.HEART_RATE_READOUT_X))
+            self.assertEqual(text.get("y"), str(GENERATOR.BOTTOM_READOUT_Y))
+            self.assertEqual(text.get("width"), str(GENERATOR.BOTTOM_READOUT_WIDTH))
+
+        value_template = value.find(".//Template")
+        self.assertIsNotNone(value_template)
+        assert value_template is not None
+        self.assertEqual(
+            value_template.text,
+            f"%d{GENERATOR.HEART_RATE_ACTIVE_GLYPH}",
+        )
+        self.assertEqual(
+            [parameter.get("expression") for parameter in value_template.findall("Parameter")],
+            ["round([HEART_RATE])"],
+        )
+        unavailable_font = unavailable.find(".//Font")
+        self.assertIsNotNone(unavailable_font)
+        assert unavailable_font is not None
+        self.assertEqual(
+            unavailable_font.text,
+            f"--{GENERATOR.HEART_RATE_ACTIVE_GLYPH}",
+        )
+
+        ambient_values = [
+            text
+            for text in self.root.findall(".//PartText")
+            if text.get("name", "").startswith("heart_rate_ambient_")
+            and text.get("name", "").endswith("_value")
+        ]
+        ambient_unavailable = [
+            text
+            for text in self.root.findall(".//PartText")
+            if text.get("name", "").startswith("heart_rate_ambient_")
+            and text.get("name", "").endswith("_unavailable")
+        ]
+        self.assertTrue(ambient_values)
+        self.assertTrue(ambient_unavailable)
+        self.assertTrue(
+            all(
+                text.find(".//Template").text
+                == f"%d{GENERATOR.HEART_RATE_AMBIENT_GLYPH}"
+                for text in ambient_values
+            )
+        )
+        self.assertTrue(
+            all(
+                text.find(".//Font").text
+                == f"--{GENERATOR.HEART_RATE_AMBIENT_GLYPH}"
+                for text in ambient_unavailable
+            )
+        )
+
+        battery_center = GENERATOR.BATTERY_READOUT_X + GENERATOR.BOTTOM_READOUT_WIDTH / 2
+        heart_rate_center = (
+            GENERATOR.HEART_RATE_READOUT_X + GENERATOR.BOTTOM_READOUT_WIDTH / 2
+        )
+        self.assertEqual(battery_center + heart_rate_center, GENERATOR.WATCH_SIZE)
+        self.assertEqual(
+            GENERATOR.HEART_RATE_READOUT_X
+            + GENERATOR.BOTTOM_READOUT_WIDTH
+            - GENERATOR.BATTERY_READOUT_X,
+            GENERATOR.BOTTOM_READOUT_HORIZONTAL_OVERLAP,
+        )
 
     def test_date_controls_cover_reference_formats_and_ambient_options(self) -> None:
         date = self.user_configuration(GENERATOR.DATE_FORMAT_ID)
@@ -522,7 +608,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             [choice.option_id for choice in GENERATOR.DATE_STYLE_CHOICES],
         )
 
-    def test_ambient_information_presets_control_date_weekday_and_watch_battery(self) -> None:
+    def test_ambient_information_presets_control_date_weekday_and_bottom_readouts(self) -> None:
         ambient_info = self.user_configuration(GENERATOR.AMBIENT_INFO_ID)
         self.assertEqual(
             [option.get("id") for option in ambient_info.findall("ListOption")],
@@ -557,7 +643,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             },
         )
         expected_battery_visibility = (
-            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_BATTERY_OPTION_IDS)}) "
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_BOTTOM_READOUT_OPTION_IDS)}) "
             "? 255 : 0"
         )
         battery_visibility = [
@@ -568,6 +654,18 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertTrue(battery_visibility)
         self.assertTrue(
             all(value == expected_battery_visibility for value in battery_visibility)
+        )
+        heart_rate_visibility = [
+            transform.get("value")
+            for group in self.root.findall("./Scene/.//Group")
+            if group.get("name", "").startswith("heart_rate_ambient_")
+            and group.get("name", "").endswith("_visibility")
+            for transform in group.findall("Transform[@target='alpha']")
+            if "CONFIGURATION.ambientInfo" in transform.get("value", "")
+        ]
+        self.assertEqual(len(heart_rate_visibility), 2)
+        self.assertTrue(
+            all(value == expected_battery_visibility for value in heart_rate_visibility)
         )
 
     def test_complication_count_options_enable_exact_layouts(self) -> None:
@@ -768,6 +866,15 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertEqual(len(providers), len(set(providers)))
         self.assertNotIn("WATCH_BATTERY", providers)
         self.assertNotIn("DATE", providers)
+        self.assertNotIn("HEART_RATE", providers)
+        self.assertEqual(
+            [(slot.provider, slot.provider_type) for slot in GENERATOR.COMPLICATION_SLOTS[:3]],
+            [
+                ("STEP_COUNT", "SHORT_TEXT"),
+                ("UNREAD_NOTIFICATION_COUNT", "SHORT_TEXT"),
+                ("NEXT_EVENT", "SHORT_TEXT"),
+            ],
+        )
 
     def test_face_has_no_custom_launch_actions(self) -> None:
         self.assertEqual(self.root.findall(".//Launch"), [])
@@ -1087,6 +1194,31 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_output_is_deterministic(self) -> None:
         self.assertEqual(self.xml, GENERATOR.render_watchface())
 
+    def test_screenshot_output_uses_fixed_heart_rate(self) -> None:
+        root = ET.fromstring(
+            GENERATOR.render_watchface(heart_rate=GENERATOR.SCREENSHOT_HEART_RATE)
+        )
+        expressions = [
+            expression.text
+            for expression in root.findall(".//Expression")
+            if expression.get("name", "").startswith("heart_rate_")
+            and expression.get("name", "").endswith("_available")
+        ]
+        parameters = [
+            parameter.get("expression")
+            for parameter in root.findall(".//Parameter")
+            if parameter.get("expression") == str(GENERATOR.SCREENSHOT_HEART_RATE)
+        ]
+        self.assertTrue(expressions)
+        self.assertTrue(
+            all(
+                expression == f"{GENERATOR.SCREENSHOT_HEART_RATE} > 0"
+                for expression in expressions
+            )
+        )
+        self.assertTrue(parameters)
+        self.assertNotIn("[HEART_RATE]", ET.tostring(root, encoding="unicode"))
+
     def test_check_mode_detects_stale_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             output = Path(temporary_directory) / "watchface.xml"
@@ -1139,6 +1271,48 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             self.assertEqual(long_result.returncode, 0)
             self.assertEqual(short_output.read_text(encoding="utf-8"), self.xml)
             self.assertEqual(long_output.read_text(encoding="utf-8"), self.xml)
+
+    def test_cli_accepts_fixed_heart_rate_option_forms(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            short_output = Path(temporary_directory) / "short.xml"
+            long_output = Path(temporary_directory) / "long.xml"
+            short_result = subprocess.run(
+                [sys.executable, str(GENERATOR_PATH), "-o", str(short_output), "-r72"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            long_result = subprocess.run(
+                [
+                    sys.executable,
+                    str(GENERATOR_PATH),
+                    f"--output={long_output}",
+                    "--heart-rate=72",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(short_result.returncode, 0)
+            self.assertEqual(long_result.returncode, 0)
+            self.assertEqual(
+                short_output.read_text(encoding="utf-8"),
+                GENERATOR.render_watchface(heart_rate=72),
+            )
+            self.assertEqual(
+                long_output.read_text(encoding="utf-8"),
+                GENERATOR.render_watchface(heart_rate=72),
+            )
+
+    def test_cli_requires_output_for_fixed_heart_rate(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(GENERATOR_PATH), "--heart-rate=72"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("--heart-rate requires --output", result.stderr)
 
     def test_cli_reports_stale_output_on_stderr(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

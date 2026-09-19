@@ -17,10 +17,12 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
-PACKAGE = "dev.j256.binarywatchface"
+PACKAGE = "dev.j256.binarywatchface.screenshot"
+SCREENSHOT_XML = ROOT / "watchface/src/screenshot/res/raw/watchface.xml"
 IMAGE = "system-images;android-37.0;android-wear-signed"
 SIZE = 454
 TIMEOUT = 180
+RENDER_SETTLE_SECONDS = 5
 
 
 def run(arguments, **kwargs):
@@ -29,8 +31,8 @@ def run(arguments, **kwargs):
 
 def capture(sdk, apk, output):
     with zipfile.ZipFile(apk) as archive:
-        if archive.read("res/raw/watchface.xml") != (ROOT / "watchface/src/main/res/raw/watchface.xml").read_bytes():
-            raise RuntimeError("APK watch-face XML differs from the checked-out source")
+        if archive.read("res/raw/watchface.xml") != SCREENSHOT_XML.read_bytes():
+            raise RuntimeError("APK watch-face XML differs from the generated screenshot source")
     abi = "arm64-v8a" if platform.machine() in ("arm64", "aarch64") else "x86_64"
     image = IMAGE + ";" + abi
     if not (sdk / Path(*image.split(";")) / "package.xml").is_file():
@@ -120,7 +122,7 @@ def capture(sdk, apk, output):
                     if time.monotonic() > deadline:
                         raise RuntimeError("The active renderer is not showing Binary")
                     time.sleep(1)
-                time.sleep(1)
+                time.sleep(RENDER_SETTLE_SECONDS)
                 png = run(adb + ["exec-out", "screencap", "-p"], capture_output=True).stdout
                 if png[:8] != b"\x89PNG\r\n\x1a\n" or struct.unpack(">II", png[16:24]) != (SIZE, SIZE):
                     raise RuntimeError("Emulator returned an invalid cover image")
@@ -162,8 +164,12 @@ def main():
         return 3
     try:
         run([sys.executable, "tools/generate_watchface.py", "--check"], cwd=ROOT)
-        run([str(ROOT / "gradlew"), "--no-daemon", "check", "assembleDebug"], cwd=ROOT)
-        capture(sdk, ROOT / "watchface/build/outputs/apk/debug/watchface-debug.apk", ROOT / "docs/screenshots/cover.png")
+        run([str(ROOT / "gradlew"), "--no-daemon", "check", "assembleDebug", "assembleScreenshot"], cwd=ROOT)
+        capture(
+            sdk,
+            ROOT / "watchface/build/outputs/apk/screenshot/watchface-screenshot.apk",
+            ROOT / "docs/screenshots/cover.png",
+        )
         return 0
     except FileNotFoundError as error:
         print(f"capture-cover: {error}", file=sys.stderr)

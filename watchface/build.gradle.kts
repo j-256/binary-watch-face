@@ -38,6 +38,12 @@ android {
     }
 
     buildTypes {
+        create("screenshot") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".screenshot"
+            versionNameSuffix = "-screenshot"
+            matchingFallbacks += listOf("debug")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = false

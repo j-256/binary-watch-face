@@ -34,14 +34,14 @@ MAKE IT YOURS
 - Choose tiny through huge display sizes
 - Select glow, bezel, and tick effects
 - Use ISO 8601 by default or choose a regional date format
-- Show the watch battery in decimal, hexadecimal, or binary
+- Show native heart rate beside the watch battery in decimal, hexadecimal, or binary
 - Configure two, three, or four complications
 
 ALWAYS-ON DISPLAY
-Keep the selected color with a dense, low-power dot pattern. Choose dim, normal, or bright rendering. Date, weekday, watch battery, and the decimal backdrop can each be included or omitted from the always-on display.
+Keep the selected color with a dense, low-power dot pattern. Choose dim, normal, or bright rendering. Date, weekday, paired battery and heart rate, and the decimal backdrop can each be included or omitted from the always-on display.
 
 PRIVATE BY DESIGN
-Binary is a resource-only Watch Face Format watch face. It has no executable app code, network access, analytics, advertising, accounts, or data collection. Time, battery, settings, and complication data remain on your watch.
+Binary is a resource-only Watch Face Format watch face. It has no executable app code, network access, analytics, advertising, accounts, or data collection. Time, battery, heart rate, settings, and complication data remain on your watch.
 
 Requires Wear OS 7.
 ```
@@ -55,13 +55,15 @@ Upload screenshots in the table order. Keep `screenshot-terminal-green.png` firs
 
 | Screenshot | Clock and date | Binary styling | Layout and data |
 | --- | --- | --- | --- |
-| `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, decimal watch battery; step count and heart rate |
-| `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, decimal watch battery; London world clock and Find Hub shortcut |
-| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, binary watch battery; notifications, media controls, and heart rate |
-| `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, hexadecimal watch battery; sunrise/sunset, notifications, heart rate, and app shortcut |
-| `screenshot-aod.png` | Terminal time with supplemental AOD information hidden | Normal-color patterned dots with weights retained | Step count and heart rate remain available at low power |
+| `screenshot-terminal-green.png` | 24-hour with mixed-case weekday and ISO date | Exact Terminal defaults: weights shown, seconds hidden, glow effect, all ticks | Large display, centered active backdrop, paired decimal battery and native heart rate; step count and unread notifications |
+| `screenshot-light.png` | 24-hour with mixed-case weekday and ISO date | Dark-gray bezel dots on the Light preset | Large display, centered active backdrop, paired decimal battery and native heart rate; step count and unread notifications |
+| `screenshot-seconds.png` | 24-hour with day-month and no weekday | Weights hidden, seconds shown, bezel effect, wave ticks | Normal display, lowered active backdrop, paired binary battery and native heart rate; step count, unread notifications, and next event |
+| `screenshot-cyan-12h.png` | 12-hour with ISO date and no weekday | Weights and seconds hidden, no dot effect, single tick | Small display, backdrop hidden, paired hexadecimal battery and native heart rate; sunrise/sunset, world clock, step count, and unread notifications |
+| `screenshot-aod.png` | Terminal time with supplemental AOD information hidden | Normal-color patterned dots with weights retained | Step count and unread notifications remain available at low power |
 
-No screenshot uses a battery complication because each active configuration already includes the watch face's native battery readout. The Terminal and AOD captures intentionally retain the same step-count and heart-rate providers to demonstrate complication continuity at low power; the other active captures vary the providers shown.
+No screenshot uses a battery or heart-rate complication because each active configuration already includes the watch face's native paired readouts. The Terminal and AOD captures intentionally retain the same step-count and unread-notification providers to demonstrate complication continuity at low power; the other active captures show the providers supplied by their preset layouts.
+
+Store and documentation renders use the screenshot-only build's fixed 72 BPM heart rate. Production builds continue to use the native WFF heart-rate source.
 
 ## Closed beta release
 
