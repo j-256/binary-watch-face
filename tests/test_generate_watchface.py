@@ -767,22 +767,35 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                     )
 
     def test_system_indicator_region_clears_readouts_and_complication_outlines(self) -> None:
-        bounds = GENERATOR.SYSTEM_INDICATOR_BOUNDS
-        left, top, right, bottom = bounds
         margin = GENERATOR.SYSTEM_INDICATOR_CLEARANCE
-        self.assertEqual(left + right, GENERATOR.WATCH_SIZE)
-        self.assertEqual(bottom, GENERATOR.WATCH_SIZE)
-        self.assertGreater(right - left, GENERATOR.NATIVE_READOUT_WIDTH)
-        for readout_left, readout_top, readout_right, readout_bottom in self.native_readout_bounds():
-            self.assertTrue(
-                readout_right <= left - margin
-                or readout_left >= right + margin
-                or readout_bottom <= top - margin
-                or readout_top >= bottom + margin
-            )
-        for slot in self.root.findall("./Scene/ComplicationSlot"):
-            with self.subTest(slot=slot.get("name")):
-                self.assertGreaterEqual(self.circle_rectangle_gap(slot, bounds), margin)
+        regions = (
+            (GENERATOR.SYSTEM_INDICATOR_BOUNDS, 0),
+            (GENERATOR.SYSTEM_ACTIVITY_PILL_BOUNDS, GENERATOR.SYSTEM_ACTIVITY_PILL_CORNER_RADIUS),
+        )
+        for bounds, corner_radius in regions:
+            left, top, right, bottom = bounds
+            with self.subTest(bounds=bounds, corner_radius=corner_radius):
+                self.assertEqual(left + right, GENERATOR.WATCH_SIZE)
+                self.assertEqual(bottom, GENERATOR.WATCH_SIZE)
+                self.assertGreater(right - left, GENERATOR.NATIVE_READOUT_WIDTH)
+                self.assertLessEqual(2 * corner_radius, min(right - left, bottom - top))
+                for readout_left, readout_top, readout_right, readout_bottom in self.native_readout_bounds():
+                    self.assertTrue(
+                        readout_right <= left - margin
+                        or readout_left >= right + margin
+                        or readout_bottom <= top - margin
+                        or readout_top >= bottom + margin
+                    )
+                inset_bounds = (
+                    left + corner_radius,
+                    top + corner_radius,
+                    right - corner_radius,
+                    bottom - corner_radius,
+                )
+                for slot in self.root.findall("./Scene/ComplicationSlot"):
+                    with self.subTest(slot=slot.get("name")):
+                        gap = self.circle_rectangle_gap(slot, inset_bounds) - corner_radius
+                        self.assertGreaterEqual(gap, margin)
 
     def test_enabled_complications_keep_space_between_their_outlines(self) -> None:
         slots = {
