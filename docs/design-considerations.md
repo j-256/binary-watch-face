@@ -34,6 +34,8 @@ Native readouts must not look like labels belonging to unrelated complication pr
 
 Geometry tests protect the reserved system region, readout separation, clock clearance, and complication separation. They complement rendered checks because glyphs, provider content, system overlays, and device scaling are not fully represented by simple bounds.
 
+Follow the [layout verification guide](layout-verification.md) for repeatable clearance reports, physical-watch capture receipts, and before/after settings comparisons. The same geometry helpers serve the command and regression tests.
+
 For a layout change, inspect active and always-on rendering for the following cases:
 
 | Case | What to check |

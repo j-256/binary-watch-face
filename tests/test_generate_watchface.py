@@ -18,13 +18,18 @@ STRINGS_PATH = PROJECT_ROOT / "watchface/src/main/res/values/strings.xml"
 WATCH_FACE_INFO_PATH = PROJECT_ROOT / "watchface/src/main/res/xml/watch_face_info.xml"
 USER_CONFIGURATION_TAGS = {"BooleanConfiguration", "ColorConfiguration", "ListConfiguration"}
 MIN_VISIBLE_TICK_LENGTH = 8
-MIN_CONTENT_GAP = 6
 MODULE_SPEC = importlib.util.spec_from_file_location("generate_watchface", GENERATOR_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"Unable to load {GENERATOR_PATH}")
 GENERATOR = importlib.util.module_from_spec(MODULE_SPEC)
 sys.modules[MODULE_SPEC.name] = GENERATOR
 MODULE_SPEC.loader.exec_module(GENERATOR)
+LAYOUT_SPEC = importlib.util.spec_from_file_location("check_layout", PROJECT_ROOT / "tools/check_layout.py")
+assert LAYOUT_SPEC is not None and LAYOUT_SPEC.loader is not None
+LAYOUT = importlib.util.module_from_spec(LAYOUT_SPEC)
+sys.modules[LAYOUT_SPEC.name] = LAYOUT
+LAYOUT_SPEC.loader.exec_module(LAYOUT)
+MIN_CONTENT_GAP = LAYOUT.MIN_CONTENT_GAP
 
 
 class WatchFaceGeneratorTest(unittest.TestCase):
@@ -718,37 +723,11 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             GENERATOR.LOWER_COMPLICATION_PAIR_GAP,
         )
 
-    @staticmethod
-    def complication_circle(slot: ET.Element) -> tuple[float, float, float]:
-        oval = slot.find("BoundingOval")
-        assert oval is not None
-        width = float(oval.get("width", "0"))
-        assert width == float(oval.get("height", "0"))
-        center_x = float(slot.get("x", "0")) + float(oval.get("x", "0")) + width / 2
-        center_y = float(slot.get("y", "0")) + float(oval.get("y", "0")) + width / 2
-        radius = width / 2 + float(oval.get("outlinePadding", "0"))
-        return center_x, center_y, radius
-
-    @classmethod
-    def circle_rectangle_gap(cls, slot: ET.Element, bounds: tuple[float, float, float, float]) -> float:
-        left, top, right, bottom = bounds
-        center_x, center_y, radius = cls.complication_circle(slot)
-        return math.hypot(
-            max(left - center_x, 0, center_x - right),
-            max(top - center_y, 0, center_y - bottom),
-        ) - radius
+    complication_circle = staticmethod(LAYOUT.complication_circle)
+    circle_rectangle_gap = staticmethod(LAYOUT.circle_rectangle_gap)
 
     def native_readout_bounds(self) -> list[tuple[float, float, float, float]]:
-        bounds = []
-        for text in self.root.findall(".//PartText"):
-            if text.get("name", "").startswith(("battery_", "heart_rate_")):
-                x, y, width, height = (
-                    float(text.get(attribute, "0"))
-                    for attribute in ("x", "y", "width", "height")
-                )
-                bounds.append((x, y, x + width, y + height))
-        self.assertTrue(bounds)
-        return bounds
+        return list(LAYOUT.native_readouts(self.root))
 
     def test_native_readouts_clear_the_largest_clock_and_every_complication(self) -> None:
         largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)

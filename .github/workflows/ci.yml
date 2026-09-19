@@ -42,10 +42,11 @@ jobs:
       - name: Install Android SDK packages
         run: android --no-metrics --sdk="$ANDROID_HOME" sdk install platforms/android-37.0 build-tools/36.0.0
 
-      - name: Test the generator
+      - name: Test the generator and layout clearances
         run: |
           python3 -m unittest discover -s tests -v
           python3 tools/generate_watchface.py --check
+          python3 tools/check_layout.py
 
       - name: Build the APK and app bundle
         run: ./gradlew --no-daemon check assembleDebug bundleRelease

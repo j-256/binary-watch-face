@@ -181,8 +181,11 @@ Run the generator tests, generated-file check, and Android build with:
 ```sh
 python3 -m unittest discover -s tests -v
 python3 tools/generate_watchface.py --check
+python3 tools/check_layout.py
 ./gradlew check assembleDebug bundleRelease
 ```
+
+The [layout verification guide](docs/layout-verification.md) covers minimum-padding checks and the reusable `tools/capture_watch.py` command for verified physical-watch screenshots and before/after settings comparisons.
 
 Before publication, also run Google's [Watch Face Format validator and Memory Footprint Evaluator](https://github.com/google/watchface):
 
