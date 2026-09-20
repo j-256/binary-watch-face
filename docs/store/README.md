@@ -77,11 +77,12 @@ Release notes:
 
 ```text
 <en-US>
-Layout update for Binary, a configurable binary watch face for Wear OS 7.
+Binary 0.4.0 for Wear OS 7.
 
-- Move heart rate and battery above the lower complications
-- Reserve bottom-center space for system activity indicators
+- Add native heart rate beside battery, with decimal, hexadecimal, and binary readouts
+- Move both readouts above the lower complications
+- Reserve bottom-center space for ongoing-activity and notification indicators
 - Balance the two-, three-, and four-complication layouts
-- Keep the binary time in its established position
+- Keep the binary time centered and prominent
 </en-US>
 ```
