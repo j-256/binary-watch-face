@@ -95,10 +95,9 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Ticks | None, single, wave, boost, or all by default |
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
-| Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; positioned above the lower-right complication |
-| Heart rate | Native beats-per-minute readout above the lower-left complication, with an unavailable placeholder |
+| Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; paired with active-only by default, active and AOD, or hidden heart rate |
 | Complications | Two by default, three, or four |
-| Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, paired battery and heart-rate presets; and optional monochrome rendering |
+| Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
 
