@@ -274,13 +274,15 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertNotIn("BooleanConfiguration", self.xml)
         self.assertNotIn("BooleanOption", self.xml)
 
-    def test_bit_weights_can_be_limited_to_active_mode(self) -> None:
+    def test_bit_weights_support_optional_lit_emphasis_and_active_only_modes(self) -> None:
         setting = self.user_configuration(GENERATOR.SHOW_WEIGHTS_ID)
         self.assertEqual(
             [option.get("id") for option in setting.findall("ListOption")],
             [
                 GENERATOR.WEIGHTS_SHOWN_ID,
                 GENERATOR.WEIGHTS_ACTIVE_ONLY_ID,
+                GENERATOR.WEIGHTS_EMPHASIZED_ID,
+                GENERATOR.WEIGHTS_ACTIVE_EMPHASIZED_ID,
                 GENERATOR.WEIGHTS_HIDDEN_ID,
             ],
         )
@@ -293,7 +295,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             condition
             for condition in self.root.findall("./Scene//Condition")
             if any(
-                f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}" in (expression.text or "")
+                expression.get("name", "").endswith("_bit_weights_visible")
                 for expression in condition.findall("./Expressions/Expression")
             )
         ]
@@ -314,14 +316,53 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             self.assertIsNotNone(
                 active.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
             )
-            ambient = weights.find(
-                f"ListConfiguration[@id='{GENERATOR.SHOW_WEIGHTS_ID}']"
+            ambient = next(
+                condition
+                for condition in weights.findall("Condition")
+                if any(
+                    f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}"
+                    in (expression.text or "")
+                    for expression in condition.findall("./Expressions/Expression")
+                )
             )
             self.assertIsNotNone(ambient)
             assert ambient is not None
             self.assertEqual(
-                [option.get("id") for option in ambient.findall("ListOption")],
-                [GENERATOR.WEIGHTS_SHOWN_ID],
+                ambient.find("./Expressions/Expression").text,
+                GENERATOR.configuration_matches_expression(
+                    GENERATOR.SHOW_WEIGHTS_ID,
+                    GENERATOR.WEIGHT_AMBIENT_OPTION_IDS,
+                ),
+            )
+            active_weight_groups = [
+                group
+                for group in active.findall("Group")
+                if "_weight_" in group.get("name", "")
+            ]
+            self.assertTrue(active_weight_groups)
+            for weight_group in active_weight_groups:
+                transform = weight_group.find("Transform[@target='alpha']")
+                self.assertIsNotNone(transform)
+                assert transform is not None
+                self.assertIn(
+                    f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}",
+                    transform.get("value", ""),
+                )
+                self.assertIn(
+                    f"? {GENERATOR.WEIGHT_LIT_ALPHA} : {GENERATOR.WEIGHT_UNLIT_ALPHA}",
+                    transform.get("value", ""),
+                )
+            self.assertTrue(
+                any(
+                    f'CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}'
+                    in transform.get("value", "")
+                    and
+                    f"? {GENERATOR.WEIGHT_LIT_ALPHA} : {GENERATOR.WEIGHT_UNLIT_ALPHA}"
+                    in transform.get("value", "")
+                    for transform in ambient.findall(
+                        ".//Transform[@target='alpha']"
+                    )
+                )
             )
             self.assertIsNotNone(condition.find("Default/Group"))
 

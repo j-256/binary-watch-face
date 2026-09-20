@@ -107,6 +107,8 @@
     <string name="setting_show_bit_weights">Show bit weights</string>
     <string name="bit_weights_shown">Weights: Active and AOD</string>
     <string name="bit_weights_active_only">Weights: Active only</string>
+    <string name="bit_weights_emphasized">Weights: Active and AOD, emphasize lit</string>
+    <string name="bit_weights_active_emphasized">Weights: Active only, emphasize lit</string>
     <string name="bit_weights_hidden">Weights: Hidden</string>
     <string name="setting_show_weekday">Date style</string>
     <string name="weekday_shown">Date style: Weekday, mixed case</string>
