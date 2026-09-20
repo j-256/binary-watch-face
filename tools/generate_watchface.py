@@ -139,6 +139,11 @@ SIX_BIT_WEIGHTS = (32, 16, 8, 4, 2, 1)
 REFERENCE_ROW_SPAN = 188
 REFERENCE_DOT_SIZE = 23
 DECIMAL_BACKDROP_SIZE = 240
+COMPACT_BACKDROP_X = 45
+COMPACT_BACKDROP_Y = 170
+COMPACT_BACKDROP_WIDTH = 360
+COMPACT_BACKDROP_HEIGHT = 110
+COMPACT_BACKDROP_TEXT_SIZE = 82
 NATIVE_READOUT_Y = 250
 NATIVE_READOUT_WIDTH = 120
 NATIVE_READOUT_HORIZONTAL_OVERLAP = 10
@@ -311,6 +316,13 @@ BACKDROP_LAYOUT_CHOICES = (
     BackdropLayoutChoice("small_lowered", "backdrop_layout_small_lowered", 0.8, 24),
     BackdropLayoutChoice("normal_lowered", "backdrop_layout_normal_lowered", 1.0, 24),
     BackdropLayoutChoice("large_lowered", "backdrop_layout_large_lowered", 1.2, 24),
+    BackdropLayoutChoice("compact", "backdrop_layout_compact", 1.0, 0),
+)
+COMPACT_BACKDROP_LAYOUT_ID = "compact"
+FULL_BACKDROP_LAYOUT_IDS = tuple(
+    choice.option_id
+    for choice in BACKDROP_LAYOUT_CHOICES
+    if choice.option_id != COMPACT_BACKDROP_LAYOUT_ID
 )
 BACKDROP_OPACITY_VALUES = tuple(
     (choice.option_id, choice.value) for choice in BACKDROP_OPACITY_CHOICES
@@ -1284,8 +1296,6 @@ def add_decimal_backdrop_layer(
         y=0,
         width=WATCH_SIZE,
         height=WATCH_SIZE,
-        pivotX=0.5,
-        pivotY=0.5,
     )
     element(
         layer,
@@ -1297,15 +1307,35 @@ def add_decimal_backdrop_layer(
             DEFAULT_BACKDROP_OPACITY_ID,
         ),
     )
+    full = element(
+        layer,
+        "Group",
+        name=f"{name}_full",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+        pivotX=0.5,
+        pivotY=0.5,
+    )
+    element(
+        full,
+        "Transform",
+        target="alpha",
+        value=(
+            f"({configuration_matches_expression(BACKDROP_LAYOUT_ID, FULL_BACKDROP_LAYOUT_IDS)}) "
+            "? 255 : 0"
+        ),
+    )
     size_expression = configuration_value_expression(
         BACKDROP_LAYOUT_ID,
         BACKDROP_LAYOUT_SCALE_VALUES,
         DEFAULT_BACKDROP_LAYOUT_ID,
     )
-    element(layer, "Transform", target="scaleX", value=size_expression)
-    element(layer, "Transform", target="scaleY", value=size_expression)
+    element(full, "Transform", target="scaleX", value=size_expression)
+    element(full, "Transform", target="scaleY", value=size_expression)
     element(
-        layer,
+        full,
         "Transform",
         target="y",
         value=configuration_value_expression(
@@ -1315,7 +1345,7 @@ def add_decimal_backdrop_layer(
         ),
     )
     add_decimal_backdrop_text(
-        layer,
+        full,
         name="hour_decimal_backdrop_ambient" if ambient else "hour_decimal_backdrop_active",
         source=hour_source,
         y=0,
@@ -1323,12 +1353,46 @@ def add_decimal_backdrop_layer(
         ambient=ambient,
     )
     add_decimal_backdrop_text(
-        layer,
+        full,
         name="minute_decimal_backdrop_ambient" if ambient else "minute_decimal_backdrop_active",
         source="[MINUTE]",
         y=WATCH_SIZE // 2,
         color=color,
         ambient=ambient,
+    )
+    compact = element(
+        layer,
+        "Group",
+        name=f"{name}_compact",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
+    element(
+        compact,
+        "Transform",
+        target="alpha",
+        value=(
+            f'[CONFIGURATION.{BACKDROP_LAYOUT_ID}] == "{COMPACT_BACKDROP_LAYOUT_ID}" '
+            "? 255 : 0"
+        ),
+    )
+    add_text(
+        compact,
+        name="compact_decimal_backdrop_ambient" if ambient else "compact_decimal_backdrop_active",
+        x=COMPACT_BACKDROP_X,
+        y=COMPACT_BACKDROP_Y,
+        width=COMPACT_BACKDROP_WIDTH,
+        height=COMPACT_BACKDROP_HEIGHT,
+        size=COMPACT_BACKDROP_TEXT_SIZE,
+        color=COLOR_BLACK if ambient else color,
+        template="%02d:%02d",
+        parameters=(hour_source, "[MINUTE]"),
+        weight="BOLD",
+        ellipsis=False,
+        outline_color=color if ambient else None,
+        outline_width=2,
     )
 
 

@@ -81,6 +81,7 @@
             <ListOption id="small_lowered" displayName="backdrop_layout_small_lowered" screenReaderText="backdrop_layout_small_lowered" />
             <ListOption id="normal_lowered" displayName="backdrop_layout_normal_lowered" screenReaderText="backdrop_layout_normal_lowered" />
             <ListOption id="large_lowered" displayName="backdrop_layout_large_lowered" screenReaderText="backdrop_layout_large_lowered" />
+            <ListOption id="compact" displayName="backdrop_layout_compact" screenReaderText="backdrop_layout_compact" />
         </ListConfiguration>
         <ListConfiguration id="backdropVisibility" displayName="setting_backdrop_visibility" screenReaderText="setting_backdrop_visibility" defaultValue="active" highlight="@drawable/highlight_clock">
             <ListOption id="off" displayName="backdrop_visibility_off" screenReaderText="backdrop_visibility_off" />
@@ -312,27 +313,42 @@
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_12_hour_clock_with_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
                                         <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                        <Group name="clock_12_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                        <Group name="clock_12_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                            <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                            <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
-                                            <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[MINUTE]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
+                                            <Group name="clock_12_hour_clock_with_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                                <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
+                                            <Group name="clock_12_hour_clock_with_seconds_active_backdrops_compact" x="0" y="0" width="450" height="450">
+                                                <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                <Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
                                         </Group>
                                     </Group>
                                 </Group>
@@ -345,31 +361,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_color_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_color_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_color_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -379,31 +412,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_mono_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_mono_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_12_hour_clock_with_seconds_ambient_backdrops_mono_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -3015,27 +3065,42 @@
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_12_hour_clock_without_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
                                         <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                        <Group name="clock_12_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                        <Group name="clock_12_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                            <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                            <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
-                                            <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[MINUTE]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
+                                            <Group name="clock_12_hour_clock_without_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                                <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
+                                            <Group name="clock_12_hour_clock_without_seconds_active_backdrops_compact" x="0" y="0" width="450" height="450">
+                                                <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                <Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
                                         </Group>
                                     </Group>
                                 </Group>
@@ -3048,31 +3113,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_color_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_color_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_color_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -3082,31 +3164,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_mono_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_1_12]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_mono_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_1_12]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_12_hour_clock_without_seconds_ambient_backdrops_mono_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_1_12]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -4756,27 +4855,42 @@
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_24_hour_clock_with_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
                                         <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                        <Group name="clock_24_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                        <Group name="clock_24_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                            <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                            <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
-                                            <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[MINUTE]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
+                                            <Group name="clock_24_hour_clock_with_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                                <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
+                                            <Group name="clock_24_hour_clock_with_seconds_active_backdrops_compact" x="0" y="0" width="450" height="450">
+                                                <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                <Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
                                         </Group>
                                     </Group>
                                 </Group>
@@ -4789,31 +4903,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_color_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_color_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_color_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -4823,31 +4954,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_mono_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_mono_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_24_hour_clock_with_seconds_ambient_backdrops_mono_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -7612,27 +7760,42 @@
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_24_hour_clock_without_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
                                         <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                        <Group name="clock_24_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                        <Group name="clock_24_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                            <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                            <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                            <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
-                                            <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
-                                                        <Template>%02d<Parameter expression="[MINUTE]" />
-                                                        </Template>
-                                                    </Font>
-                                                </Text>
-                                            </PartText>
+                                            <Group name="clock_24_hour_clock_without_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                                <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d<Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
+                                            <Group name="clock_24_hour_clock_without_seconds_active_backdrops_compact" x="0" y="0" width="450" height="450">
+                                                <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_active">
+                                                    <Text align="CENTER" ellipsis="FALSE">
+                                                        <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="[CONFIGURATION.backdropColor.0]">
+                                                            <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                <Parameter expression="[MINUTE]" />
+                                                            </Template>
+                                                        </Font>
+                                                    </Text>
+                                                </PartText>
+                                            </Group>
                                         </Group>
                                     </Group>
                                 </Group>
@@ -7645,31 +7808,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_color_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_color_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_color_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_color_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.backdropColor.0]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
@@ -7679,31 +7859,48 @@
                                             <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                             <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_mono_visibility" x="0" y="0" width="450" height="450">
                                                 <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;ambient&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
-                                                <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_mono_style" x="0" y="0" width="450" height="450">
                                                     <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
-                                                    <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : 1.0" />
-                                                    <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : 0" />
-                                                    <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[HOUR_0_23]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
-                                                    <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
-                                                        <Text align="CENTER" ellipsis="FALSE">
-                                                            <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
-                                                                <Outline color="[CONFIGURATION.appearance.3]" width="2">
-                                                                    <Template>%02d<Parameter expression="[MINUTE]" />
-                                                                    </Template>
-                                                                </Outline>
-                                                            </Font>
-                                                        </Text>
-                                                    </PartText>
+                                                    <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_mono_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                                                        <Transform target="alpha" value="([CONFIGURATION.backdropLayout] == &quot;small_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; || [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; || [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; || [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot;) ? 255 : 0" />
+                                                        <Transform target="scaleX" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="scaleY" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 0.8 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 1.0 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 1.2 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 1.0 : 1.0" />
+                                                        <Transform target="y" value="[CONFIGURATION.backdropLayout] == &quot;small_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;normal_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;large_raised&quot; ? -24 : [CONFIGURATION.backdropLayout] == &quot;small_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;large_centered&quot; ? 0 : [CONFIGURATION.backdropLayout] == &quot;small_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;normal_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;large_lowered&quot; ? 24 : [CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 0 : 0" />
+                                                        <PartText x="0" y="0" width="450" height="225" alpha="255" name="hour_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[HOUR_0_23]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                        <PartText x="0" y="225" width="450" height="225" alpha="255" name="minute_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="240" weight="EXTRA_BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d<Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
+                                                    <Group name="clock_24_hour_clock_without_seconds_ambient_backdrops_mono_compact" x="0" y="0" width="450" height="450">
+                                                        <Transform target="alpha" value="[CONFIGURATION.backdropLayout] == &quot;compact&quot; ? 255 : 0" />
+                                                        <PartText x="45" y="170" width="360" height="110" alpha="255" name="compact_decimal_backdrop_ambient">
+                                                            <Text align="CENTER" ellipsis="FALSE">
+                                                                <Font family="SYNC_TO_DEVICE" size="82" weight="BOLD" color="#000000">
+                                                                    <Outline color="[CONFIGURATION.appearance.3]" width="2">
+                                                                        <Template>%02d:%02d<Parameter expression="[HOUR_0_23]" />
+                                                                            <Parameter expression="[MINUTE]" />
+                                                                        </Template>
+                                                                    </Outline>
+                                                                </Font>
+                                                            </Text>
+                                                        </PartText>
+                                                    </Group>
                                                 </Group>
                                             </Group>
                                         </Group>
