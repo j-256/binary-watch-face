@@ -77,6 +77,7 @@
     <string name="backdrop_layout_small_lowered">Backdrop layout: Small, lowered</string>
     <string name="backdrop_layout_normal_lowered">Backdrop layout: Normal, lowered</string>
     <string name="backdrop_layout_large_lowered">Backdrop layout: Large, lowered</string>
+    <string name="backdrop_layout_compact">Backdrop layout: Compact HH:mm</string>
     <string name="setting_backdrop_visibility">Backdrop visibility</string>
     <string name="backdrop_visibility_off">Backdrop: Hidden</string>
     <string name="backdrop_visibility_active">Backdrop: Active only</string>

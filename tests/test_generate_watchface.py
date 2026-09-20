@@ -1247,21 +1247,55 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         assert ambient is not None
         self.assertIsNotNone(ambient.find("./Text/Font/Outline"))
         self.assertEqual(ambient.findtext("./Text/Font/Outline/Template"), "%02d")
-        backdrop_templates = {
+        full_backdrop_templates = {
             template.text
             for part in self.root.iter("PartText")
-            if "_decimal_backdrop_" in part.get("name", "")
+            if part.get("name", "").startswith(
+                ("hour_decimal_backdrop_", "minute_decimal_backdrop_")
+            )
             for template in part.findall(".//Template")
         }
-        self.assertEqual(backdrop_templates, {"%02d"})
+        self.assertEqual(full_backdrop_templates, {"%02d"})
+
+        compact = self.root.find(
+            ".//PartText[@name='compact_decimal_backdrop_active']"
+        )
+        self.assertIsNotNone(compact)
+        assert compact is not None
+        self.assertEqual(
+            tuple(
+                compact.get(attribute)
+                for attribute in ("x", "y", "width", "height")
+            ),
+            (
+                str(GENERATOR.COMPACT_BACKDROP_X),
+                str(GENERATOR.COMPACT_BACKDROP_Y),
+                str(GENERATOR.COMPACT_BACKDROP_WIDTH),
+                str(GENERATOR.COMPACT_BACKDROP_HEIGHT),
+            ),
+        )
+        compact_template = compact.find(".//Template")
+        self.assertIsNotNone(compact_template)
+        assert compact_template is not None
+        self.assertEqual(compact_template.text, "%02d:%02d")
+        self.assertEqual(
+            [
+                parameter.get("expression")
+                for parameter in compact_template.findall("Parameter")
+            ][1],
+            "[MINUTE]",
+        )
 
         style = next(
             group
             for group in self.root.iter("Group")
             if group.get("name", "").endswith("_active_backdrops_style")
         )
+        full = style.find("Group")
+        self.assertIsNotNone(full)
+        assert full is not None
         self.assertEqual(
-            tuple(style.get(attribute) for attribute in ("pivotX", "pivotY")),
+            tuple(full.get(attribute) for attribute in ("pivotX", "pivotY")),
             ("0.5", "0.5"),
         )
         transforms = {
@@ -1281,10 +1315,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             GENERATOR.BACKDROP_LAYOUT_SCALE_VALUES,
             GENERATOR.DEFAULT_BACKDROP_LAYOUT_ID,
         )
-        self.assertEqual(transforms["scaleX"], size_expression)
-        self.assertEqual(transforms["scaleY"], size_expression)
+        full_transforms = {
+            transform.get("target"): transform.get("value")
+            for transform in full.findall("Transform")
+        }
+        self.assertEqual(full_transforms["scaleX"], size_expression)
+        self.assertEqual(full_transforms["scaleY"], size_expression)
         self.assertEqual(
-            transforms["y"],
+            full_transforms["y"],
             GENERATOR.configuration_value_expression(
                 GENERATOR.BACKDROP_LAYOUT_ID,
                 GENERATOR.BACKDROP_LAYOUT_Y_VALUES,
