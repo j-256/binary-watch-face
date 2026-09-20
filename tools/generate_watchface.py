@@ -454,6 +454,7 @@ COMPLICATION_SLOTS = (
 )
 
 COMPLICATION_LAYOUTS = {
+    "0": (),
     "2": (0, 1),
     "3": (0, 1, 2),
     "4": (0, 1, 3, 4),
@@ -499,6 +500,21 @@ FLAVOR_CHOICES = (
         DEFAULT_FLAVOR_ID,
         "flavor_terminal",
         flavor_configuration_values(),
+    ),
+    FlavorChoice(
+        "minimal",
+        "flavor_minimal",
+        flavor_configuration_values(
+            backdropVisibility="off",
+            dotEffect="none",
+            tickStyle="none",
+            showBitWeights=WEIGHTS_HIDDEN_ID,
+            showWeekday="FALSE",
+            ambientInfo="off",
+            dateFormat="off",
+            batteryDisplay="off_heart_off",
+            complicationCount="0",
+        ),
     ),
     FlavorChoice(
         "seconds",
@@ -965,14 +981,16 @@ def add_user_configurations(root: ET.Element) -> None:
     )
     for option_id, slot_ids in COMPLICATION_LAYOUTS.items():
         label = f"complication_count_{option_id}"
-        element(
-            complication_count,
-            "ListOption",
-            id=option_id,
-            displayName=label,
-            screenReaderText=label,
-            complicationSlotIds=" ".join(str(slot_id) for slot_id in slot_ids),
-        )
+        attributes = {
+            "id": option_id,
+            "displayName": label,
+            "screenReaderText": label,
+        }
+        if slot_ids:
+            attributes["complicationSlotIds"] = " ".join(
+                str(slot_id) for slot_id in slot_ids
+            )
+        element(complication_count, "ListOption", **attributes)
 
     flavors = element(configurations, "Flavors", defaultValue=DEFAULT_FLAVOR_ID)
     slots_by_id = {slot.slot_id: slot for slot in COMPLICATION_SLOTS}

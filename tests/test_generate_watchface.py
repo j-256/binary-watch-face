@@ -778,7 +778,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             for option in configuration.findall("ListOption")
         }
         self.assertEqual(options, GENERATOR.COMPLICATION_LAYOUTS)
-        self.assertEqual(options, {"2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)})
+        self.assertEqual(
+            options,
+            {"0": (), "2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)},
+        )
+        zero = configuration.find("ListOption[@id='0']")
+        self.assertIsNotNone(zero)
+        assert zero is not None
+        self.assertNotIn("complicationSlotIds", zero.attrib)
 
         declared = {
             int(slot.get("slotId", "-1"))
@@ -786,6 +793,26 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         }
         enabled = {slot_id for layout in options.values() for slot_id in layout}
         self.assertEqual(enabled, declared)
+
+    def test_minimal_flavor_hides_every_non_clock_element(self) -> None:
+        minimal = next(
+            choice
+            for choice in GENERATOR.FLAVOR_CHOICES
+            if choice.option_id == "minimal"
+        )
+        selected = dict(minimal.configurations)
+        self.assertEqual(selected[GENERATOR.BACKDROP_VISIBILITY_ID], "off")
+        self.assertEqual(selected[GENERATOR.DOT_EFFECT_ID], "none")
+        self.assertEqual(selected[GENERATOR.TICK_STYLE_ID], "none")
+        self.assertEqual(selected[GENERATOR.SHOW_SECONDS_ID], "FALSE")
+        self.assertEqual(selected[GENERATOR.SHOW_WEIGHTS_ID], GENERATOR.WEIGHTS_HIDDEN_ID)
+        self.assertEqual(selected[GENERATOR.DATE_FORMAT_ID], "off")
+        self.assertEqual(selected[GENERATOR.BATTERY_DISPLAY_ID], "off_heart_off")
+        self.assertEqual(selected[GENERATOR.COMPLICATION_COUNT_ID], "0")
+        flavor = self.root.find("./UserConfigurations/Flavors/Flavor[@id='minimal']")
+        self.assertIsNotNone(flavor)
+        assert flavor is not None
+        self.assertEqual(flavor.findall("ComplicationSlot"), [])
 
     def test_complication_layout_preserves_prioritized_lower_pair(self) -> None:
         slots = {

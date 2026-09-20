@@ -170,6 +170,7 @@
             <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
         </ListConfiguration>
         <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2" highlight="@drawable/highlight_complications">
+            <ListOption id="0" displayName="complication_count_0" screenReaderText="complication_count_0" />
             <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
             <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
             <ListOption id="4" displayName="complication_count_4" screenReaderText="complication_count_4" complicationSlotIds="0 1 3 4" />
@@ -201,6 +202,27 @@
                 <ComplicationSlot slotId="1">
                     <DefaultProviderPolicy defaultSystemProvider="UNREAD_NOTIFICATION_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
+            </Flavor>
+            <Flavor id="minimal" displayName="flavor_minimal" screenReaderText="flavor_minimal">
+                <Configuration id="dotColor" optionId="terminal" />
+                <Configuration id="textColor" optionId="terminal" />
+                <Configuration id="appearance" optionId="dark" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
+                <Configuration id="backdropOpacity" optionId="30" />
+                <Configuration id="backdropLayout" optionId="normal_centered" />
+                <Configuration id="backdropVisibility" optionId="off" />
+                <Configuration id="displaySize" optionId="large" />
+                <Configuration id="clockMode" optionId="24" />
+                <Configuration id="dotEffect" optionId="none" />
+                <Configuration id="tickStyle" optionId="none" />
+                <Configuration id="showSeconds" optionId="FALSE" />
+                <Configuration id="showBitWeights" optionId="FALSE" />
+                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="ambientColor" optionId="TRUE" />
+                <Configuration id="ambientInfo" optionId="off" />
+                <Configuration id="dateFormat" optionId="off" />
+                <Configuration id="batteryDisplay" optionId="off_heart_off" />
+                <Configuration id="complicationCount" optionId="0" />
             </Flavor>
             <Flavor id="seconds" displayName="flavor_seconds" screenReaderText="flavor_seconds">
                 <Configuration id="dotColor" optionId="yellow" />
