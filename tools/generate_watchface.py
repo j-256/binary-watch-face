@@ -81,7 +81,7 @@ CONFIGURATION_HIGHLIGHTS = {
     SHOW_WEEKDAY_ID: "@drawable/highlight_date",
     AMBIENT_INFO_ID: "@drawable/highlight_date_battery",
     AMBIENT_COLOR_ID: "@drawable/highlight_full_face",
-    BATTERY_DISPLAY_ID: "@drawable/highlight_battery",
+    BATTERY_DISPLAY_ID: "@drawable/highlight_readouts",
     TICK_STYLE_ID: "@drawable/highlight_ticks",
     COMPLICATION_COUNT_ID: "@drawable/highlight_complications",
 }
@@ -357,10 +357,51 @@ AMBIENT_DATE_OPTION_IDS = (
     "date_weekday_battery",
 )
 AMBIENT_WEEKDAY_OPTION_IDS = ("date_weekday", "date_weekday_battery")
-AMBIENT_NATIVE_READOUT_OPTION_IDS = (
+AMBIENT_BATTERY_OPTION_IDS = (
     "battery",
     "date_battery",
     "date_weekday_battery",
+)
+BATTERY_DISPLAY_OPTIONS = (
+    ("decimal", "readouts_decimal_heart_active"),
+    ("hex", "readouts_hex_heart_active"),
+    ("binary", "readouts_binary_heart_active"),
+    ("off", "readouts_battery_off_heart_active"),
+    ("decimal_heart_both", "readouts_decimal_heart_both"),
+    ("hex_heart_both", "readouts_hex_heart_both"),
+    ("binary_heart_both", "readouts_binary_heart_both"),
+    ("off_heart_both", "readouts_battery_off_heart_both"),
+    ("decimal_heart_off", "readouts_decimal_heart_off"),
+    ("hex_heart_off", "readouts_hex_heart_off"),
+    ("binary_heart_off", "readouts_binary_heart_off"),
+    ("off_heart_off", "readouts_both_off"),
+)
+BATTERY_DECIMAL_OPTION_IDS = (
+    "decimal",
+    "decimal_heart_both",
+    "decimal_heart_off",
+)
+BATTERY_HEX_OPTION_IDS = ("hex", "hex_heart_both", "hex_heart_off")
+BATTERY_BINARY_OPTION_IDS = (
+    "binary",
+    "binary_heart_both",
+    "binary_heart_off",
+)
+HEART_RATE_ACTIVE_OPTION_IDS = (
+    "decimal",
+    "hex",
+    "binary",
+    "off",
+    "decimal_heart_both",
+    "hex_heart_both",
+    "binary_heart_both",
+    "off_heart_both",
+)
+HEART_RATE_AMBIENT_OPTION_IDS = (
+    "decimal_heart_both",
+    "hex_heart_both",
+    "binary_heart_both",
+    "off_heart_both",
 )
 BACKDROP_ACTIVE_OPTION_IDS = ("active", "both")
 BACKDROP_AMBIENT_OPTION_IDS = ("ambient", "both")
@@ -481,7 +522,7 @@ FLAVOR_CHOICES = (
             showBitWeights=WEIGHTS_HIDDEN_ID,
             showWeekday="FALSE",
             ambientInfo="date_battery",
-            batteryDisplay="hex",
+            batteryDisplay="hex_heart_both",
             complicationCount="4",
         ),
     ),
@@ -497,6 +538,7 @@ FLAVOR_CHOICES = (
             showBitWeights=WEIGHTS_ACTIVE_ONLY_ID,
             ambientColor="FALSE",
             ambientInfo="date_battery",
+            batteryDisplay="decimal_heart_both",
         ),
     ),
 )
@@ -896,15 +938,10 @@ def add_user_configurations(root: ET.Element) -> None:
         configurations,
         "ListConfiguration",
         configuration_id=BATTERY_DISPLAY_ID,
-        display_name="setting_battery_display",
+        display_name="setting_native_readouts",
         default_value="decimal",
     )
-    for option_id, label in (
-        ("decimal", "battery_display_decimal"),
-        ("hex", "battery_display_hex"),
-        ("binary", "battery_display_binary"),
-        ("off", "battery_display_off"),
-    ):
+    for option_id, label in BATTERY_DISPLAY_OPTIONS:
         element(battery_display, "ListOption", id=option_id, displayName=label, screenReaderText=label)
 
     complication_count = add_user_configuration(
@@ -1954,7 +1991,7 @@ def add_battery_readout(
             "Transform",
             target="alpha",
             value=(
-                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
+                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_BATTERY_OPTION_IDS)}) "
                 "? 255 : 0"
             ),
         )
@@ -1981,9 +2018,20 @@ def add_battery_readout(
 
 
 def add_battery(scene: ET.Element) -> None:
-    battery = element(scene, "ListConfiguration", id=BATTERY_DISPLAY_ID)
+    battery = element(scene, "Condition")
+    expressions = element(battery, "Expressions")
+    for name, option_ids in (
+        ("decimal", BATTERY_DECIMAL_OPTION_IDS),
+        ("hex", BATTERY_HEX_OPTION_IDS),
+        ("binary", BATTERY_BINARY_OPTION_IDS),
+    ):
+        expression = element(expressions, "Expression", name=f"battery_{name}_visible")
+        expression.text = configuration_matches_expression(
+            BATTERY_DISPLAY_ID,
+            option_ids,
+        )
 
-    decimal = element(battery, "ListOption", id="decimal")
+    decimal = element(battery, "Compare", expression="battery_decimal_visible")
     decimal_group = element(decimal, "Group", name="battery_decimal", x=0, y=0, width=WATCH_SIZE, height=WATCH_SIZE)
     add_battery_readout(
         decimal_group,
@@ -1992,7 +2040,7 @@ def add_battery(scene: ET.Element) -> None:
         parameters=("[BATTERY_PERCENT]",),
     )
 
-    hexadecimal = element(battery, "ListOption", id="hex")
+    hexadecimal = element(battery, "Compare", expression="battery_hex_visible")
     hexadecimal_group = element(
         hexadecimal,
         "Group",
@@ -2009,13 +2057,13 @@ def add_battery(scene: ET.Element) -> None:
         parameters=("[BATTERY_PERCENT]",),
     )
 
-    binary = element(battery, "ListOption", id="binary")
+    binary = element(battery, "Compare", expression="battery_binary_visible")
     binary_group = element(binary, "Group", name="battery_binary", x=0, y=0, width=WATCH_SIZE, height=WATCH_SIZE)
     condition = element(binary_group, "Condition")
-    expressions = element(condition, "Expressions")
+    binary_expressions = element(condition, "Expressions")
     for bit_count in range(7, 1, -1):
         threshold = 2 ** (bit_count - 1)
-        expression = element(expressions, "Expression", name=f"battery_uses_{bit_count}_bits")
+        expression = element(binary_expressions, "Expression", name=f"battery_uses_{bit_count}_bits")
         expression.text = f"[BATTERY_PERCENT] >= {threshold}"
     for bit_count in range(7, 1, -1):
         compare = element(condition, "Compare", expression=f"battery_uses_{bit_count}_bits")
@@ -2052,7 +2100,7 @@ def add_battery(scene: ET.Element) -> None:
         parameters=("[BATTERY_PERCENT] % 2",),
     )
 
-    off = element(battery, "ListOption", id="off")
+    off = element(battery, "Default")
     add_empty_group(off, "battery_hidden")
 
 
@@ -2107,8 +2155,29 @@ def add_heart_rate_text(
 
 
 def add_heart_rate(scene: ET.Element, *, heart_rate: int | None) -> None:
+    condition = element(scene, "Condition")
+    expressions = element(condition, "Expressions")
+    active_expression = element(
+        expressions,
+        "Expression",
+        name="heart_rate_active_visible",
+    )
+    active_expression.text = configuration_matches_expression(
+        BATTERY_DISPLAY_ID,
+        HEART_RATE_ACTIVE_OPTION_IDS,
+    )
+    compare = element(condition, "Compare", expression="heart_rate_active_visible")
+    heart_rate_group = element(
+        compare,
+        "Group",
+        name="heart_rate",
+        x=0,
+        y=0,
+        width=WATCH_SIZE,
+        height=WATCH_SIZE,
+    )
     active = element(
-        scene,
+        heart_rate_group,
         "Group",
         name="heart_rate_active",
         x=0,
@@ -2137,39 +2206,41 @@ def add_heart_rate(scene: ET.Element, *, heart_rate: int | None) -> None:
             alpha=0,
         )
         add_variant(ambient, "alpha", ambient_brightness_expression())
-        visibility = element(
-            ambient,
-            "Group",
-            name=f"heart_rate_ambient_{suffix}_visibility",
-            x=0,
-            y=0,
-            width=WATCH_SIZE,
-            height=WATCH_SIZE,
-        )
-        element(
-            visibility,
-            "Transform",
-            target="alpha",
-            value=(
-                f"({configuration_matches_expression(AMBIENT_INFO_ID, AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
-                "? 255 : 0"
-            ),
-        )
         add_heart_rate_text(
-            visibility,
+            ambient,
             name=f"heart_rate_ambient_{suffix}",
             color=color,
             glyph=HEART_RATE_AMBIENT_GLYPH,
             heart_rate=heart_rate,
         )
 
+    ambient_condition = element(heart_rate_group, "Condition")
+    ambient_expressions = element(ambient_condition, "Expressions")
+    ambient_expression = element(
+        ambient_expressions,
+        "Expression",
+        name="heart_rate_ambient_visible",
+    )
+    ambient_expression.text = configuration_matches_expression(
+        BATTERY_DISPLAY_ID,
+        HEART_RATE_AMBIENT_OPTION_IDS,
+    )
+    ambient_compare = element(
+        ambient_condition,
+        "Compare",
+        expression="heart_rate_ambient_visible",
+    )
     add_ambient_color_condition(
-        scene,
+        ambient_compare,
         name="heart_rate_ambient",
         color=COLOR_TEXT_AMBIENT,
         monochrome=COLOR_AMBIENT_MONO,
         builder=build_ambient,
     )
+    ambient_default = element(ambient_condition, "Default")
+    add_empty_group(ambient_default, "heart_rate_ambient_hidden")
+    default = element(condition, "Default")
+    add_empty_group(default, "heart_rate_hidden")
 
 
 def add_complication_shell(parent: ET.Element, size: int) -> None:
