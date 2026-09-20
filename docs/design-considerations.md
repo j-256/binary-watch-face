@@ -45,7 +45,7 @@ For a layout change, inspect active and always-on rendering for the following ca
 | Three complications | Center slot clears both readouts and neighboring complications |
 | Four complications | Side slots clear the time at every size; lower slots remain balanced |
 | Huge size, seconds, and weights | Time remains readable without collisions or a count-dependent shift |
-| Binary battery and three-digit heart rate | Full values and glyphs fit without touching providers |
+| Binary battery, status cues, and three-digit heart rate | Full values and glyphs fit without touching providers |
 | Notification dot and ongoing activity | Readouts remain visible and the system return action remains tappable |
 | Dark, light, and AOD | Contrast, placement, and the system reserve remain valid |
 
