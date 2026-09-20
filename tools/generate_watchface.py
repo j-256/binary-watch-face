@@ -53,6 +53,8 @@ SHOW_SECONDS_ID = "showSeconds"
 SHOW_WEIGHTS_ID = "showBitWeights"
 WEIGHTS_SHOWN_ID = "TRUE"
 WEIGHTS_ACTIVE_ONLY_ID = "active"
+WEIGHTS_EMPHASIZED_ID = "emphasized"
+WEIGHTS_ACTIVE_EMPHASIZED_ID = "active_emphasized"
 WEIGHTS_HIDDEN_ID = "FALSE"
 DATE_FORMAT_ID = "dateFormat"
 SHOW_WEEKDAY_ID = "showWeekday"
@@ -87,9 +89,24 @@ CONFIGURATION_HIGHLIGHTS = {
 WEIGHT_VISIBILITY_OPTIONS = (
     (WEIGHTS_SHOWN_ID, "bit_weights_shown"),
     (WEIGHTS_ACTIVE_ONLY_ID, "bit_weights_active_only"),
+    (WEIGHTS_EMPHASIZED_ID, "bit_weights_emphasized"),
+    (WEIGHTS_ACTIVE_EMPHASIZED_ID, "bit_weights_active_emphasized"),
     (WEIGHTS_HIDDEN_ID, "bit_weights_hidden"),
 )
-WEIGHT_VISIBLE_OPTION_IDS = (WEIGHTS_SHOWN_ID, WEIGHTS_ACTIVE_ONLY_ID)
+WEIGHT_VISIBLE_OPTION_IDS = (
+    WEIGHTS_SHOWN_ID,
+    WEIGHTS_ACTIVE_ONLY_ID,
+    WEIGHTS_EMPHASIZED_ID,
+    WEIGHTS_ACTIVE_EMPHASIZED_ID,
+)
+WEIGHT_AMBIENT_OPTION_IDS = (WEIGHTS_SHOWN_ID, WEIGHTS_EMPHASIZED_ID)
+WEIGHT_EMPHASIZED_OPTION_IDS = (
+    WEIGHTS_EMPHASIZED_ID,
+    WEIGHTS_ACTIVE_EMPHASIZED_ID,
+)
+WEIGHT_UNIFORM_ACTIVE_ALPHA = 210
+WEIGHT_LIT_ALPHA = 255
+WEIGHT_UNLIT_ALPHA = 90
 SIMPLE_LIST_SETTINGS = (
     (
         SHOW_SECONDS_ID,
@@ -1406,8 +1423,31 @@ def add_binary_row(
         )
         add_variant(active, "alpha", 0)
         for x, bit in zip(positions, weights):
-            add_text(
+            weight_group = element(
                 active,
+                "Group",
+                name=f"{name}_weight_{bit}_active",
+                x=0,
+                y=0,
+                width=WATCH_SIZE,
+                height=WATCH_SIZE,
+            )
+            emphasized = configuration_matches_expression(
+                SHOW_WEIGHTS_ID,
+                WEIGHT_EMPHASIZED_OPTION_IDS,
+            )
+            element(
+                weight_group,
+                "Transform",
+                target="alpha",
+                value=(
+                    f"({emphasized}) ? "
+                    f"(floor(({source}) / {bit}) % 2 == 1 ? {WEIGHT_LIT_ALPHA} : {WEIGHT_UNLIT_ALPHA}) "
+                    f": {WEIGHT_UNIFORM_ACTIVE_ALPHA}"
+                ),
+            )
+            add_text(
+                weight_group,
                 x=x - 7,
                 y=y - 23,
                 width=dot_size + 14,
@@ -1415,10 +1455,13 @@ def add_binary_row(
                 size=13,
                 color=COLOR_TEXT_ACTIVE,
                 template=str(bit),
-                alpha=210,
             )
 
-        def build_ambient(ambient_option: ET.Element, color: str, suffix: str) -> None:
+        def build_ambient(
+            ambient_option: ET.Element,
+            color: str,
+            suffix: str,
+        ) -> None:
             ambient = element(
                 ambient_option,
                 "Group",
@@ -1431,8 +1474,27 @@ def add_binary_row(
             )
             add_variant(ambient, "alpha", ambient_brightness_expression())
             for x, bit in zip(positions, weights):
-                add_text(
+                weight_parent = element(
                     ambient,
+                    "Group",
+                    name=f"{name}_weight_{bit}_ambient_{suffix}",
+                    x=0,
+                    y=0,
+                    width=WATCH_SIZE,
+                    height=WATCH_SIZE,
+                )
+                element(
+                    weight_parent,
+                    "Transform",
+                    target="alpha",
+                    value=(
+                        f'[CONFIGURATION.{SHOW_WEIGHTS_ID}] == "{WEIGHTS_EMPHASIZED_ID}" '
+                        f"? (floor(({source}) / {bit}) % 2 == 1 "
+                        f"? {WEIGHT_LIT_ALPHA} : {WEIGHT_UNLIT_ALPHA}) : 255"
+                    ),
+                )
+                add_text(
+                    weight_parent,
                     x=x - 7,
                     y=y - 23,
                     width=dot_size + 14,
@@ -1451,11 +1513,40 @@ def add_binary_row(
                 builder=build_ambient,
             )
 
-        add_enabled_group(
-            weights_parent,
+        ambient_condition = element(weights_parent, "Condition")
+        ambient_expressions = element(ambient_condition, "Expressions")
+        ambient_expression_name = f"{name}_bit_weights_ambient_visible"
+        ambient_expression = element(
+            ambient_expressions,
+            "Expression",
+            name=ambient_expression_name,
+        )
+        ambient_expression.text = configuration_matches_expression(
             SHOW_WEIGHTS_ID,
-            f"{name}_weights_ambient_enabled",
-            build_ambient_enabled,
+            WEIGHT_AMBIENT_OPTION_IDS,
+        )
+        ambient_compare = element(
+            ambient_condition,
+            "Compare",
+            expression=ambient_expression_name,
+        )
+        ambient_parent = element(
+            ambient_compare,
+            "Group",
+            name=f"{name}_weights_ambient_enabled",
+            x=0,
+            y=0,
+            width=WATCH_SIZE,
+            height=WATCH_SIZE,
+        )
+        build_ambient_enabled(ambient_parent)
+        ambient_default = element(
+            ambient_condition,
+            "Default",
+        )
+        add_empty_group(
+            ambient_default,
+            f"{name}_weights_ambient_hidden",
         )
 
     weights_condition = element(group, "Condition")

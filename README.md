@@ -93,7 +93,7 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Clock mode | 24-hour by default or 12-hour |
 | Effect | None, glow by default, or bezel |
 | Ticks | None, single, wave, boost, or all by default |
-| Binary display | Optional seconds row; bit weights in active and AOD modes by default, active only, or hidden |
+| Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Battery | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; positioned above the lower-right complication |
 | Heart rate | Native beats-per-minute readout above the lower-left complication, with an unavailable placeholder |
