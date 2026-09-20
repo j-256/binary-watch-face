@@ -563,7 +563,11 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         }
         self.assertIn("0b%d", binary_templates)
         self.assertIn("0b%d%d%d%d%d%d%d", binary_templates)
-        battery_text = scene_configuration.findall(".//PartText")
+        battery_text = [
+            text
+            for text in scene_configuration.findall(".//PartText")
+            if text.get("name", "").endswith("_text")
+        ]
         self.assertTrue(battery_text)
         self.assertTrue(
             all(text.get("x") == str(GENERATOR.BATTERY_READOUT_X) for text in battery_text)
@@ -571,6 +575,42 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertTrue(
             all(text.get("y") == str(GENERATOR.NATIVE_READOUT_Y) for text in battery_text)
         )
+
+        status_conditions = [
+            condition
+            for condition in scene_configuration.findall(".//Condition")
+            if any(
+                expression.get("name", "").endswith("_charging")
+                for expression in condition.findall("./Expressions/Expression")
+            )
+        ]
+        self.assertTrue(status_conditions)
+        for condition in status_conditions:
+            expressions = [
+                expression.text
+                for expression in condition.findall("./Expressions/Expression")
+            ]
+            self.assertEqual(
+                expressions,
+                ["[BATTERY_CHARGING_STATUS]", "[BATTERY_IS_LOW]"],
+            )
+            charging = condition.find("./Compare[1]/PartText")
+            low = condition.find("./Compare[2]/PartText")
+            self.assertIsNotNone(charging)
+            self.assertIsNotNone(low)
+            assert charging is not None and low is not None
+            for status in (charging, low):
+                self.assertEqual(status.get("x"), str(GENERATOR.BATTERY_STATUS_X))
+                self.assertEqual(status.get("y"), str(GENERATOR.NATIVE_READOUT_Y))
+                self.assertEqual(
+                    status.get("width"),
+                    str(GENERATOR.BATTERY_STATUS_WIDTH),
+                )
+            self.assertEqual(
+                charging.find(".//Font").text,
+                GENERATOR.BATTERY_CHARGING_GLYPH,
+            )
+            self.assertEqual(low.find(".//Font").text, GENERATOR.BATTERY_LOW_GLYPH)
 
     def test_native_heart_rate_balances_battery_above_complications(self) -> None:
         scene_configuration = next(

@@ -19,6 +19,8 @@ SCREENSHOT_OUTPUT = PROJECT_ROOT / "watchface/src/screenshot/res/raw/watchface.x
 SCREENSHOT_HEART_RATE = 72
 HEART_RATE_ACTIVE_GLYPH = "\u2665\ufe0e"
 HEART_RATE_AMBIENT_GLYPH = "\u2661"
+BATTERY_CHARGING_GLYPH = "\u26a1\ufe0e"
+BATTERY_LOW_GLYPH = "\u2022"
 XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>\n'
 
 DOT_COLOR_ID = "dotColor"
@@ -42,6 +44,7 @@ COLOR_BLACK = "#000000"
 COLOR_AMBIENT_MONO = "#FFFFFF"
 COLOR_BACKDROP_DARK = "#242424"
 COLOR_BACKDROP_LIGHT = "#E0E0E0"
+COLOR_BATTERY_LOW = "#FF453A"
 AMBIENT_DITHER_ROW_COUNT = 7
 AMBIENT_DITHER_DASH_MULTIPLIER = 2
 AMBIENT_DITHER_GAP = 1
@@ -149,12 +152,15 @@ NATIVE_READOUT_WIDTH = 120
 NATIVE_READOUT_HORIZONTAL_OVERLAP = 10
 NATIVE_READOUT_HEIGHT = 28
 NATIVE_READOUT_TEXT_SIZE = 20
+BATTERY_STATUS_WIDTH = 14
+BATTERY_STATUS_TEXT_SIZE = 14
 HEART_RATE_READOUT_X = (
     WATCH_SIZE - 2 * NATIVE_READOUT_WIDTH + NATIVE_READOUT_HORIZONTAL_OVERLAP
 ) // 2
 BATTERY_READOUT_X = (
     HEART_RATE_READOUT_X + NATIVE_READOUT_WIDTH - NATIVE_READOUT_HORIZONTAL_OVERLAP
 )
+BATTERY_STATUS_X = BATTERY_READOUT_X + NATIVE_READOUT_WIDTH - BATTERY_STATUS_WIDTH
 SYSTEM_INDICATOR_BOUNDS = (140, 380, 310, WATCH_SIZE)
 SYSTEM_ACTIVITY_PILL_BOUNDS = (140, 366, 310, WATCH_SIZE)
 SYSTEM_ACTIVITY_PILL_CORNER_RADIUS = 38
@@ -2046,6 +2052,12 @@ def add_battery_readout(
         parameters=parameters,
     )
     add_screen_reader(active_text, "Battery %d percent", ("[BATTERY_PERCENT]",))
+    add_battery_status(
+        active,
+        name=f"{name}_active_status",
+        color=COLOR_TEXT_ACTIVE,
+        low_color=COLOR_BATTERY_LOW,
+    )
 
     def build_ambient(color_option: ET.Element, color: str, suffix: str) -> None:
         ambient = element(
@@ -2077,7 +2089,7 @@ def add_battery_readout(
                 "? 255 : 0"
             ),
         )
-        add_text(
+        ambient_text = add_text(
             visibility,
             name=f"{name}_ambient_{suffix}_text",
             x=BATTERY_READOUT_X,
@@ -2089,6 +2101,17 @@ def add_battery_readout(
             template=template,
             parameters=parameters,
         )
+        add_screen_reader(
+            ambient_text,
+            "Battery %d percent",
+            ("[BATTERY_PERCENT]",),
+        )
+        add_battery_status(
+            visibility,
+            name=f"{name}_ambient_{suffix}_status",
+            color=color,
+            low_color=COLOR_BATTERY_LOW if suffix == "color" else COLOR_AMBIENT_MONO,
+        )
 
     add_ambient_color_condition(
         parent,
@@ -2097,6 +2120,58 @@ def add_battery_readout(
         monochrome=COLOR_AMBIENT_MONO,
         builder=build_ambient,
     )
+
+
+def add_battery_status(
+    parent: ET.Element,
+    *,
+    name: str,
+    color: str,
+    low_color: str,
+) -> None:
+    condition = element(parent, "Condition")
+    expressions = element(condition, "Expressions")
+    charging = element(expressions, "Expression", name=f"{name}_charging")
+    charging.text = "[BATTERY_CHARGING_STATUS]"
+    low = element(expressions, "Expression", name=f"{name}_low")
+    low.text = "[BATTERY_IS_LOW]"
+
+    charging_compare = element(
+        condition,
+        "Compare",
+        expression=f"{name}_charging",
+    )
+    charging_text = add_text(
+        charging_compare,
+        name=f"{name}_charging_glyph",
+        x=BATTERY_STATUS_X,
+        y=NATIVE_READOUT_Y,
+        width=BATTERY_STATUS_WIDTH,
+        height=NATIVE_READOUT_HEIGHT,
+        size=BATTERY_STATUS_TEXT_SIZE,
+        color=color,
+        template=BATTERY_CHARGING_GLYPH,
+        ellipsis=False,
+    )
+    add_screen_reader(charging_text, "Battery charging")
+
+    low_compare = element(condition, "Compare", expression=f"{name}_low")
+    low_text = add_text(
+        low_compare,
+        name=f"{name}_low_glyph",
+        x=BATTERY_STATUS_X,
+        y=NATIVE_READOUT_Y,
+        width=BATTERY_STATUS_WIDTH,
+        height=NATIVE_READOUT_HEIGHT,
+        size=BATTERY_STATUS_TEXT_SIZE,
+        color=low_color,
+        template=BATTERY_LOW_GLYPH,
+        ellipsis=False,
+    )
+    add_screen_reader(low_text, "Battery low")
+
+    default = element(condition, "Default")
+    add_empty_group(default, f"{name}_normal")
 
 
 def add_battery(scene: ET.Element) -> None:
