@@ -40,6 +40,7 @@ For a layout change, inspect active and always-on rendering for the following ca
 
 | Case | What to check |
 | --- | --- |
+| Zero complications | Minimal preset contains only the centered binary time and preserves the system reserve |
 | Two complications | Clear hierarchy between time, native readouts, and the lower pair |
 | Three complications | Center slot clears both readouts and neighboring complications |
 | Four complications | Side slots clear the time at every size; lower slots remain balanced |

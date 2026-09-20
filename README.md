@@ -23,16 +23,16 @@ See [design considerations](docs/design-considerations.md) for the visual hierar
 - Uses four hour bits in 12-hour mode, five in 24-hour mode, and six for minutes and seconds
 - Offers optional full-dial decimal values, bit weights, a seconds row, multiple date formats, native heart rate, and decimal, hexadecimal, or binary watch-battery readouts
 - Defaults dots and text independently to phosphor terminal green, with a broad palette and dark or light appearance
-- Includes curated Terminal, Seconds, Cyan dashboard, and Light presets in companion apps that support WFF flavors
+- Includes curated Terminal, Minimal, Seconds, Cyan dashboard, and Light presets in companion apps that support WFF flavors
 - Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
-- Provides two complications by default and configurable two-, three-, and four-slot layouts
+- Provides two complications by default and configurable zero-, two-, three-, and four-slot layouts
 - Preserves normal provider actions on complications without defining any whole-face or custom tap actions
 - Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, battery, and heart rate while keeping complications legible
 
 ## Compatibility
 
-The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Format 5 is required to let a setting enable exactly two, three, or four complication slots without leaving invisible tap targets. Compatibility depends on the installed OS rather than model age: Pixel Watch 2 is supported after updating to Wear OS 7, while watches that remain on earlier releases are not supported.
+The watch face uses Watch Face Format 5 and requires Wear OS 7, API level 37. Format 5 is required to let a setting enable exactly zero, two, three, or four complication slots without leaving invisible tap targets. Compatibility depends on the installed OS rather than model age: Pixel Watch 2 is supported after updating to Wear OS 7, while watches that remain on earlier releases are not supported.
 
 ## Install
 
@@ -96,11 +96,12 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden; paired with active-only by default, active and AOD, or hidden heart rate |
-| Complications | Two by default, three, or four |
+| Complications | None, two by default, three, or four |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
 
+- None: no enabled complication slots
 - Two: lower left and lower right
 - Three: the lower pair plus a smaller slot between them
 - Four: the lower pair plus side slots flanking the native readout row

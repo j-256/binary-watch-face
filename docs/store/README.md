@@ -35,10 +35,10 @@ MAKE IT YOURS
 - Select glow, bezel, and tick effects
 - Use ISO 8601 by default or choose a regional date format
 - Show native heart rate beside the watch battery in decimal, hexadecimal, or binary
-- Configure two, three, or four complications
+- Configure zero, two, three, or four complications
 
 ALWAYS-ON DISPLAY
-Keep the selected color with a dense, low-power dot pattern. Choose dim, normal, or bright rendering. Date, weekday, paired battery and heart rate, and the decimal backdrop can each be included or omitted from the always-on display.
+Keep the selected color with a dense, low-power dot pattern. Choose dim, normal, or bright rendering. Date, weekday, battery, independently controlled heart rate, and the decimal backdrop can each be included or omitted from the always-on display.
 
 PRIVATE BY DESIGN
 Binary is a resource-only Watch Face Format watch face. It has no executable app code, network access, analytics, advertising, accounts, or data collection. Time, battery, heart rate, settings, and complication data remain on your watch.

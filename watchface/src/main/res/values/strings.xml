@@ -2,6 +2,7 @@
 <resources>
     <string name="watch_face_name">Binary</string>
     <string name="flavor_terminal">Preset: Terminal</string>
+    <string name="flavor_minimal">Preset: Minimal</string>
     <string name="flavor_seconds">Preset: Seconds</string>
     <string name="flavor_cyan_dashboard">Preset: Cyan dashboard</string>
     <string name="flavor_light">Preset: Light</string>
@@ -153,6 +154,7 @@
     <string name="readouts_binary_heart_off">Readouts: Binary battery, heart rate hidden</string>
     <string name="readouts_both_off">Readouts: Battery and heart rate hidden</string>
     <string name="setting_complication_count">Complication count</string>
+    <string name="complication_count_0">Complications: None</string>
     <string name="complication_count_2">Complications: Two</string>
     <string name="complication_count_3">Complications: Three</string>
     <string name="complication_count_4">Complications: Four</string>
