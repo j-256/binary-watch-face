@@ -86,14 +86,28 @@ def layout_clearances(root: ET.Element) -> list[Clearance]:
         raise ValueError("Expected Binary's 450-unit design canvas")
     elements = root.findall("./Scene/ComplicationSlot")
     slots = {int(slot.attrib["slotId"]): slot for slot in elements}
-    if len(slots) != len(elements) or set(slots) != {slot.slot_id for slot in GENERATOR.COMPLICATION_SLOTS}:
+    expected_slots = {slot.slot_id for slot in GENERATOR.COMPLICATION_SLOTS} | {GENERATOR.HISTORY_SLOT_ID}
+    if len(slots) != len(elements) or set(slots) != expected_slots:
         raise ValueError("Missing, duplicate, or unexpected Binary complication slots")
+    history = slots.pop(GENERATOR.HISTORY_SLOT_ID)
+    box = history.find("BoundingBox")
+    if box is None:
+        raise ValueError("Missing history background bounds")
+    hx, hy, hw, hh = (number(history, key) for key in ("x", "y", "width", "height"))
+    if hw <= 0 or hh <= 0 or tuple(number(box, key) for key in ("x", "y", "width", "height")) != (0, 0, hw, hh):
+        raise ValueError("Invalid history background bounds")
+    history_bounds = (hx, hy, hx + hw, hy + hh)
     readouts = native_readouts(root)
     largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)
     base = next(size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID)
     dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
     clock_bottom = max(max(rows) for rows in GENERATOR.CLOCK_ROW_LAYOUT.values()) + dot_size / 2 * (1 + largest.scale)
     checks = []
+    for slot in slots.values():
+        checks.append(Clearance("history-complication", slot.attrib["name"], circle_rectangle_gap(slot, history_bounds), MIN_CONTENT_GAP))
+    for (left, top, right, bottom), name in readouts.items():
+        gap = math.hypot(max(hx - right, 0, left - hx - hw), max(hy - bottom, 0, top - hy - hh))
+        checks.append(Clearance("history-readout", name, gap, MIN_CONTENT_GAP))
     for bounds, name in readouts.items():
         checks.append(Clearance("readout-clock", name, bounds[1] - clock_bottom, MIN_CONTENT_GAP))
         for slot in slots.values():
@@ -117,7 +131,8 @@ def layout_clearances(root: ET.Element) -> list[Clearance]:
         for slot in slots.values():
             gap = circle_rectangle_gap(slot, inset) - radius
             checks.append(Clearance(name, slot.attrib["name"], gap, GENERATOR.SYSTEM_INDICATOR_CLEARANCE))
-        for (readout_left, readout_top, readout_right, readout_bottom), readout in readouts.items():
+        rectangles = {**readouts, history_bounds: "heart_history"}
+        for (readout_left, readout_top, readout_right, readout_bottom), readout in rectangles.items():
             gap = math.hypot(
                 max(inset[0] - readout_right, 0, readout_left - inset[2]),
                 max(inset[1] - readout_bottom, 0, readout_top - inset[3]),

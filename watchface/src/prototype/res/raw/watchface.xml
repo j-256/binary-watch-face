@@ -83,7 +83,7 @@
             <ListOption id="large_lowered" displayName="backdrop_layout_large_lowered" screenReaderText="backdrop_layout_large_lowered" />
             <ListOption id="compact" displayName="backdrop_layout_compact" screenReaderText="backdrop_layout_compact" />
         </ListConfiguration>
-        <ListConfiguration id="backdropVisibility" displayName="setting_backdrop_visibility" screenReaderText="setting_backdrop_visibility" defaultValue="active" highlight="@drawable/highlight_clock">
+        <ListConfiguration id="backdropVisibility" displayName="setting_backdrop_visibility" screenReaderText="setting_backdrop_visibility" defaultValue="off" highlight="@drawable/highlight_clock">
             <ListOption id="off" displayName="backdrop_visibility_off" screenReaderText="backdrop_visibility_off" />
             <ListOption id="active" displayName="backdrop_visibility_active" screenReaderText="backdrop_visibility_active" />
             <ListOption id="ambient" displayName="backdrop_visibility_ambient" screenReaderText="backdrop_visibility_ambient" />
@@ -105,7 +105,7 @@
             <ListOption id="glow" displayName="dot_effect_glow" screenReaderText="dot_effect_glow" />
             <ListOption id="bezel" displayName="dot_effect_bezel" screenReaderText="dot_effect_bezel" />
         </ListConfiguration>
-        <ListConfiguration id="tickStyle" displayName="setting_tick_style" screenReaderText="setting_tick_style" defaultValue="all" highlight="@drawable/highlight_ticks">
+        <ListConfiguration id="tickStyle" displayName="setting_tick_style" screenReaderText="setting_tick_style" defaultValue="single" highlight="@drawable/highlight_ticks">
             <ListOption id="none" displayName="tick_style_none" screenReaderText="tick_style_none" />
             <ListOption id="single" displayName="tick_style_single" screenReaderText="tick_style_single" />
             <ListOption id="wave" displayName="tick_style_wave" screenReaderText="tick_style_wave" />
@@ -116,7 +116,7 @@
             <ListOption id="TRUE" displayName="seconds_shown" screenReaderText="seconds_shown" />
             <ListOption id="FALSE" displayName="seconds_hidden" screenReaderText="seconds_hidden" />
         </ListConfiguration>
-        <ListConfiguration id="showBitWeights" displayName="setting_show_bit_weights" screenReaderText="setting_show_bit_weights" defaultValue="TRUE" highlight="@drawable/highlight_weights">
+        <ListConfiguration id="showBitWeights" displayName="setting_show_bit_weights" screenReaderText="setting_show_bit_weights" defaultValue="FALSE" highlight="@drawable/highlight_weights">
             <ListOption id="TRUE" displayName="bit_weights_shown" screenReaderText="bit_weights_shown" />
             <ListOption id="active" displayName="bit_weights_active_only" screenReaderText="bit_weights_active_only" />
             <ListOption id="emphasized" displayName="bit_weights_emphasized" screenReaderText="bit_weights_emphasized" />
@@ -169,7 +169,7 @@
             <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
             <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
         </ListConfiguration>
-        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2" highlight="@drawable/highlight_complications">
+        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2_history_clear" highlight="@drawable/highlight_complications">
             <ListOption id="0" displayName="complication_count_0" screenReaderText="complication_count_0" />
             <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
             <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
@@ -191,24 +191,27 @@
                 <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="backdropOpacity" optionId="30" />
                 <Configuration id="backdropLayout" optionId="normal_centered" />
-                <Configuration id="backdropVisibility" optionId="active" />
+                <Configuration id="backdropVisibility" optionId="off" />
                 <Configuration id="displaySize" optionId="large" />
                 <Configuration id="clockMode" optionId="24" />
                 <Configuration id="dotEffect" optionId="glow" />
-                <Configuration id="tickStyle" optionId="all" />
+                <Configuration id="tickStyle" optionId="single" />
                 <Configuration id="showSeconds" optionId="FALSE" />
-                <Configuration id="showBitWeights" optionId="TRUE" />
+                <Configuration id="showBitWeights" optionId="FALSE" />
                 <Configuration id="showWeekday" optionId="TRUE" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="iso" />
                 <Configuration id="batteryDisplay" optionId="decimal" />
-                <Configuration id="complicationCount" optionId="2" />
+                <Configuration id="complicationCount" optionId="2_history_clear" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
                 <ComplicationSlot slotId="1">
                     <DefaultProviderPolicy defaultSystemProvider="UNREAD_NOTIFICATION_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+                </ComplicationSlot>
+                <ComplicationSlot slotId="5">
+                    <DefaultProviderPolicy primaryProvider="dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication" primaryProviderType="PHOTO_IMAGE" defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
                 </ComplicationSlot>
             </Flavor>
             <Flavor id="minimal" displayName="flavor_minimal" screenReaderText="flavor_minimal">
@@ -15162,18 +15165,18 @@
                         <Variant mode="AMBIENT" target="alpha" value="0" />
                         <Condition>
                             <Expressions>
-                                <Expression name="heart_rate_active_available">72 &gt; 0</Expression>
+                                <Expression name="heart_rate_active_available">round([HEART_RATE]) &gt; 0</Expression>
                             </Expressions>
                             <Compare expression="heart_rate_active_available">
                                 <PartText x="110" y="250" width="120" height="28" alpha="255" name="heart_rate_active_value">
                                     <Text align="CENTER" ellipsis="TRUE">
                                         <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.0]">
-                                            <Template>%d♥︎<Parameter expression="72" />
+                                            <Template>%d♥︎<Parameter expression="round([HEART_RATE])" />
                                             </Template>
                                         </Font>
                                     </Text>
                                     <ScreenReader stringId="Heart rate %d beats per minute">
-                                        <Parameter expression="72" />
+                                        <Parameter expression="round([HEART_RATE])" />
                                     </ScreenReader>
                                 </PartText>
                             </Compare>
@@ -15201,18 +15204,18 @@
                                         <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                         <Condition>
                                             <Expressions>
-                                                <Expression name="heart_rate_ambient_color_available">72 &gt; 0</Expression>
+                                                <Expression name="heart_rate_ambient_color_available">round([HEART_RATE]) &gt; 0</Expression>
                                             </Expressions>
                                             <Compare expression="heart_rate_ambient_color_available">
                                                 <PartText x="110" y="250" width="120" height="28" alpha="255" name="heart_rate_ambient_color_value">
                                                     <Text align="CENTER" ellipsis="TRUE">
                                                         <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="[CONFIGURATION.textColor.2]">
-                                                            <Template>%d♡<Parameter expression="72" />
+                                                            <Template>%d♡<Parameter expression="round([HEART_RATE])" />
                                                             </Template>
                                                         </Font>
                                                     </Text>
                                                     <ScreenReader stringId="Heart rate %d beats per minute">
-                                                        <Parameter expression="72" />
+                                                        <Parameter expression="round([HEART_RATE])" />
                                                     </ScreenReader>
                                                 </PartText>
                                             </Compare>
@@ -15232,18 +15235,18 @@
                                         <Variant mode="AMBIENT" target="alpha" value="[CONFIGURATION.ambientColor] == &quot;dim_color&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;bright_color&quot; ? 255 : [CONFIGURATION.ambientColor] == &quot;dim_mono&quot; ? 128 : [CONFIGURATION.ambientColor] == &quot;FALSE&quot; ? 192 : [CONFIGURATION.ambientColor] == &quot;bright_mono&quot; ? 255 : 192" />
                                         <Condition>
                                             <Expressions>
-                                                <Expression name="heart_rate_ambient_mono_available">72 &gt; 0</Expression>
+                                                <Expression name="heart_rate_ambient_mono_available">round([HEART_RATE]) &gt; 0</Expression>
                                             </Expressions>
                                             <Compare expression="heart_rate_ambient_mono_available">
                                                 <PartText x="110" y="250" width="120" height="28" alpha="255" name="heart_rate_ambient_mono_value">
                                                     <Text align="CENTER" ellipsis="TRUE">
                                                         <Font family="SYNC_TO_DEVICE" size="20" weight="NORMAL" color="#FFFFFF">
-                                                            <Template>%d♡<Parameter expression="72" />
+                                                            <Template>%d♡<Parameter expression="round([HEART_RATE])" />
                                                             </Template>
                                                         </Font>
                                                     </Text>
                                                     <ScreenReader stringId="Heart rate %d beats per minute">
-                                                        <Parameter expression="72" />
+                                                        <Parameter expression="round([HEART_RATE])" />
                                                     </ScreenReader>
                                                 </PartText>
                                             </Compare>

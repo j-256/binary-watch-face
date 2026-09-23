@@ -78,7 +78,7 @@ class LayoutCheckTest(unittest.TestCase):
     def test_invalid_geometry_fails_closed(self):
         for change in ("missing-slot", "non-circle", "non-finite"):
             root = copy.deepcopy(self.root)
-            slot = root.find("./Scene/ComplicationSlot")
+            slot = root.find("./Scene/ComplicationSlot[BoundingOval]")
             if change == "missing-slot":
                 root.find("Scene").remove(slot)
             elif change == "non-circle":
@@ -99,6 +99,13 @@ class LayoutCheckTest(unittest.TestCase):
                 self.assertFalse(json.loads(stdout)["passed"])
                 self.assertEqual(stderr, "")
         self.assertEqual(invoke(LAYOUT.main, ["/missing/watchface.xml"])[0], 2)
+
+    def test_history_background_cannot_cover_native_or_provider_targets(self):
+        history = self.root.find("./Scene/ComplicationSlot[@name='heart_history']")
+        history.set("y", "110")
+        failures = [check for check in LAYOUT.layout_clearances(self.root) if not check.passed]
+        self.assertTrue(any(check.category == "history-readout" for check in failures))
+        self.assertTrue(any(check.category == "history-complication" for check in failures))
 
 
 class WatchCaptureTest(unittest.TestCase):

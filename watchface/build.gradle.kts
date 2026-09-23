@@ -38,6 +38,12 @@ android {
     }
 
     buildTypes {
+        create("prototype") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".prototype"
+            versionNameSuffix = "-history-prototype"
+            matchingFallbacks += listOf("debug")
+        }
         create("screenshot") {
             initWith(getByName("debug"))
             applicationIdSuffix = ".screenshot"
