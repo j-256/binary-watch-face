@@ -52,7 +52,7 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
     @Override public ComplicationData getPreviewData(ComplicationType type) {
         if (type != ComplicationType.PHOTO_IMAGE) return null;
         return image(HistorySeries.demo(HistorySeries.Span.HOUR, System.currentTimeMillis()), true, "Sample",
-                HistorySettings.Labels.NONE);
+                HistorySettings.Labels.NONE, TimeRange.ALWAYS);
     }
 
     private static void deliver(ComplicationRequestListener listener, ComplicationData data) {
@@ -65,13 +65,18 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
 
     static PhotoImageComplicationData image(HistorySeries series, boolean demo, String emptyLabel,
             HistorySettings.Labels labels) {
+        return image(series, demo, emptyLabel, labels, TimeRange.between(Instant.ofEpochMilli(series.endMs),
+                Instant.ofEpochMilli(series.endMs + IMAGE_LIFETIME_MS)));
+    }
+
+    private static PhotoImageComplicationData image(HistorySeries series, boolean demo, String emptyLabel,
+            HistorySettings.Labels labels, TimeRange validity) {
         String description = demo ? "Sample heart-rate graph, " : "Heart-rate history, ";
         description += series.span.label + (series.sampleCount == 0 ? ", " + emptyLabel : series.isStale() ? ", readings are stale" : "");
         return new PhotoImageComplicationData.Builder(
                 Icon.createWithBitmap(GraphRenderer.renderBackground(series, demo, emptyLabel, labels)),
                 new PlainComplicationText.Builder(description).build())
-                .setValidTimeRange(TimeRange.between(Instant.ofEpochMilli(series.endMs),
-                        Instant.ofEpochMilli(series.endMs + IMAGE_LIFETIME_MS)))
+                .setValidTimeRange(validity)
                 .build();
     }
 }
