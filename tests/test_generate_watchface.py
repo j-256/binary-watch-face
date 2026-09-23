@@ -274,13 +274,15 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertNotIn("BooleanConfiguration", self.xml)
         self.assertNotIn("BooleanOption", self.xml)
 
-    def test_bit_weights_can_be_limited_to_active_mode(self) -> None:
+    def test_bit_weights_support_optional_lit_emphasis_and_active_only_modes(self) -> None:
         setting = self.user_configuration(GENERATOR.SHOW_WEIGHTS_ID)
         self.assertEqual(
             [option.get("id") for option in setting.findall("ListOption")],
             [
                 GENERATOR.WEIGHTS_SHOWN_ID,
                 GENERATOR.WEIGHTS_ACTIVE_ONLY_ID,
+                GENERATOR.WEIGHTS_EMPHASIZED_ID,
+                GENERATOR.WEIGHTS_ACTIVE_EMPHASIZED_ID,
                 GENERATOR.WEIGHTS_HIDDEN_ID,
             ],
         )
@@ -293,7 +295,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             condition
             for condition in self.root.findall("./Scene//Condition")
             if any(
-                f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}" in (expression.text or "")
+                expression.get("name", "").endswith("_bit_weights_visible")
                 for expression in condition.findall("./Expressions/Expression")
             )
         ]
@@ -314,14 +316,53 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             self.assertIsNotNone(
                 active.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']")
             )
-            ambient = weights.find(
-                f"ListConfiguration[@id='{GENERATOR.SHOW_WEIGHTS_ID}']"
+            ambient = next(
+                condition
+                for condition in weights.findall("Condition")
+                if any(
+                    f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}"
+                    in (expression.text or "")
+                    for expression in condition.findall("./Expressions/Expression")
+                )
             )
             self.assertIsNotNone(ambient)
             assert ambient is not None
             self.assertEqual(
-                [option.get("id") for option in ambient.findall("ListOption")],
-                [GENERATOR.WEIGHTS_SHOWN_ID],
+                ambient.find("./Expressions/Expression").text,
+                GENERATOR.configuration_matches_expression(
+                    GENERATOR.SHOW_WEIGHTS_ID,
+                    GENERATOR.WEIGHT_AMBIENT_OPTION_IDS,
+                ),
+            )
+            active_weight_groups = [
+                group
+                for group in active.findall("Group")
+                if "_weight_" in group.get("name", "")
+            ]
+            self.assertTrue(active_weight_groups)
+            for weight_group in active_weight_groups:
+                transform = weight_group.find("Transform[@target='alpha']")
+                self.assertIsNotNone(transform)
+                assert transform is not None
+                self.assertIn(
+                    f"CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}",
+                    transform.get("value", ""),
+                )
+                self.assertIn(
+                    f"? {GENERATOR.WEIGHT_LIT_ALPHA} : {GENERATOR.WEIGHT_UNLIT_ALPHA}",
+                    transform.get("value", ""),
+                )
+            self.assertTrue(
+                any(
+                    f'CONFIGURATION.{GENERATOR.SHOW_WEIGHTS_ID}'
+                    in transform.get("value", "")
+                    and
+                    f"? {GENERATOR.WEIGHT_LIT_ALPHA} : {GENERATOR.WEIGHT_UNLIT_ALPHA}"
+                    in transform.get("value", "")
+                    for transform in ambient.findall(
+                        ".//Transform[@target='alpha']"
+                    )
+                )
             )
             self.assertIsNotNone(condition.find("Default/Group"))
 
@@ -480,25 +521,53 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertEqual(configuration.get("defaultValue"), "decimal")
         self.assertEqual(
             [option.get("id") for option in configuration.findall("ListOption")],
-            ["decimal", "hex", "binary", "off"],
+            [option_id for option_id, _ in GENERATOR.BATTERY_DISPLAY_OPTIONS],
         )
 
-        scene_configuration = self.root.find(
-            f"./Scene/ListConfiguration[@id='{GENERATOR.BATTERY_DISPLAY_ID}']"
+        scene_configuration = next(
+            condition
+            for condition in self.root.findall("./Scene/Condition")
+            if condition.find("./Expressions/Expression[@name='battery_decimal_visible']")
+            is not None
         )
         self.assertIsNotNone(scene_configuration)
         assert scene_configuration is not None
-        hex_template = scene_configuration.find("./ListOption[@id='hex']/.//Template")
+        battery_expressions = {
+            expression.get("name"): expression.text
+            for expression in scene_configuration.findall("./Expressions/Expression")
+        }
+        self.assertEqual(
+            battery_expressions,
+            {
+                "battery_decimal_visible": GENERATOR.configuration_matches_expression(
+                    GENERATOR.BATTERY_DISPLAY_ID,
+                    GENERATOR.BATTERY_DECIMAL_OPTION_IDS,
+                ),
+                "battery_hex_visible": GENERATOR.configuration_matches_expression(
+                    GENERATOR.BATTERY_DISPLAY_ID,
+                    GENERATOR.BATTERY_HEX_OPTION_IDS,
+                ),
+                "battery_binary_visible": GENERATOR.configuration_matches_expression(
+                    GENERATOR.BATTERY_DISPLAY_ID,
+                    GENERATOR.BATTERY_BINARY_OPTION_IDS,
+                ),
+            },
+        )
+        hex_template = scene_configuration.find("./Compare[@expression='battery_hex_visible']/.//Template")
         self.assertIsNotNone(hex_template)
         assert hex_template is not None
         self.assertEqual(hex_template.text, "0x%x")
         binary_templates = {
             template.text
-            for template in scene_configuration.findall("./ListOption[@id='binary']/.//Template")
+            for template in scene_configuration.findall("./Compare[@expression='battery_binary_visible']/.//Template")
         }
         self.assertIn("0b%d", binary_templates)
         self.assertIn("0b%d%d%d%d%d%d%d", binary_templates)
-        battery_text = scene_configuration.findall(".//PartText")
+        battery_text = [
+            text
+            for text in scene_configuration.findall(".//PartText")
+            if text.get("name", "").endswith("_text")
+        ]
         self.assertTrue(battery_text)
         self.assertTrue(
             all(text.get("x") == str(GENERATOR.BATTERY_READOUT_X) for text in battery_text)
@@ -507,8 +576,105 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             all(text.get("y") == str(GENERATOR.NATIVE_READOUT_Y) for text in battery_text)
         )
 
+        status_conditions = [
+            condition
+            for condition in scene_configuration.findall(".//Condition")
+            if any(
+                expression.get("name", "").endswith("_low")
+                for expression in condition.findall("./Expressions/Expression")
+            )
+        ]
+        self.assertTrue(status_conditions)
+        for condition in status_conditions:
+            expressions = [
+                expression.text
+                for expression in condition.findall("./Expressions/Expression")
+            ]
+            self.assertEqual(
+                expressions,
+                ["[BATTERY_IS_LOW]"],
+            )
+            low = condition.find("./Compare/PartText")
+            self.assertIsNotNone(low)
+            assert low is not None
+            self.assertEqual(low.get("x"), str(GENERATOR.BATTERY_STATUS_X))
+            self.assertEqual(low.get("y"), str(GENERATOR.NATIVE_READOUT_Y))
+            self.assertEqual(
+                low.get("width"),
+                str(GENERATOR.BATTERY_STATUS_WIDTH),
+            )
+            self.assertEqual(low.find(".//Font").text, GENERATOR.BATTERY_LOW_GLYPH)
+
+    def test_binary_battery_ranges_are_exclusive_and_render_every_percentage(self) -> None:
+        condition = self.root.find(
+            ".//Compare[@expression='battery_binary_visible']/Group/Condition"
+        )
+        self.assertIsNotNone(condition)
+        assert condition is not None
+        expressions = {
+            expression.get("name"): expression.text
+            for expression in condition.findall("./Expressions/Expression")
+        }
+
+        for percent in range(101):
+            with self.subTest(percent=percent):
+                def evaluate(expression: str) -> int | bool:
+                    return eval(
+                        expression.replace("[BATTERY_PERCENT]", str(percent)).replace("&&", "and"),
+                        {"__builtins__": {}, "floor": math.floor},
+                    )
+
+                matches = [
+                    compare
+                    for compare in condition.findall("Compare")
+                    if evaluate(expressions[compare.get("expression")])
+                ]
+                self.assertLessEqual(len(matches), 1)
+                branch = matches[0] if matches else condition.find("Default")
+                assert branch is not None
+                readouts = [
+                    text
+                    for text in branch.findall(".//PartText")
+                    if text.get("name", "").endswith("_text")
+                ]
+                self.assertTrue(readouts)
+                for readout in readouts:
+                    template = readout.find(".//Template")
+                    assert template is not None and template.text is not None
+                    values = tuple(
+                        evaluate(parameter.get("expression"))
+                        for parameter in template.findall("Parameter")
+                    )
+                    self.assertEqual(template.text % values, "0b" + format(percent, "b"))
+
     def test_native_heart_rate_balances_battery_above_complications(self) -> None:
-        active = self.root.find("./Scene/Group[@name='heart_rate_active']")
+        scene_configuration = next(
+            condition
+            for condition in self.root.findall("./Scene/Condition")
+            if condition.find("./Expressions/Expression[@name='heart_rate_active_visible']")
+            is not None
+        )
+        self.assertIsNotNone(scene_configuration)
+        assert scene_configuration is not None
+        self.assertEqual(
+            scene_configuration.find(
+                "./Expressions/Expression[@name='heart_rate_active_visible']"
+            ).text,
+            GENERATOR.configuration_matches_expression(
+                GENERATOR.BATTERY_DISPLAY_ID,
+                GENERATOR.HEART_RATE_ACTIVE_OPTION_IDS,
+            ),
+        )
+        self.assertEqual(
+            scene_configuration.find(
+                ".//Expression[@name='heart_rate_ambient_visible']"
+            ).text,
+            GENERATOR.configuration_matches_expression(
+                GENERATOR.BATTERY_DISPLAY_ID,
+                GENERATOR.HEART_RATE_AMBIENT_OPTION_IDS,
+            ),
+        )
+        active = scene_configuration.find(".//Group[@name='heart_rate_active']")
         self.assertIsNotNone(active)
         assert active is not None
 
@@ -560,6 +726,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         ]
         self.assertTrue(ambient_values)
         self.assertTrue(ambient_unavailable)
+        self.assertTrue(
+            scene_configuration.findall(
+                ".//Compare[@expression='heart_rate_ambient_visible']/.//PartText"
+            )
+        )
+        self.assertIsNotNone(
+            scene_configuration.find("./Default/Group[@name='heart_rate_hidden']")
+        )
         self.assertTrue(
             all(
                 text.find(".//Template").text
@@ -617,8 +791,11 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         date = self.root.find(
             f"./Scene/ListConfiguration[@id='{GENERATOR.DATE_FORMAT_ID}']"
         )
-        battery = self.root.find(
-            f"./Scene/ListConfiguration[@id='{GENERATOR.BATTERY_DISPLAY_ID}']"
+        battery = next(
+            condition
+            for condition in self.root.findall("./Scene/Condition")
+            if condition.find("./Expressions/Expression[@name='battery_decimal_visible']")
+            is not None
         )
         self.assertIsNotNone(date)
         self.assertIsNotNone(battery)
@@ -642,7 +819,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             },
         )
         expected_battery_visibility = (
-            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_NATIVE_READOUT_OPTION_IDS)}) "
+            f"({GENERATOR.configuration_matches_expression(GENERATOR.AMBIENT_INFO_ID, GENERATOR.AMBIENT_BATTERY_OPTION_IDS)}) "
             "? 255 : 0"
         )
         battery_visibility = [
@@ -654,17 +831,19 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertTrue(
             all(value == expected_battery_visibility for value in battery_visibility)
         )
-        heart_rate_visibility = [
-            transform.get("value")
-            for group in self.root.findall("./Scene/.//Group")
-            if group.get("name", "").startswith("heart_rate_ambient_")
-            and group.get("name", "").endswith("_visibility")
-            for transform in group.findall("Transform[@target='alpha']")
-            if "CONFIGURATION.ambientInfo" in transform.get("value", "")
-        ]
-        self.assertEqual(len(heart_rate_visibility), 2)
-        self.assertTrue(
-            all(value == expected_battery_visibility for value in heart_rate_visibility)
+        heart_rate = next(
+            condition
+            for condition in self.root.findall("./Scene/Condition")
+            if condition.find("./Expressions/Expression[@name='heart_rate_active_visible']")
+            is not None
+        )
+        self.assertIsNotNone(heart_rate)
+        assert heart_rate is not None
+        self.assertFalse(
+            any(
+                "CONFIGURATION.ambientInfo" in transform.get("value", "")
+                for transform in heart_rate.findall(".//Transform")
+            )
         )
 
     def test_complication_count_options_enable_exact_layouts(self) -> None:
@@ -674,7 +853,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             for option in configuration.findall("ListOption")
         }
         self.assertEqual(options, GENERATOR.COMPLICATION_LAYOUTS)
-        self.assertEqual(options, {"2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)})
+        self.assertEqual(
+            options,
+            {"0": (), "2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)},
+        )
+        zero = configuration.find("ListOption[@id='0']")
+        self.assertIsNotNone(zero)
+        assert zero is not None
+        self.assertNotIn("complicationSlotIds", zero.attrib)
 
         declared = {
             int(slot.get("slotId", "-1"))
@@ -682,6 +868,26 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         }
         enabled = {slot_id for layout in options.values() for slot_id in layout}
         self.assertEqual(enabled, declared)
+
+    def test_minimal_flavor_hides_every_non_clock_element(self) -> None:
+        minimal = next(
+            choice
+            for choice in GENERATOR.FLAVOR_CHOICES
+            if choice.option_id == "minimal"
+        )
+        selected = dict(minimal.configurations)
+        self.assertEqual(selected[GENERATOR.BACKDROP_VISIBILITY_ID], "off")
+        self.assertEqual(selected[GENERATOR.DOT_EFFECT_ID], "none")
+        self.assertEqual(selected[GENERATOR.TICK_STYLE_ID], "none")
+        self.assertEqual(selected[GENERATOR.SHOW_SECONDS_ID], "FALSE")
+        self.assertEqual(selected[GENERATOR.SHOW_WEIGHTS_ID], GENERATOR.WEIGHTS_HIDDEN_ID)
+        self.assertEqual(selected[GENERATOR.DATE_FORMAT_ID], "off")
+        self.assertEqual(selected[GENERATOR.BATTERY_DISPLAY_ID], "off_heart_off")
+        self.assertEqual(selected[GENERATOR.COMPLICATION_COUNT_ID], "0")
+        flavor = self.root.find("./UserConfigurations/Flavors/Flavor[@id='minimal']")
+        self.assertIsNotNone(flavor)
+        assert flavor is not None
+        self.assertEqual(flavor.findall("ComplicationSlot"), [])
 
     def test_complication_layout_preserves_prioritized_lower_pair(self) -> None:
         slots = {
@@ -1143,21 +1349,55 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         assert ambient is not None
         self.assertIsNotNone(ambient.find("./Text/Font/Outline"))
         self.assertEqual(ambient.findtext("./Text/Font/Outline/Template"), "%02d")
-        backdrop_templates = {
+        full_backdrop_templates = {
             template.text
             for part in self.root.iter("PartText")
-            if "_decimal_backdrop_" in part.get("name", "")
+            if part.get("name", "").startswith(
+                ("hour_decimal_backdrop_", "minute_decimal_backdrop_")
+            )
             for template in part.findall(".//Template")
         }
-        self.assertEqual(backdrop_templates, {"%02d"})
+        self.assertEqual(full_backdrop_templates, {"%02d"})
+
+        compact = self.root.find(
+            ".//PartText[@name='compact_decimal_backdrop_active']"
+        )
+        self.assertIsNotNone(compact)
+        assert compact is not None
+        self.assertEqual(
+            tuple(
+                compact.get(attribute)
+                for attribute in ("x", "y", "width", "height")
+            ),
+            (
+                str(GENERATOR.COMPACT_BACKDROP_X),
+                str(GENERATOR.COMPACT_BACKDROP_Y),
+                str(GENERATOR.COMPACT_BACKDROP_WIDTH),
+                str(GENERATOR.COMPACT_BACKDROP_HEIGHT),
+            ),
+        )
+        compact_template = compact.find(".//Template")
+        self.assertIsNotNone(compact_template)
+        assert compact_template is not None
+        self.assertEqual(compact_template.text, "%02d:%02d")
+        self.assertEqual(
+            [
+                parameter.get("expression")
+                for parameter in compact_template.findall("Parameter")
+            ][1],
+            "[MINUTE]",
+        )
 
         style = next(
             group
             for group in self.root.iter("Group")
             if group.get("name", "").endswith("_active_backdrops_style")
         )
+        full = style.find("Group")
+        self.assertIsNotNone(full)
+        assert full is not None
         self.assertEqual(
-            tuple(style.get(attribute) for attribute in ("pivotX", "pivotY")),
+            tuple(full.get(attribute) for attribute in ("pivotX", "pivotY")),
             ("0.5", "0.5"),
         )
         transforms = {
@@ -1177,10 +1417,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             GENERATOR.BACKDROP_LAYOUT_SCALE_VALUES,
             GENERATOR.DEFAULT_BACKDROP_LAYOUT_ID,
         )
-        self.assertEqual(transforms["scaleX"], size_expression)
-        self.assertEqual(transforms["scaleY"], size_expression)
+        full_transforms = {
+            transform.get("target"): transform.get("value")
+            for transform in full.findall("Transform")
+        }
+        self.assertEqual(full_transforms["scaleX"], size_expression)
+        self.assertEqual(full_transforms["scaleY"], size_expression)
         self.assertEqual(
-            transforms["y"],
+            full_transforms["y"],
             GENERATOR.configuration_value_expression(
                 GENERATOR.BACKDROP_LAYOUT_ID,
                 GENERATOR.BACKDROP_LAYOUT_Y_VALUES,

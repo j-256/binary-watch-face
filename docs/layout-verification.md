@@ -51,6 +51,10 @@ Each output directory must be new. Captures can contain personal health and comp
 
 The command checks visibility, package identity, version, and both ambient-state signals before capture. It reads the renderer again afterward and rejects evidence if its state changed. This prevents a dimmed interactive frame from being labeled as AOD. All device commands are reads; installation, waking the screen, selecting the face, and starting or tapping an activity remain explicit operator actions.
 
+Use `--mode low-battery` when the renderer reports `LOW_BATTERY_INTERACTIVE`. This is distinct from ordinary active rendering and AOD. Dismiss system notifications before capturing so they do not obscure the readout under test.
+
+Verify binary battery values on both sides of each power-of-two boundary, including low charge. Digit-width conditions must use mutually exclusive ranges: a Wear OS 7 emulator can fall through overlapping ranges to the one-digit fallback even when the percentage and bit arithmetic are correct. The generator regression check covers every percentage from 0 through 100; rendered checks must also exercise changing charge levels and AOD.
+
 For update verification, capture before installation and use that receipt with `--compare-with` after installing the new version. Version and rendering mode may change; selected style, enabled slots, and reported provider identities must agree. Missing identities for enabled providers are reported as unverified and make a requested comparison fail. The comparison requires the same device serial and package. A device reconnect that changes its serial requires a new baseline.
 
 Exit status is `0` for a successful capture and requested comparison, `1` for device/capture failure or changed/unverifiable selections, `2` for invalid input or an unmet precondition such as the wrong render mode, and `3` for missing `adb`. Results are JSON on stdout; diagnostics are on stderr. Both commands support `-h` and `--help`.

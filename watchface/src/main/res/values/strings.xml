@@ -2,6 +2,7 @@
 <resources>
     <string name="watch_face_name">Binary</string>
     <string name="flavor_terminal">Preset: Terminal</string>
+    <string name="flavor_minimal">Preset: Minimal</string>
     <string name="flavor_seconds">Preset: Seconds</string>
     <string name="flavor_cyan_dashboard">Preset: Cyan dashboard</string>
     <string name="flavor_light">Preset: Light</string>
@@ -77,6 +78,7 @@
     <string name="backdrop_layout_small_lowered">Backdrop layout: Small, lowered</string>
     <string name="backdrop_layout_normal_lowered">Backdrop layout: Normal, lowered</string>
     <string name="backdrop_layout_large_lowered">Backdrop layout: Large, lowered</string>
+    <string name="backdrop_layout_compact">Backdrop layout: Compact HH:mm</string>
     <string name="setting_backdrop_visibility">Backdrop visibility</string>
     <string name="backdrop_visibility_off">Backdrop: Hidden</string>
     <string name="backdrop_visibility_active">Backdrop: Active only</string>
@@ -107,6 +109,8 @@
     <string name="setting_show_bit_weights">Show bit weights</string>
     <string name="bit_weights_shown">Weights: Active and AOD</string>
     <string name="bit_weights_active_only">Weights: Active only</string>
+    <string name="bit_weights_emphasized">Weights: Active and AOD, emphasize lit</string>
+    <string name="bit_weights_active_emphasized">Weights: Active only, emphasize lit</string>
     <string name="bit_weights_hidden">Weights: Hidden</string>
     <string name="setting_show_weekday">Date style</string>
     <string name="weekday_shown">Date style: Weekday, mixed case</string>
@@ -117,9 +121,9 @@
     <string name="ambient_info_off">AOD info: Hidden</string>
     <string name="ambient_info_date">AOD info: Date</string>
     <string name="ambient_info_date_weekday">AOD info: Date and weekday</string>
-    <string name="ambient_info_battery">AOD info: Battery and heart rate</string>
-    <string name="ambient_info_date_battery">AOD info: Date, battery, and heart rate</string>
-    <string name="ambient_info_date_weekday_battery">AOD info: Date, weekday, battery, and heart rate</string>
+    <string name="ambient_info_battery">AOD info: Battery</string>
+    <string name="ambient_info_date_battery">AOD info: Date and battery</string>
+    <string name="ambient_info_date_weekday_battery">AOD info: Date, weekday, and battery</string>
     <string name="setting_ambient_appearance">AOD brightness and color</string>
     <string name="ambient_appearance_dim_color">AOD brightness: Dim, color</string>
     <string name="ambient_appearance_normal_color">AOD brightness: Normal, color</string>
@@ -136,12 +140,21 @@
     <string name="date_format_iso">Date: 2026-11-26</string>
     <string name="date_format_unix">Date: Unix timestamp</string>
     <string name="date_format_off">Date: Hidden</string>
-    <string name="setting_battery_display">Battery readout</string>
-    <string name="battery_display_decimal">Battery: Decimal</string>
-    <string name="battery_display_hex">Battery: Hexadecimal</string>
-    <string name="battery_display_binary">Battery: Binary</string>
-    <string name="battery_display_off">Battery: Hidden</string>
+    <string name="setting_native_readouts">Native readouts</string>
+    <string name="readouts_decimal_heart_active">Readouts: Decimal battery, active-only heart rate</string>
+    <string name="readouts_hex_heart_active">Readouts: Hex battery, active-only heart rate</string>
+    <string name="readouts_binary_heart_active">Readouts: Binary battery, active-only heart rate</string>
+    <string name="readouts_battery_off_heart_active">Readouts: Battery hidden, active-only heart rate</string>
+    <string name="readouts_decimal_heart_both">Readouts: Decimal battery, active and AOD heart rate</string>
+    <string name="readouts_hex_heart_both">Readouts: Hex battery, active and AOD heart rate</string>
+    <string name="readouts_binary_heart_both">Readouts: Binary battery, active and AOD heart rate</string>
+    <string name="readouts_battery_off_heart_both">Readouts: Battery hidden, active and AOD heart rate</string>
+    <string name="readouts_decimal_heart_off">Readouts: Decimal battery, heart rate hidden</string>
+    <string name="readouts_hex_heart_off">Readouts: Hex battery, heart rate hidden</string>
+    <string name="readouts_binary_heart_off">Readouts: Binary battery, heart rate hidden</string>
+    <string name="readouts_both_off">Readouts: Battery and heart rate hidden</string>
     <string name="setting_complication_count">Complication count</string>
+    <string name="complication_count_0">Complications: None</string>
     <string name="complication_count_2">Complications: Two</string>
     <string name="complication_count_3">Complications: Three</string>
     <string name="complication_count_4">Complications: Four</string>

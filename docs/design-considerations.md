@@ -24,7 +24,7 @@ Use named geometry in `tools/generate_watchface.py` and enforce separation in th
 
 ## Readouts and complications
 
-Heart rate and watch battery are native readouts, not complication slots. Place them together between the binary field and the lower complications, with heart rate on the left and battery on the right. Keep this row stable across complication counts and active/AOD modes. Preserve room for a three-digit heart rate, its heart glyph, and the longest binary battery value.
+Heart rate and watch battery are native readouts, not complication slots. Place them together between the binary field and the lower complications, with heart rate on the left and battery on the right. Keep this row stable across complication counts and active/AOD modes. Preserve room for a three-digit heart rate, its heart glyph, and the longest binary battery value. Leave charging indication to Wear OS; the native battery readout only adds a low-battery cue.
 
 The larger lower-left and lower-right complications retain their slot IDs, size, and position when the count changes. Smaller side complications flank the readout row in the four-slot layout. In the three-slot layout, the center complication sits below the readouts, between the lower pair. Preserve usable separation between circles, readable provider text, and visible perimeter ticks.
 
@@ -40,11 +40,12 @@ For a layout change, inspect active and always-on rendering for the following ca
 
 | Case | What to check |
 | --- | --- |
+| Zero complications | Minimal preset contains only the centered binary time and preserves the system reserve |
 | Two complications | Clear hierarchy between time, native readouts, and the lower pair |
 | Three complications | Center slot clears both readouts and neighboring complications |
 | Four complications | Side slots clear the time at every size; lower slots remain balanced |
 | Huge size, seconds, and weights | Time remains readable without collisions or a count-dependent shift |
-| Binary battery and three-digit heart rate | Full values and glyphs fit without touching providers |
+| Binary battery, status cues, and three-digit heart rate | Full values and glyphs fit without touching providers |
 | Notification dot and ongoing activity | Readouts remain visible and the system return action remains tappable |
 | Dark, light, and AOD | Contrast, placement, and the system reserve remain valid |
 

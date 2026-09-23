@@ -17,7 +17,11 @@ import sys
 PACKAGE = "dev.j256.binarywatchface"
 SCHEMA_VERSION = 1
 COMMAND_TIMEOUT = 30
-RENDER_MODES = {"active": "INTERACTIVE", "ambient": "AMBIENT"}
+RENDER_MODES = {
+    "active": "INTERACTIVE",
+    "ambient": "AMBIENT",
+    "low-battery": "LOW_BATTERY_INTERACTIVE",
+}
 
 
 class PreconditionError(ValueError):

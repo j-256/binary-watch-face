@@ -143,6 +143,18 @@ class WatchCaptureTest(unittest.TestCase):
             with self.subTest(runtime=runtime), self.assertRaises(CAPTURE.PreconditionError):
                 CAPTURE.parse_runtime(runtime, CAPTURE.PACKAGE, "ambient", "0.4.0")
 
+    def test_low_battery_capture_requires_its_explicit_mode(self):
+        runtime = RUNTIME.replace("isAmbient=true", "isAmbient=false").replace(
+            "drawMode=AMBIENT", "drawMode=LOW_BATTERY_INTERACTIVE"
+        )
+        snapshot = CAPTURE.parse_runtime(runtime, CAPTURE.PACKAGE, "low-battery", "0.4.0")
+        self.assertEqual(snapshot["mode"], "low-battery")
+        for mode in ("active", "ambient"):
+            with self.subTest(mode=mode), self.assertRaises(CAPTURE.PreconditionError):
+                CAPTURE.parse_runtime(runtime, CAPTURE.PACKAGE, mode, "0.4.0")
+        with self.assertRaises(CAPTURE.PreconditionError):
+            CAPTURE.parse_runtime(RUNTIME, CAPTURE.PACKAGE, "low-battery", "0.4.0")
+
     def test_transition_during_capture_does_not_save_mislabeled_evidence(self):
         changed = RUNTIME.replace("displaySize -> huge", "displaySize -> small")
         with self.assertRaisesRegex(RuntimeError, "changed during capture"):
