@@ -196,7 +196,7 @@ public class HistoryIntegrationTest {
         settings.labels(HistorySettings.Labels.NONE);
     }
 
-    @Test public void labelsCanBeHiddenWithoutHidingSampleStaleOrEmptyNotices() {
+    @Test public void labelsCanBeHiddenInEitherModeWithoutHidingStaleOrEmptyNotices() {
         HistorySeries series = HistorySeries.demo(HistorySeries.Span.HOUR, now);
         Bitmap hidden = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
         Bitmap window = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
@@ -204,7 +204,11 @@ public class HistoryIntegrationTest {
         assertEquals(0, captionPixels(hidden));
         assertTrue(captionPixels(window) > 0);
         assertTrue(captionPixels(range) > captionPixels(window));
-        assertTrue(captionPixels(GraphRenderer.renderBackground(series, true, "", HistorySettings.Labels.NONE)) > 0);
+        for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
+            assertTrue(GraphRenderer.renderBackground(series, false, "", labels)
+                    .sameAs(GraphRenderer.renderBackground(series, true, "", labels)));
+        }
+        assertFalse(GraphRenderer.render(series, false, "").sameAs(GraphRenderer.render(series, true, "")));
         HistorySeries stale = new HistorySeries(HistorySeries.Span.HOUR, now);
         stale.add(new HistorySeries.Sample(now - 20 * HistorySeries.MINUTE_MS, 70));
         assertTrue(captionPixels(GraphRenderer.renderBackground(stale, false, "", HistorySettings.Labels.NONE)) > 0);

@@ -56,17 +56,17 @@ public final class GraphRenderer {
         float captionLeft = background ? 114 : left;
         float captionRight = background ? 336 : right;
         float captionBaseline = background ? 13.5f : 27;
-        String header = labels == HistorySettings.Labels.NONE ? demo ? "SAMPLE" : ""
-                : (demo ? "SAMPLE  /  " : "HEART  /  ") + series.span.label.toUpperCase(Locale.ROOT);
+        String header = labels == HistorySettings.Labels.NONE ? ""
+                : (demo && !background ? "SAMPLE  /  " : "HEART  /  ")
+                    + series.span.label.toUpperCase(Locale.ROOT);
         long ageMinutes = (series.endMs - series.latestMs) / HistorySeries.MINUTE_MS;
         String range = String.format(Locale.ROOT, "%.0f-%.0f", series.minimum, series.maximum);
         String status = series.sampleCount == 0 ? emptyLabel : series.isStale() ? "STALE " + ageMinutes + "m"
                 : labels == HistorySettings.Labels.RANGE
                     ? range + (!demo && ageMinutes > 0 ? " / " + ageMinutes + "m" : " BPM") : "";
         if (labels == HistorySettings.Labels.NONE) {
-            String notice = header.isEmpty() ? status : status.isEmpty() ? header : header + " / " + status;
             paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(notice, width / 2f, captionBaseline, paint);
+            canvas.drawText(status, width / 2f, captionBaseline, paint);
         } else {
             canvas.drawText(header, captionLeft, captionBaseline, paint);
             paint.setTextAlign(Paint.Align.RIGHT);

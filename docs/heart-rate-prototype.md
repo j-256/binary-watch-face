@@ -6,7 +6,7 @@ This is an unreleased Wear OS 7 prototype. **Binary Pulse** installs alongside *
 
 ## Preview
 
-These Wear OS emulator captures use invented readings labeled **SAMPLE**. They do not show anyone's health data.
+These Wear OS emulator captures use invented readings. They do not show anyone's health data. The companion app identifies preview mode; the watch face follows the selected label preference without a demo badge.
 
 <p align="center">
   <img src="screenshots/history-hour.png" alt="One-hour sample graph behind the centered binary clock" width="31%">
@@ -33,12 +33,23 @@ python3 tools/generate_watchface.py --check
 ./gradlew check :history:assembleDebug :watchface:assemblePrototype
 ```
 
-Install on an explicitly selected Wear OS 7 emulator or test watch:
+For a physical watch, check that it runs Wear OS 7 (Android API 37) before installing. Put the watch and computer on the same Wi-Fi network, enable the watch's developer options, then enable **ADB debugging** and **Wireless debugging**. Choose **Pair new device**, use the IP address and pairing port shown there, and enter its pairing code when prompted. Return to the main Wireless debugging screen for the connection address; its port can differ from the pairing port. These steps follow Android's [Wi-Fi debugging guide](https://developer.android.com/training/wearables/get-started/debug-wifi).
 
 ```sh
+adb pair WATCH_IP:PAIRING_PORT
+adb connect WATCH_IP:CONNECTION_PORT
+adb devices -l
+```
+
+Use the connected device's exact serial from `adb devices -l` in place of `DEVICE_SERIAL` below. Confirm its API level, then install the history app before the face so its provider is available during setup. The same installation commands work with an explicitly selected Wear OS 7 emulator.
+
+```sh
+adb -s DEVICE_SERIAL shell getprop ro.build.version.sdk
 adb -s DEVICE_SERIAL install -r history/build/outputs/apk/debug/history-debug.apk
 adb -s DEVICE_SERIAL install -r watchface/build/outputs/apk/prototype/watchface-prototype.apk
 ```
+
+The SDK check must report `37` or newer. In the downloadable prototype bundle, the corresponding APKs are named `binary-heart-history.apk` and `binary-pulse-prototype.apk`.
 
 1. Open **Binary Heart History** from the watch's app list.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
@@ -54,6 +65,14 @@ Recording starts with an empty history and fills as the watch delivers readings.
 The time-window controls are in the on-watch app:
 
 <img src="screenshots/history-settings.png" alt="On-watch controls for 30 minutes, 1 hour, 6 hours, and 24 hours" width="260">
+
+## Preview data
+
+The preview is a deterministic synthetic day with one reading per minute. It combines small resting fluctuations, a lower sleep period, a walking peak, and a stronger exercise peak, spanning approximately 45 to 163 BPM across the full day. Two deliberate interruptions leave five and thirty-two minutes between consecutive readings. This exercises interrupted collection as well as continuous segments.
+
+Every refresh regenerates the same shape relative to the new end time. Its timestamps advance, but the preview does not evolve or scroll through different activity. It is a visual fixture, not a continuous sensor simulation. Real recording stores incoming readings and advances the rolling window over that history.
+
+The shorter windows show less of the fixture: thirty minutes covers modest variation, one hour includes the walking peak, six hours adds the exercise peak, and twenty-four hours includes the lower sleep period. The renderer groups readings into display buckets and preserves each bucket's minimum and maximum. At the day scale, the short interruption falls inside a bucket and can disappear; the longer interruption remains visible. Separate tests exercise empty, stale, invalid, isolated, and out-of-order readings.
 
 ## How the graph behaves
 
@@ -73,7 +92,7 @@ This is a periodically refreshed trend, not a beat-to-beat pulse or ECG waveform
 
 The on-watch app keeps a brighter chart with guide lines for closer inspection. The watch-face image uses the wider, dimmer treatment. The tiny lightning bolt beside the battery value means Wear OS reports charging; the separate bottom-center charging indicator belongs to the system.
 
-Hiding labels leaves fresh recorded history entirely free of captions. Sample previews retain a small **SAMPLE** marker, and stale or empty histories retain their status notices. See the [optional time and range captions](screenshots/history-labels.png) for the more detailed treatment.
+Hiding labels leaves fresh history entirely free of captions in both preview and recording modes. Stale or empty histories retain their status notices. See the [optional time and range captions](screenshots/history-labels.png) for the more detailed treatment.
 
 ## Architecture and privacy
 

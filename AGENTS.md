@@ -10,6 +10,6 @@ The main, screenshot, and prototype variants of `res/raw/watchface.xml` are gene
 
 Use `./gradlew check assembleDebug bundleRelease` for the normal project checks. Run the official WFF validator and memory evaluator before a release checkpoint.
 
-For heart-history changes, also build `:watchface:assemblePrototype` and run `:history:connectedDebugAndroidTest` on an explicitly selected disposable Wear OS emulator. The integration tests erase the test app's local history. Inspect the graph in active and confirmed ambient modes, and keep synthetic data labeled in review screenshots.
+For heart-history changes, also build `:watchface:assemblePrototype` and run `:history:connectedDebugAndroidTest` on an explicitly selected disposable Wear OS emulator. The integration tests erase the test app's local history. Inspect the graph in active and confirmed ambient modes. Identify synthetic data in review captions without adding a badge to the watch face.
 
 Use Conventional Commits. Never push or publish without explicit approval.
