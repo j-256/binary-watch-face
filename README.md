@@ -17,6 +17,8 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
 
+The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide, dim graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. Labels are hidden by default, with optional marks on the trace and side times. Tapping the graph opens touch inspection and settings in the separate on-watch recorder. The **Binary Pulse** face installs alongside Binary. This is an unreleased prototype; the guide includes screenshots, setup, privacy behavior, and removal instructions.
+
 ## Features
 
 - Offers direct 12- or 24-hour clock selection, defaulting to 24-hour mode
@@ -27,7 +29,7 @@ See [design considerations](docs/design-considerations.md) for the visual hierar
 - Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable zero-, two-, three-, and four-slot layouts
-- Preserves normal provider actions on complications without defining any whole-face or custom tap actions
+- Preserves normal provider actions on complications; tapping the optional history background opens its graph and settings
 - Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, battery, and heart rate while keeping complications legible
 
 ## Compatibility
@@ -96,7 +98,7 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden, with a low-battery cue; paired with active-only by default, active and AOD, or hidden heart rate |
-| Complications | None, two by default, three, or four |
+| Layout | None, two by default, three, or four provider slots; optional subtle or clear heart-history background |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
@@ -107,6 +109,8 @@ The complication layouts keep the larger lower-left and lower-right providers st
 - Four: the lower pair plus side slots flanking the native readout row
 
 The binary time keeps the same position and size across complication layouts. Native readouts sit above the lower complications, leaving the bottom center available for Wear OS notification and ongoing-activity indicators.
+
+Heart-history layouts add a separate background image slot and hide the active decimal backdrop. The graph requires Binary Heart History, follows the text color, and is hidden in always-on mode. The original layouts keep the graph slot disabled.
 
 ## Toolchain
 

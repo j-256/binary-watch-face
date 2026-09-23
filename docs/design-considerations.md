@@ -8,6 +8,10 @@ Keep the binary rows horizontally centered and preserve their shared left and ri
 
 Keep the decimal backdrop subordinate through its independent appearance controls. Readouts and complication labels should remain visually secondary to the binary field. Verify both a restrained preset and the largest clock with seconds and weights enabled; a layout that only works with small dots is insufficient.
 
+The optional heart-history background follows the same hierarchy. Its wide, dim trace and faint area fill sit behind the clock, native readouts, and opaque complication backgrounds. Fade the plot toward the edges, hide its labels by default, and keep any optional caption above the bit weights. Retain stale and empty-data notices; identify invented readings in the companion app and review captions. Suppress the active decimal backdrop while history is enabled and hide the graph in AOD. The image slot must remain outside the system-indicator reserve. Tapping exposed history content opens Binary Heart History for touch inspection and settings. Verify ordinary provider actions at every slot position whenever changing the overlapping background or its tap action. Static checks enforce foreground layer order and system clearance, but cannot prove touch routing. Graph visibility shares the Layout selector with provider count so Wear OS has only one setting controlling complication-slot enablement. See the [prototype guide](heart-rate-prototype.md) for rendered examples and the separate on-watch recorder.
+
+Optional time marks are vertical strokes centered on the heart-history trace, without a conventional axis or grid. Keep their orientation fixed as the trace rises and falls. Preserve gaps and use equal elapsed intervals so a wearer can count inward from the two side times. Dim the plot separately from its annotations, and use thicker marks and readable type at native watch size. Keep the side times in the outer margins beside the hour row, clear of the moving bezel tick, round screen edge, and every provider layout. Only the optional range and status notices use the caption area beneath the date.
+
 ## System indicators own the bottom center
 
 Wear OS draws a notification dot and a larger, tappable ongoing-activity indicator over the watch face. Stopwatch, timer, media, and workout activity can occupy more space than the dot. A dot-only screenshot does not establish clearance. See Google's [ongoing-activity documentation](https://developer.android.com/training/wearables/notifications/ongoing-activity).
@@ -28,7 +32,11 @@ Heart rate and watch battery are native readouts, not complication slots. Place 
 
 The larger lower-left and lower-right complications retain their slot IDs, size, and position when the count changes. Smaller side complications flank the readout row in the four-slot layout. In the three-slot layout, the center complication sits below the readouts, between the lower pair. Preserve usable separation between circles, readable provider text, and visible perimeter ticks.
 
-Native readouts must not look like labels belonging to unrelated complication providers. Complications retain their standard provider actions; do not add whole-face tap actions or invisible complication targets. Keep editor highlights aligned with the actual content.
+Native readouts must not look like labels belonging to unrelated complication providers. Complications retain their standard provider actions. The visible history background may open its own app through the image provider's tap action, while foreground complications and system indicators retain their actions. Do not add invisible complication targets or unrelated whole-face shortcuts. Keep editor highlights aligned with the actual content.
+
+## History inspection
+
+Binary Heart History opens to an enlarged chart with a Settings button. Keep the timestamp and BPM above the plot so the finger does not cover them. A vertical inspection line exists only during the active touch and clears on release, cancellation, loss of focus, or leaving the chart. Snap to recorded readings near the touched time; preserve missing-data gaps. The chart is cached during a gesture so dragging does not read storage or rebuild the image. Back from settings returns to the chart.
 
 ## Verification and release checkpoints
 
