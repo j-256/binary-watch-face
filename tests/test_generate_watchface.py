@@ -581,7 +581,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             condition
             for condition in scene_configuration.findall(".//Condition")
             if any(
-                expression.get("name", "").endswith("_charging")
+                expression.get("name", "").endswith("_low")
                 for expression in condition.findall("./Expressions/Expression")
             )
         ]
@@ -593,23 +593,16 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             ]
             self.assertEqual(
                 expressions,
-                ["[BATTERY_CHARGING_STATUS]", "[BATTERY_IS_LOW]"],
+                ["[BATTERY_IS_LOW]"],
             )
-            charging = condition.find("./Compare[1]/PartText")
-            low = condition.find("./Compare[2]/PartText")
-            self.assertIsNotNone(charging)
+            low = condition.find("./Compare/PartText")
             self.assertIsNotNone(low)
-            assert charging is not None and low is not None
-            for status in (charging, low):
-                self.assertEqual(status.get("x"), str(GENERATOR.BATTERY_STATUS_X))
-                self.assertEqual(status.get("y"), str(GENERATOR.NATIVE_READOUT_Y))
-                self.assertEqual(
-                    status.get("width"),
-                    str(GENERATOR.BATTERY_STATUS_WIDTH),
-                )
+            assert low is not None
+            self.assertEqual(low.get("x"), str(GENERATOR.BATTERY_STATUS_X))
+            self.assertEqual(low.get("y"), str(GENERATOR.NATIVE_READOUT_Y))
             self.assertEqual(
-                charging.find(".//Font").text,
-                GENERATOR.BATTERY_CHARGING_GLYPH,
+                low.get("width"),
+                str(GENERATOR.BATTERY_STATUS_WIDTH),
             )
             self.assertEqual(low.find(".//Font").text, GENERATOR.BATTERY_LOW_GLYPH)
 

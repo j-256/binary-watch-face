@@ -106,7 +106,7 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 
 This is a periodically refreshed trend, not a beat-to-beat pulse or ECG waveform. Sensor cadence, batching, and availability belong to the device's Health Services implementation. The native heart-rate readout and this stored history can update at different times. A graph image expires after ten minutes if it is not refreshed. See Android's [passive monitoring guide](https://developer.android.com/health-and-fitness/health-services/monitor-background) and [complication update guidance](https://developer.android.com/training/wearables/complications/exposing-data).
 
-The on-watch app keeps a brighter chart with guide lines and touch inspection. The watch-face image uses the wider, dimmer treatment. The tiny lightning bolt beside the battery value means Wear OS reports charging; the separate bottom-center charging indicator belongs to the system.
+The on-watch app keeps a brighter chart with guide lines and touch inspection. The watch-face image uses the wider, dimmer treatment. Charging status is left to Wear OS's system indicator.
 
 Hiding labels leaves fresh history entirely free of captions in both preview and recording modes. Stale or empty histories retain their status notices. See the [optional time and range captions](screenshots/history-labels.png) for the more detailed treatment.
 

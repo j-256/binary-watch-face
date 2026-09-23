@@ -20,7 +20,6 @@ PROTOTYPE_OUTPUT = PROJECT_ROOT / "watchface/src/prototype/res/raw/watchface.xml
 SCREENSHOT_HEART_RATE = 72
 HEART_RATE_ACTIVE_GLYPH = "\u2665\ufe0e"
 HEART_RATE_AMBIENT_GLYPH = "\u2661"
-BATTERY_CHARGING_GLYPH = "\u26a1\ufe0e"
 BATTERY_LOW_GLYPH = "\u2022"
 XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>\n'
 
@@ -2066,11 +2065,10 @@ def add_battery_readout(
         parameters=parameters,
     )
     add_screen_reader(active_text, "Battery %d percent", ("[BATTERY_PERCENT]",))
-    add_battery_status(
+    add_low_battery_indicator(
         active,
         name=f"{name}_active_status",
-        color=COLOR_TEXT_ACTIVE,
-        low_color=COLOR_BATTERY_LOW,
+        color=COLOR_BATTERY_LOW,
     )
 
     def build_ambient(color_option: ET.Element, color: str, suffix: str) -> None:
@@ -2120,11 +2118,10 @@ def add_battery_readout(
             "Battery %d percent",
             ("[BATTERY_PERCENT]",),
         )
-        add_battery_status(
+        add_low_battery_indicator(
             visibility,
             name=f"{name}_ambient_{suffix}_status",
-            color=color,
-            low_color=COLOR_BATTERY_LOW if suffix == "color" else COLOR_AMBIENT_MONO,
+            color=COLOR_BATTERY_LOW if suffix == "color" else COLOR_AMBIENT_MONO,
         )
 
     add_ambient_color_condition(
@@ -2136,38 +2133,16 @@ def add_battery_readout(
     )
 
 
-def add_battery_status(
+def add_low_battery_indicator(
     parent: ET.Element,
     *,
     name: str,
     color: str,
-    low_color: str,
 ) -> None:
     condition = element(parent, "Condition")
     expressions = element(condition, "Expressions")
-    charging = element(expressions, "Expression", name=f"{name}_charging")
-    charging.text = "[BATTERY_CHARGING_STATUS]"
     low = element(expressions, "Expression", name=f"{name}_low")
     low.text = "[BATTERY_IS_LOW]"
-
-    charging_compare = element(
-        condition,
-        "Compare",
-        expression=f"{name}_charging",
-    )
-    charging_text = add_text(
-        charging_compare,
-        name=f"{name}_charging_glyph",
-        x=BATTERY_STATUS_X,
-        y=NATIVE_READOUT_Y,
-        width=BATTERY_STATUS_WIDTH,
-        height=NATIVE_READOUT_HEIGHT,
-        size=BATTERY_STATUS_TEXT_SIZE,
-        color=color,
-        template=BATTERY_CHARGING_GLYPH,
-        ellipsis=False,
-    )
-    add_screen_reader(charging_text, "Battery charging")
 
     low_compare = element(condition, "Compare", expression=f"{name}_low")
     low_text = add_text(
@@ -2178,7 +2153,7 @@ def add_battery_status(
         width=BATTERY_STATUS_WIDTH,
         height=NATIVE_READOUT_HEIGHT,
         size=BATTERY_STATUS_TEXT_SIZE,
-        color=low_color,
+        color=color,
         template=BATTERY_LOW_GLYPH,
         ellipsis=False,
     )

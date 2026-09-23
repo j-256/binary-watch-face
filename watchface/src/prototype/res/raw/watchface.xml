@@ -13867,17 +13867,8 @@
                         </PartText>
                         <Condition>
                             <Expressions>
-                                <Expression name="battery_decimal_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                 <Expression name="battery_decimal_active_status_low">[BATTERY_IS_LOW]</Expression>
                             </Expressions>
-                            <Compare expression="battery_decimal_active_status_charging">
-                                <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_active_status_charging_glyph">
-                                    <Text align="CENTER" ellipsis="FALSE">
-                                        <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                    </Text>
-                                    <ScreenReader stringId="Battery charging" />
-                                </PartText>
-                            </Compare>
                             <Compare expression="battery_decimal_active_status_low">
                                 <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_active_status_low_glyph">
                                     <Text align="CENTER" ellipsis="FALSE">
@@ -13913,17 +13904,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_decimal_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_decimal_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_decimal_ambient_color_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_ambient_color_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_decimal_ambient_color_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_ambient_color_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -13957,17 +13939,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_decimal_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_decimal_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_decimal_ambient_mono_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_ambient_mono_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_decimal_ambient_mono_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_decimal_ambient_mono_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14003,17 +13976,8 @@
                         </PartText>
                         <Condition>
                             <Expressions>
-                                <Expression name="battery_hex_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                 <Expression name="battery_hex_active_status_low">[BATTERY_IS_LOW]</Expression>
                             </Expressions>
-                            <Compare expression="battery_hex_active_status_charging">
-                                <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_active_status_charging_glyph">
-                                    <Text align="CENTER" ellipsis="FALSE">
-                                        <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                    </Text>
-                                    <ScreenReader stringId="Battery charging" />
-                                </PartText>
-                            </Compare>
                             <Compare expression="battery_hex_active_status_low">
                                 <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_active_status_low_glyph">
                                     <Text align="CENTER" ellipsis="FALSE">
@@ -14049,17 +14013,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_hex_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_hex_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_hex_ambient_color_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_ambient_color_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_hex_ambient_color_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_ambient_color_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14093,17 +14048,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_hex_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_hex_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_hex_ambient_mono_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_ambient_mono_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_hex_ambient_mono_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_hex_ambient_mono_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14156,17 +14102,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_7_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_7_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_7_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_7_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14208,17 +14145,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_7_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_7_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_7_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_7_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14258,17 +14186,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_7_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_7_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_7_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_7_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_7_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14309,17 +14228,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_6_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_6_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_6_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_6_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14360,17 +14270,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_6_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_6_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_6_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_6_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14409,17 +14310,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_6_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_6_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_6_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_6_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_6_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14459,17 +14351,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_5_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_5_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_5_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_5_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14509,17 +14392,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_5_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_5_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_5_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_5_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14557,17 +14431,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_5_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_5_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_5_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_5_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_5_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14606,17 +14471,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_4_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_4_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_4_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_4_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14655,17 +14511,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_4_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_4_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_4_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_4_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14702,17 +14549,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_4_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_4_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_4_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_4_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_4_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14750,17 +14588,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_3_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_3_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_3_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_3_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14798,17 +14627,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_3_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_3_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_3_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_3_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14844,17 +14664,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_3_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_3_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_3_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_3_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_3_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14891,17 +14702,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_2_bits_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_2_bits_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_2_bits_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_2_bits_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -14938,17 +14740,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_2_bits_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_2_bits_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_2_bits_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_2_bits_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -14983,17 +14776,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_2_bits_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_2_bits_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_2_bits_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_2_bits_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_2_bits_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -15029,17 +14813,8 @@
                                     </PartText>
                                     <Condition>
                                         <Expressions>
-                                            <Expression name="battery_binary_1_bit_active_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                             <Expression name="battery_binary_1_bit_active_status_low">[BATTERY_IS_LOW]</Expression>
                                         </Expressions>
-                                        <Compare expression="battery_binary_1_bit_active_status_charging">
-                                            <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_active_status_charging_glyph">
-                                                <Text align="CENTER" ellipsis="FALSE">
-                                                    <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.0]">⚡︎</Font>
-                                                </Text>
-                                                <ScreenReader stringId="Battery charging" />
-                                            </PartText>
-                                        </Compare>
                                         <Compare expression="battery_binary_1_bit_active_status_low">
                                             <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_active_status_low_glyph">
                                                 <Text align="CENTER" ellipsis="FALSE">
@@ -15075,17 +14850,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_1_bit_ambient_color_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_1_bit_ambient_color_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_1_bit_ambient_color_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_ambient_color_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="[CONFIGURATION.textColor.2]">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_1_bit_ambient_color_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_ambient_color_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
@@ -15119,17 +14885,8 @@
                                                 </PartText>
                                                 <Condition>
                                                     <Expressions>
-                                                        <Expression name="battery_binary_1_bit_ambient_mono_status_charging">[BATTERY_CHARGING_STATUS]</Expression>
                                                         <Expression name="battery_binary_1_bit_ambient_mono_status_low">[BATTERY_IS_LOW]</Expression>
                                                     </Expressions>
-                                                    <Compare expression="battery_binary_1_bit_ambient_mono_status_charging">
-                                                        <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_ambient_mono_status_charging_glyph">
-                                                            <Text align="CENTER" ellipsis="FALSE">
-                                                                <Font family="SYNC_TO_DEVICE" size="14" weight="NORMAL" color="#FFFFFF">⚡︎</Font>
-                                                            </Text>
-                                                            <ScreenReader stringId="Battery charging" />
-                                                        </PartText>
-                                                    </Compare>
                                                     <Compare expression="battery_binary_1_bit_ambient_mono_status_low">
                                                         <PartText x="326" y="250" width="14" height="28" alpha="255" name="battery_binary_1_bit_ambient_mono_status_low_glyph">
                                                             <Text align="CENTER" ellipsis="FALSE">
