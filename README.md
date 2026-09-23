@@ -17,6 +17,8 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
 
+The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. It includes a separate on-watch recorder and a **Binary Pulse** face that installs alongside Binary. This is an unreleased prototype; the guide includes screenshots, setup, privacy behavior, and removal instructions.
+
 ## Features
 
 - Offers direct 12- or 24-hour clock selection, defaulting to 24-hour mode
@@ -96,7 +98,7 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden, with charging and low-state cues; paired with active-only by default, active and AOD, or hidden heart rate |
-| Complications | None, two by default, three, or four |
+| Layout | None, two by default, three, or four provider slots; optional subtle or clear heart-history background |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:
@@ -107,6 +109,8 @@ The complication layouts keep the larger lower-left and lower-right providers st
 - Four: the lower pair plus side slots flanking the native readout row
 
 The binary time keeps the same position and size across complication layouts. Native readouts sit above the lower complications, leaving the bottom center available for Wear OS notification and ongoing-activity indicators.
+
+Heart-history layouts add a separate background image slot and hide the active decimal backdrop. The graph requires Binary Heart History, follows the text color, and is hidden in always-on mode. The original layouts keep the graph slot disabled.
 
 ## Toolchain
 

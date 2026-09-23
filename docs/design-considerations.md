@@ -8,6 +8,8 @@ Keep the binary rows horizontally centered and preserve their shared left and ri
 
 Keep the decimal backdrop subordinate through its independent appearance controls. Readouts and complication labels should remain visually secondary to the binary field. Verify both a restrained preset and the largest clock with seconds and weights enabled; a layout that only works with small dots is insufficient.
 
+The optional heart-history background follows the same hierarchy. Keep the trace behind the clock and its caption above the bit weights, suppress the active decimal backdrop while history is enabled, and hide the graph in AOD. Its image slot must clear native readouts, ordinary provider targets, and system indicators. Graph visibility shares the Layout selector with provider count so Wear OS has only one setting controlling complication-slot enablement. See the [prototype guide](heart-rate-prototype.md) for rendered examples and the separate on-watch recorder.
+
 ## System indicators own the bottom center
 
 Wear OS draws a notification dot and a larger, tappable ongoing-activity indicator over the watch face. Stopwatch, timer, media, and workout activity can occupy more space than the dot. A dot-only screenshot does not establish clearance. See Google's [ongoing-activity documentation](https://developer.android.com/training/wearables/notifications/ongoing-activity).
