@@ -15,6 +15,16 @@ public final class HistorySettings {
     public static final String STATUS_ERROR = "error";
     public static final String STATUS_STORAGE_ERROR = "storage_error";
     public static final String STATUS_SCHEDULE_ERROR = "schedule_error";
+    static final String LABELS_KEY = "labels";
+
+    public enum Labels {
+        NONE(R.string.labels_none), WINDOW(R.string.labels_window), RANGE(R.string.labels_range);
+
+        public final int title;
+
+        Labels(int title) { this.title = title; }
+    }
+
     private final SharedPreferences preferences;
 
     public HistorySettings(Context context) {
@@ -27,6 +37,16 @@ public final class HistorySettings {
 
     public void span(HistorySeries.Span value) {
         preferences.edit().putString("span", value.name()).apply();
+    }
+
+    public Labels labels() {
+        String name = preferences.getString(LABELS_KEY, Labels.NONE.name());
+        for (Labels value : Labels.values()) if (value.name().equals(name)) return value;
+        return Labels.NONE;
+    }
+
+    public void labels(Labels value) {
+        preferences.edit().putString(LABELS_KEY, value.name()).apply();
     }
 
     public boolean recording() { return preferences.getBoolean("recording", false); }

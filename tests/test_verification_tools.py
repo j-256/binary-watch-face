@@ -100,12 +100,19 @@ class LayoutCheckTest(unittest.TestCase):
                 self.assertEqual(stderr, "")
         self.assertEqual(invoke(LAYOUT.main, ["/missing/watchface.xml"])[0], 2)
 
-    def test_history_background_cannot_cover_native_or_provider_targets(self):
+    def test_history_background_must_remain_below_native_and_provider_content(self):
+        scene = self.root.find("Scene")
+        history = scene.find("ComplicationSlot[@name='heart_history']")
+        scene.remove(history)
+        scene.append(history)
+        with self.assertRaisesRegex(ValueError, "render below"):
+            LAYOUT.layout_clearances(self.root)
+
+    def test_history_background_cannot_extend_into_system_activity_area(self):
         history = self.root.find("./Scene/ComplicationSlot[@name='heart_history']")
         history.set("y", "110")
         failures = [check for check in LAYOUT.layout_clearances(self.root) if not check.passed]
-        self.assertTrue(any(check.category == "history-readout" for check in failures))
-        self.assertTrue(any(check.category == "history-complication" for check in failures))
+        self.assertTrue(any(check.category == "system-pill" and check.elements == "heart_history" for check in failures))
 
 
 class WatchCaptureTest(unittest.TestCase):

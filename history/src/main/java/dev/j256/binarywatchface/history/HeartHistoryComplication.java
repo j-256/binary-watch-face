@@ -39,7 +39,7 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
                     }
                 } else series = new HistorySeries(settings.span(), now);
                 String emptyLabel = settings.recording() ? "Waiting for readings" : "Open Heart History";
-                deliver(listener, image(series, settings.demo(), emptyLabel));
+                deliver(listener, image(series, settings.demo(), emptyLabel, settings.labels()));
                 String result = series.sampleCount == 0 ? "empty" : settings.demo() ? "sample" : series.isStale() ? "stale" : "ready";
                 HistoryRuntime.log("image", operation, result, started, series.sampleCount);
             } catch (RuntimeException error) {
@@ -51,7 +51,8 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
 
     @Override public ComplicationData getPreviewData(ComplicationType type) {
         if (type != ComplicationType.PHOTO_IMAGE) return null;
-        return image(HistorySeries.demo(HistorySeries.Span.HOUR, System.currentTimeMillis()), true, "Sample");
+        return image(HistorySeries.demo(HistorySeries.Span.HOUR, System.currentTimeMillis()), true, "Sample",
+                HistorySettings.Labels.NONE);
     }
 
     private static void deliver(ComplicationRequestListener listener, ComplicationData data) {
@@ -62,11 +63,12 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
         }
     }
 
-    static PhotoImageComplicationData image(HistorySeries series, boolean demo, String emptyLabel) {
+    static PhotoImageComplicationData image(HistorySeries series, boolean demo, String emptyLabel,
+            HistorySettings.Labels labels) {
         String description = demo ? "Sample heart-rate graph, " : "Heart-rate history, ";
         description += series.span.label + (series.sampleCount == 0 ? ", " + emptyLabel : series.isStale() ? ", readings are stale" : "");
         return new PhotoImageComplicationData.Builder(
-                Icon.createWithBitmap(GraphRenderer.render(series, demo, emptyLabel)),
+                Icon.createWithBitmap(GraphRenderer.renderBackground(series, demo, emptyLabel, labels)),
                 new PlainComplicationText.Builder(description).build())
                 .setValidTimeRange(TimeRange.between(Instant.ofEpochMilli(series.endMs),
                         Instant.ofEpochMilli(series.endMs + IMAGE_LIFETIME_MS)))

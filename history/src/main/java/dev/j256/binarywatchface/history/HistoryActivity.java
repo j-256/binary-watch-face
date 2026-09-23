@@ -93,6 +93,20 @@ public final class HistoryActivity extends Activity {
             }
             content.addView(buttons);
         }
+        TextView labelsHeading = text(content, getString(R.string.labels_heading), 14, INK);
+        labelsHeading.setPadding(0, dp(14), 0, dp(4));
+        action(content, settings.labels().title, false, view -> {
+            HistorySettings.Labels[] choices = HistorySettings.Labels.values();
+            String[] titles = new String[choices.length];
+            for (int index = 0; index < choices.length; index++) titles[index] = getString(choices[index].title);
+            new AlertDialog.Builder(this).setTitle(R.string.labels_heading)
+                    .setSingleChoiceItems(titles, settings.labels().ordinal(), (dialog, index) -> {
+                        settings.labels(choices[index]);
+                        HistoryRuntime.requestImage(this);
+                        dialog.dismiss();
+                        refresh();
+                    }).setNegativeButton(R.string.not_now, null).show();
+        });
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
         action(content, R.string.sample, false, view -> {
             working = true;

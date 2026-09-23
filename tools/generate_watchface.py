@@ -32,7 +32,9 @@ BACKDROP_OPACITY_ID = "backdropOpacity"
 BACKDROP_LAYOUT_ID = "backdropLayout"
 BACKDROP_VISIBILITY_ID = "backdropVisibility"
 HISTORY_SLOT_ID = 5
-HISTORY_BOUNDS = (106, 60, 238, 182)
+HISTORY_BOUNDS = (0, 60, 450, 300)
+HISTORY_ALPHA_SUBTLE = 75
+HISTORY_ALPHA_CLEAR = 135
 HISTORY_PROVIDER = "dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication"
 COLOR_DOT_ACTIVE = f"[CONFIGURATION.{DOT_COLOR_ID}.0]"
 COLOR_DOT_INACTIVE = f"[CONFIGURATION.{DOT_COLOR_ID}.1]"
@@ -2692,8 +2694,8 @@ def add_history_background(scene: ET.Element) -> None:
     complication = element(slot, "Complication", type="PHOTO_IMAGE")
     part = element(complication, "PartImage", x=0, y=0, width=width, height=height)
     element(part, "Transform", target="alpha", value=(
-        f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(key for key in HISTORY_COMPLICATION_LAYOUTS if key.endswith("_clear")))}) ? 155 : '
-        f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(HISTORY_COMPLICATION_LAYOUTS))}) ? 85 : 0'
+        f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(key for key in HISTORY_COMPLICATION_LAYOUTS if key.endswith("_clear")))}) ? {HISTORY_ALPHA_CLEAR} : '
+        f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(HISTORY_COMPLICATION_LAYOUTS))}) ? {HISTORY_ALPHA_SUBTLE} : 0'
     ))
     element(part, "Image", resource="[COMPLICATION.PHOTO_IMAGE]")
     element(slot, "Complication", type="EMPTY")

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="labels_heading">Graph labels</string>
+    <string name="labels_none">None</string>
+    <string name="labels_window">Time window</string>
+    <string name="labels_range">Time + range</string>
     <string name="app_name">Binary Heart History</string>
     <string name="complication_name">Heart history graph</string>
     <string name="title">Heart history</string>

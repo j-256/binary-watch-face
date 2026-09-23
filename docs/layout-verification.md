@@ -24,6 +24,8 @@ The clearance command reports the tightest gap in each category, in the watch fa
 
 Complication measurements include `BoundingOval` outline padding. The lower-pair, center, and side slots are checked in their enabled combinations. The command shares geometry helpers with the generator tests. Regression cases deliberately move a readout back into the system area, move the center slot into the taller pill, and make complications collide. CI runs the tests, generated-file check, and clearance command before building.
 
+The optional heart-history image deliberately overlaps ordinary face content from behind. Its bounds must clear the system reserve, and its scene order must precede native readouts and ordinary complications. The supplied history provider has no tap action. Verify touch routing with actionable providers in every ordinary slot position, including the optional center slot; painted layer order alone does not prove that taps reach them.
+
 Exit status is `0` when all gaps pass, `1` for insufficient clearance, and `2` for invalid input or usage. The command needs no SDK, emulator, device, or image-processing dependency.
 
 ## Capture a connected watch

@@ -97,17 +97,22 @@ def layout_clearances(root: ET.Element) -> list[Clearance]:
     if hw <= 0 or hh <= 0 or tuple(number(box, key) for key in ("x", "y", "width", "height")) != (0, 0, hw, hh):
         raise ValueError("Invalid history background bounds")
     history_bounds = (hx, hy, hx + hw, hy + hh)
+    scene = list(root.find("Scene"))
+    history_index = scene.index(history)
+    foreground = list(slots.values()) + [
+        child for child in scene if any(
+            text.get("name", "").startswith(("battery_", "heart_rate_"))
+            for text in child.iter("PartText")
+        )
+    ]
+    if any(scene.index(child) < history_index for child in foreground):
+        raise ValueError("History background must render below readouts and ordinary complications")
     readouts = native_readouts(root)
     largest = max(GENERATOR.SIZE_CHOICES, key=lambda size: size.scale)
     base = next(size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID)
     dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
     clock_bottom = max(max(rows) for rows in GENERATOR.CLOCK_ROW_LAYOUT.values()) + dot_size / 2 * (1 + largest.scale)
     checks = []
-    for slot in slots.values():
-        checks.append(Clearance("history-complication", slot.attrib["name"], circle_rectangle_gap(slot, history_bounds), MIN_CONTENT_GAP))
-    for (left, top, right, bottom), name in readouts.items():
-        gap = math.hypot(max(hx - right, 0, left - hx - hw), max(hy - bottom, 0, top - hy - hh))
-        checks.append(Clearance("history-readout", name, gap, MIN_CONTENT_GAP))
     for bounds, name in readouts.items():
         checks.append(Clearance("readout-clock", name, bounds[1] - clock_bottom, MIN_CONTENT_GAP))
         for slot in slots.values():

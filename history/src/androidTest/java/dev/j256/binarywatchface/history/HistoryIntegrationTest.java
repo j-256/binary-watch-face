@@ -162,9 +162,63 @@ public class HistoryIntegrationTest {
             Bitmap bitmap = GraphRenderer.render(series, true, "Sample");
             assertEquals(0, bitmap.getPixel(0, 0));
             assertTrue(bitmap.getAllocationByteCount() < 1_000_000);
-            var data = HeartHistoryComplication.image(series, true, "Sample");
+            Bitmap background = GraphRenderer.renderBackground(series, true, "Sample", HistorySettings.Labels.NONE);
+            assertTrue(background.getAllocationByteCount() < 1_000_000);
+            for (int y = 0; y < background.getHeight(); y++) {
+                assertEquals(0, background.getPixel(0, y));
+                assertEquals(0, background.getPixel(background.getWidth() - 1, y));
+            }
+            var data = HeartHistoryComplication.image(series, true, "Sample", HistorySettings.Labels.NONE);
             assertNull(data.getTapAction());
             assertFalse(data.getValidTimeRange().contains(java.time.Instant.ofEpochMilli(now + 11 * HistorySeries.MINUTE_MS)));
         }
+    }
+
+    @Test public void backgroundFillDoesNotBridgeMissingReadings() {
+        HistorySeries series = new HistorySeries(HistorySeries.Span.HOUR, now);
+        series.add(new HistorySeries.Sample(now - 45 * HistorySeries.MINUTE_MS, 70));
+        series.add(new HistorySeries.Sample(now - 15 * HistorySeries.MINUTE_MS, 90));
+        Bitmap background = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
+        for (int y = 40; y < background.getHeight(); y++) {
+            assertEquals(0, background.getPixel(background.getWidth() / 2, y));
+        }
+    }
+
+    @Test public void labelsDefaultToNoneAndPersistAcrossSettingsInstances() {
+        context.getSharedPreferences("history-settings", Context.MODE_PRIVATE).edit()
+                .remove(HistorySettings.LABELS_KEY).commit();
+        HistorySettings settings = new HistorySettings(context);
+        assertEquals(HistorySettings.Labels.NONE, settings.labels());
+        for (HistorySettings.Labels choice : HistorySettings.Labels.values()) {
+            settings.labels(choice);
+            assertEquals(choice, new HistorySettings(context).labels());
+        }
+        settings.labels(HistorySettings.Labels.NONE);
+    }
+
+    @Test public void labelsCanBeHiddenWithoutHidingSampleStaleOrEmptyNotices() {
+        HistorySeries series = HistorySeries.demo(HistorySeries.Span.HOUR, now);
+        Bitmap hidden = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
+        Bitmap window = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
+        Bitmap range = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.RANGE);
+        assertEquals(0, captionPixels(hidden));
+        assertTrue(captionPixels(window) > 0);
+        assertTrue(captionPixels(range) > captionPixels(window));
+        assertTrue(captionPixels(GraphRenderer.renderBackground(series, true, "", HistorySettings.Labels.NONE)) > 0);
+        HistorySeries stale = new HistorySeries(HistorySeries.Span.HOUR, now);
+        stale.add(new HistorySeries.Sample(now - 20 * HistorySeries.MINUTE_MS, 70));
+        assertTrue(captionPixels(GraphRenderer.renderBackground(stale, false, "", HistorySettings.Labels.NONE)) > 0);
+        assertTrue(captionPixels(GraphRenderer.renderBackground(new HistorySeries(HistorySeries.Span.HOUR, now),
+                false, "Waiting for readings", HistorySettings.Labels.NONE)) > 0);
+    }
+
+    private int captionPixels(Bitmap bitmap) {
+        int visible = 0;
+        for (int y = 0; y < 20; y++) {
+            for (int x = 0; x < bitmap.getWidth(); x++) {
+                if ((bitmap.getPixel(x, y) >>> 24) != 0) visible++;
+            }
+        }
+        return visible;
     }
 }
