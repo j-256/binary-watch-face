@@ -8,6 +8,15 @@ This is a Wear OS 7 prototype distributed through private internal testing. **Bi
 
 These Wear OS emulator captures use invented readings. They do not show anyone's health data. The companion app identifies preview mode; the watch face follows the selected label preference without a demo badge.
 
+The decimal backdrop remains available above the graph, with full-dial numbers or compact HH:mm and independent appearance controls:
+
+<p align="center">
+  <img src="screenshots/history-decimal-full.png" alt="Full-dial decimal hours and minutes above the faint heart-history graph" width="45%">
+  <img src="screenshots/history-decimal-compact.png" alt="Compact decimal HH:mm above the faint heart-history graph" width="45%">
+</p>
+
+With the decimal backdrop hidden, these captures show the graph across its time windows:
+
 <p align="center">
   <img src="screenshots/history-hour.png" alt="One-hour sample graph behind the centered binary clock" width="31%">
   <img src="screenshots/history-six-hours.png" alt="Six-hour sample graph showing activity and gaps" width="31%">
@@ -74,13 +83,13 @@ The SDK check must report `37` or newer. In the downloadable prototype bundle, t
 5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the subtle graph and two ordinary providers.
 6. In the face editor, use **Layout** to select subtle or clear heart history with no ordinary providers, or with two, three, or four. If automatic provider selection is unavailable, assign **Heart history graph** to **Heart history background** in the complication picker.
 
-Updating an existing installation preserves its chosen layout. To use the quieter default on that installation, select **Layout: Two slots + heart history, subtle**, or the subtle option for your preferred provider count. Keep **Graph labels: None** in Binary Heart History to show timestamps only in the app.
+Updating an existing installation preserves its chosen layout. To use the quieter default on that installation, select **Layout: Two slots + heart history, subtle**, or the subtle option for your preferred provider count. Keep **Graph labels: None** in Binary Heart History to show timestamps only in the app. The decimal backdrop defaults to active mode and retains its own color, opacity, layout, and visibility controls. An installation that already has the backdrop hidden keeps that choice after an update; select **Backdrop visibility: Active only** or **Active and AOD** to show the numbers with the graph.
 
 Wear OS allows only one active setting to control complication-slot enablement. Graph visibility and provider count therefore share the Layout selector. Choosing a layout without history disables the image slot completely. Use the supplied **Heart history graph** provider. Tapping an exposed part of its background opens Binary Heart History; ordinary complications retain their own actions. The graph renders below the ordinary complications, whose opaque backgrounds preserve their contrast and whose normal actions remain reachable.
 
 The graph's window and annotation preferences belong to the history app and add no WFF settings. The face shares its existing Layout choices because the [WFF configuration schema](https://github.com/google/watchface/blob/main/third_party/wff/specification/documents/5/userConfiguration/userConfigurationsElement.xsd) permits at most twenty top-level entries, including the presets container. Generator tests enforce this limit.
 
-Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. Preview pauses recording and preserves eligible recorded data; **Start recording** resumes it. **Stop and erase history** clears it after confirmation. The decimal background is suppressed in active mode while history is selected; its configured AOD behavior remains independent.
+Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. Preview pauses recording and preserves eligible recorded data; **Start recording** resumes it. **Stop and erase history** clears it after confirmation. The decimal backdrop renders above the history graph, and its visibility stays independent of the selected history layout.
 
 The time-window controls are under **Settings** in the on-watch app:
 
@@ -185,7 +194,7 @@ ANDROID_SERIAL=EMULATOR_SERIAL ./gradlew :history:connectedDebugAndroidTest
 
 The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Touch tests cover dragging and clearing the cursor on release, cancellation, visibility changes, and focus loss. Inspection tests cover original timestamps and values, out-of-order readings, empty history, and missing intervals. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
 
-Physical-watch installation, long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified. Private Play internal testing enables on-wrist evaluation; it does not establish public release readiness. On-wrist testing and health-permission distribution requirements need review before wider publication.
+On 2026-09-23, the wearer confirmed installing both apps through private Play testing on a Pixel Watch 5, granting heart-rate and background access, adding Binary Pulse as a watch face, and seeing recorded readings in both the app and the face after selecting the graph provider. Long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified on hardware. Private Play internal testing enables on-wrist evaluation; it does not establish public release readiness. On-wrist testing and health-permission distribution requirements need review before wider publication.
 
 ## Prepare a private Play update
 
@@ -199,7 +208,7 @@ Set the upload-key environment variables using the [signing instructions](../REA
 
 Upload `history/build/outputs/bundle/release/history-release.aab` to Binary Heart History and `watchface/build/outputs/bundle/prototypeRelease/watchface-prototypeRelease.aab` to Binary Pulse. The `prototypeRelease` variant shares the prototype face resources while remaining non-debuggable and resource-only. Both bundles use the configured upload key; leaving both signing variables unset produces unsigned bundles for local checks.
 
-Before uploading, verify each bundle's signature, package, version, and checksum, and run the official WFF validator and memory evaluator for the face. Check each app's highest uploaded version code before building an update, and increase its code because Play does not accept a reused code. Review the internal track, tester audience, and release notes before publishing. Confirm availability in Play separately from upload completion and separately from installation on the watch.
+Before uploading, verify each bundle's signature, package, version, and checksum, and run the official WFF validator and memory evaluator for the face. Check each app's highest uploaded version code before building an update, and increase its code because Play does not accept a reused code. Binary Pulse uses `prototypeVersionCode` and `prototypeVersionNameSuffix` in `watchface/build.gradle.kts` independently of Binary's version. Review the internal track, tester audience, and release notes before publishing. Confirm availability in Play separately from upload completion and separately from installation on the watch.
 
 ## Remove the prototype
 

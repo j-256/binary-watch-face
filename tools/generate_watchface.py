@@ -1459,7 +1459,6 @@ def add_decimal_backdrops(parent: ET.Element, *, name: str, hour_source: str) ->
         target="alpha",
         value=(
             f"({configuration_matches_expression(BACKDROP_VISIBILITY_ID, BACKDROP_ACTIVE_OPTION_IDS)}) "
-            f"&& !({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(HISTORY_COMPLICATION_LAYOUTS))}) "
             "? 255 : 0"
         ),
     )
@@ -2687,7 +2686,6 @@ def build_watchface(*, heart_rate: int | None = None, prototype: bool = False) -
     add_user_configurations(root)
     if prototype:
         overrides = {
-            BACKDROP_VISIBILITY_ID: "off",
             COMPLICATION_COUNT_ID: "2_history",
             SHOW_WEIGHTS_ID: WEIGHTS_HIDDEN_ID,
             TICK_STYLE_ID: "single",

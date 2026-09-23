@@ -5,6 +5,8 @@ plugins {
 val releaseStoreFileEnvironment = "BINARY_WATCH_FACE_UPLOAD_STORE_FILE"
 val releasePasswordEnvironment = "BINARY_WATCH_FACE_UPLOAD_PASSWORD"
 val releaseKeyAlias = "upload"
+val prototypeVersionCode = 5
+val prototypeVersionNameSuffix = "-history-prototype.1"
 val releaseStoreFile = providers.environmentVariable(releaseStoreFileEnvironment).orNull?.takeIf(String::isNotBlank)
 val releasePassword = providers.environmentVariable(releasePasswordEnvironment).orNull?.takeIf(String::isNotBlank)
 val releaseSigningConfigured = releaseStoreFile != null && releasePassword != null
@@ -41,7 +43,7 @@ android {
         create("prototype") {
             initWith(getByName("debug"))
             applicationIdSuffix = ".prototype"
-            versionNameSuffix = "-history-prototype"
+            versionNameSuffix = prototypeVersionNameSuffix
             matchingFallbacks += listOf("debug")
         }
         create("screenshot") {
@@ -60,7 +62,7 @@ android {
         create("prototypeRelease") {
             initWith(getByName("release"))
             applicationIdSuffix = ".prototype"
-            versionNameSuffix = "-history-prototype"
+            versionNameSuffix = prototypeVersionNameSuffix
         }
     }
 
@@ -69,5 +71,15 @@ android {
     lint {
         abortOnError = true
         checkReleaseBuilds = true
+    }
+}
+
+androidComponents {
+    listOf("prototype", "prototypeRelease").forEach { buildType ->
+        onVariants(selector().withBuildType(buildType)) { variant ->
+            variant.outputs.forEach { output ->
+                output.versionCode.set(prototypeVersionCode)
+            }
+        }
     }
 }

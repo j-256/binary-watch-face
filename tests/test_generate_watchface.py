@@ -1176,7 +1176,12 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_prototype_starts_with_subtle_history_without_changing_production_defaults(self) -> None:
         prototype = GENERATOR.build_watchface(prototype=True)
         background = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.BACKDROP_VISIBILITY_ID}']")
-        self.assertEqual(background.get("defaultValue"), "off")
+        self.assertEqual(background.get("defaultValue"), "active")
+        flavor_background = prototype.find(
+            f"./UserConfigurations/Flavors/Flavor[@id='{GENERATOR.DEFAULT_FLAVOR_ID}']"
+            f"/Configuration[@id='{GENERATOR.BACKDROP_VISIBILITY_ID}']"
+        )
+        self.assertEqual(flavor_background.get("optionId"), "active")
         layout = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.COMPLICATION_COUNT_ID}']")
         self.assertEqual(layout.get("defaultValue"), "2_history")
         self.assertEqual(self.user_configuration(GENERATOR.BACKDROP_VISIBILITY_ID).get("defaultValue"), "active")
@@ -1470,7 +1475,6 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_active_and_ambient_decimal_backgrounds_are_independently_configurable(self) -> None:
         expected_active_visibility = (
             f"({GENERATOR.configuration_matches_expression(GENERATOR.BACKDROP_VISIBILITY_ID, GENERATOR.BACKDROP_ACTIVE_OPTION_IDS)}) "
-            f"&& !({GENERATOR.configuration_matches_expression(GENERATOR.COMPLICATION_COUNT_ID, tuple(GENERATOR.HISTORY_COMPLICATION_LAYOUTS))}) "
             "? 255 : 0"
         )
         expected_ambient_visibility = (
