@@ -100,7 +100,7 @@ public final class BatteryTestActivity extends Activity {
                     LinearLayout content = content("Battery test");
                     text(content, "Battery records could not be read. " + error.getMessage(), 13, INK);
                     action(content, "Retry", true, view -> refresh());
-                    action(content, "Reset battery tests", false, view -> new AlertDialog.Builder(this)
+                    action(content, "Reset battery tests", false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                             .setTitle("Reset battery tests?")
                             .setMessage("Removes unreadable tests and results. Heart-rate history is kept. Confirm your recording mode in History settings afterward.")
                             .setNegativeButton(R.string.not_now, null).setPositiveButton("Reset", (dialog, which) -> {
@@ -108,7 +108,7 @@ public final class BatteryTestActivity extends Activity {
                                     try { new BatteryTestStore(this).reset(); refresh(); }
                                     catch (RuntimeException failure) { completed(failure.getMessage()); }
                                 });
-                            }).show());
+                            })));
                     action(content, "Back", false, view -> finish());
                 });
             }
@@ -129,13 +129,13 @@ public final class BatteryTestActivity extends Activity {
                 BatteryTrial.Mode[] choices = BatteryTrial.Mode.values();
                 String[] titles = new String[choices.length];
                 for (int index = 0; index < choices.length; index++) titles[index] = BatteryText.mode(choices[index]);
-                new AlertDialog.Builder(this).setTitle("Test mode")
+                HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle("Test mode")
                         .setSingleChoiceItems(titles, selected.ordinal(), (dialog, which) -> {
                             selected = choices[which];
                             dialog.dismiss();
                             message = null;
                             refresh();
-                        }).setNegativeButton(R.string.not_now, null).show();
+                        }).setNegativeButton(R.string.not_now, null));
             });
             text(content, description(selected), 13, INK);
             action(content, "Set up mode", true, view -> {
@@ -177,19 +177,19 @@ public final class BatteryTestActivity extends Activity {
             text(content, BatteryText.hours(elapsed) + " elapsed", 22, ACCENT);
             text(content, active.first().percent() + "% at start / " + (reading.available() ? reading.percent() + "% now" : "reading unavailable"), 13, INK);
             if (active.issue() != BatteryTrial.Issue.NONE) text(content, "Excluded: " + BatteryText.issue(active.issue()), 13, INK);
-            action(content, "Finish run", true, view -> new AlertDialog.Builder(this)
+            action(content, "Finish run", true, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle("Uninterrupted run?")
                     .setMessage("Did the watch stay unplugged with the same face and settings, without force-stopping History? Brief interruptions between readings cannot be detected reliably.")
                     .setPositiveButton("Yes, save", (dialog, which) -> operate(done -> BatteryTestCoordinator.finish(this, true, done)))
                     .setNegativeButton("No, exclude", (dialog, which) -> operate(done -> BatteryTestCoordinator.finish(this, false, done)))
-                    .setNeutralButton("Keep running", null).show());
+                    .setNeutralButton("Keep running", null)));
             action(content, "Add battery reading", false, view -> operate(done -> BatteryTestCoordinator.checkpoint(this, done)));
             text(content, "Close the app and wear your watch normally. Aim for 12-24 hours. Start, finish, and added readings are saved; no background polling runs.", 12, MUTED);
             if (active.mode() == BatteryTrial.Mode.GRAPH) text(content, "Preview graph active. Your heart-rate recording is paused.", 12, MUTED);
-            action(content, "View readings", false, view -> new AlertDialog.Builder(this)
+            action(content, "View readings", false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle("Observed battery")
                     .setView(new BatteryReadingsView(this, active))
-                    .setPositiveButton("Close", null).show());
+                    .setPositiveButton("Close", null)));
         }
         action(content, "Results", false, view -> { results = true; message = null; refresh(); });
         text(content, "Repeat each mode on comparable days. Battery percentage is coarse; small differences may be noise.", 12, MUTED);
@@ -229,14 +229,14 @@ public final class BatteryTestActivity extends Activity {
         }
         if (!runs.isEmpty()) {
             action(content, "Share results", false, view -> share());
-            action(content, "Clear battery results", false, view -> new AlertDialog.Builder(this)
+            action(content, "Clear battery results", false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle("Clear battery results?").setMessage("Heart-rate history and an active test are kept.")
                     .setNegativeButton(R.string.not_now, null).setPositiveButton("Clear", (dialog, which) -> {
                         HistoryRuntime.IO.execute(() -> {
                             try { new BatteryTestStore(this).clearResults(); refresh(); }
                             catch (RuntimeException error) { completed(error.getMessage()); }
                         });
-                    }).show());
+                    })));
         }
         text(content, "Results stay on this watch unless you choose to share them. Retains the latest "
                 + BatteryTestStore.MAX_RUNS + " runs for up to " + BatteryTestStore.RETENTION_MS / (24 * BatteryTrial.HOUR_MS)
@@ -293,9 +293,7 @@ public final class BatteryTestActivity extends Activity {
     }
 
     private LinearLayout content(String title) {
-        ScrollView scroll = new ScrollView(this);
-        scroll.setBackgroundColor(Color.BLACK);
-        scroll.setFillViewport(true);
+        ScrollView scroll = HistoryUi.scroll(this);
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(28), dp(30), dp(28), dp(42));

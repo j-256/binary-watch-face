@@ -93,7 +93,7 @@ Recording starts with an empty history and fills as the watch delivers readings.
 
 **Settings > Battery test** compares battery drain with recording and the background graph independently enabled or disabled. It includes guided setup, preserved recording preferences, local results, comparison charts, and a battery-only JSON export. Follow the [battery comparison guide](battery-testing.md) for matched runs and the limitations of whole-watch measurements.
 
-The time-window controls are under **Settings** in the on-watch app:
+The time-window controls are under **Settings** in the on-watch app. Turn the crown or swipe to scroll Settings, battery-test screens, and their dialogs. Button labels are centered with space on both sides, including the compact time-window choices.
 
 <img src="screenshots/history-settings.png" alt="On-watch controls for 30 minutes, 1 hour, 6 hours, and 24 hours" width="260">
 

@@ -78,9 +78,7 @@ public final class HistoryActivity extends Activity {
             return;
         }
         int offset = scroll == null ? 0 : scroll.getScrollY();
-        scroll = new ScrollView(this);
-        scroll.setBackgroundColor(Color.BLACK);
-        scroll.setFillViewport(true);
+        scroll = HistoryUi.scroll(this);
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(28), dp(30), dp(28), dp(42));
@@ -99,10 +97,11 @@ public final class HistoryActivity extends Activity {
         HistorySeries.Span[] spans = HistorySeries.Span.values();
         for (int row = 0; row < 2; row++) {
             LinearLayout buttons = new LinearLayout(this);
+            buttons.setBaselineAligned(false);
             for (int column = 0; column < 2; column++) {
                 HistorySeries.Span span = spans[row * 2 + column];
                 Button button = button(span.label, span == settings.span());
-                LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(0, dp(48), 1);
+                LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(0, -1, 1);
                 layout.setMargins(dp(2), dp(3), dp(2), dp(3));
                 buttons.addView(button, layout);
                 button.setOnClickListener(view -> {
@@ -119,13 +118,13 @@ public final class HistoryActivity extends Activity {
             HistorySettings.Labels[] choices = HistorySettings.Labels.values();
             String[] titles = new String[choices.length];
             for (int index = 0; index < choices.length; index++) titles[index] = getString(choices[index].title);
-            new AlertDialog.Builder(this).setTitle(R.string.labels_heading)
+            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.labels_heading)
                     .setSingleChoiceItems(titles, settings.labels().ordinal(), (dialog, index) -> {
                         settings.labels(choices[index]);
                         HistoryRuntime.requestImage(this);
                         dialog.dismiss();
                         refresh();
-                    }).setNegativeButton(R.string.not_now, null).show();
+                    }).setNegativeButton(R.string.not_now, null));
         });
         if (settings.labels() != HistorySettings.Labels.NONE) {
             long minutes = HistoryTimeline.intervalMs(settings.span()) / HistorySeries.MINUTE_MS;
@@ -144,14 +143,14 @@ public final class HistoryActivity extends Activity {
             HistoryRuntime.stop(this, true, this::finished);
         });
         if (settings.recording() || settings.demo() || series.sampleCount > 0) {
-            action(content, R.string.erase, false, view -> new AlertDialog.Builder(this)
+            action(content, R.string.erase, false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle(R.string.erase_title).setMessage(R.string.erase_explanation)
                     .setNegativeButton(R.string.not_now, null)
                     .setPositiveButton(R.string.erase, (dialog, which) -> {
                         working = true;
                         refresh();
                         HistoryRuntime.stop(this, false, this::finished);
-                    }).show());
+                    })));
         }
         if (!HistorySettings.hasPermissions(this)) {
             action(content, R.string.permissions, false, view -> startActivity(new Intent(
@@ -171,9 +170,9 @@ public final class HistoryActivity extends Activity {
         content.setPadding(0, dp(10), 0, dp(20));
         content.addView(new HistoryGraphView(this, series, settings.demo()), new LinearLayout.LayoutParams(-1, 0, 1));
         Button settingsButton = button(getString(R.string.settings), false);
-        settingsButton.setGravity(Gravity.CENTER);
         settingsButton.setEnabled(true);
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(dp(112), dp(40));
+        settingsButton.setMinHeight(dp(40));
+        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(dp(112), -2);
         layout.topMargin = dp(7);
         content.addView(settingsButton, layout);
         settingsButton.setOnClickListener(view -> {
@@ -207,12 +206,11 @@ public final class HistoryActivity extends Activity {
         if (checkSelfPermission(HistorySettings.HEART_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{HistorySettings.HEART_PERMISSION}, PERMISSION_REQUEST);
         } else if (checkSelfPermission(HistorySettings.BACKGROUND_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
-            new AlertDialog.Builder(this).setTitle(R.string.background_title)
+            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.background_title)
                     .setMessage(R.string.background_explanation)
                     .setNegativeButton(R.string.not_now, null)
                     .setPositiveButton(R.string.allow_background, (dialog, which) ->
-                            requestPermissions(new String[]{HistorySettings.BACKGROUND_PERMISSION}, PERMISSION_REQUEST))
-                    .show();
+                            requestPermissions(new String[]{HistorySettings.BACKGROUND_PERMISSION}, PERMISSION_REQUEST)));
         } else {
             working = true;
             refresh();
@@ -248,11 +246,8 @@ public final class HistoryActivity extends Activity {
     }
 
     private Button action(LinearLayout parent, int label, boolean primary, View.OnClickListener listener) {
-        Button button = button(getString(label), primary);
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(-1, dp(52));
-        layout.setMargins(0, dp(7), 0, 0);
-        parent.addView(button, layout);
-        button.setOnClickListener(listener);
+        Button button = HistoryUi.action(parent, getString(label), primary, listener);
+        button.setEnabled(!working);
         return button;
     }
 
