@@ -13,7 +13,7 @@ public final class HistoryTimeline {
     private static final DateTimeFormatter CLOCK = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT);
     private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("EEE", Locale.ROOT);
 
-    public record Mark(long timeMs, double fraction, double bpm, double slope) {}
+    public record Mark(long timeMs, double fraction, double bpm) {}
     public record Label(String time, String day) {}
 
     private HistoryTimeline() {}
@@ -41,24 +41,18 @@ public final class HistoryTimeline {
             if (fraction <= current) {
                 if (previous < 0) {
                     if (index != 0) return null;
-                    int next = index + 1;
-                    while (next < series.buckets.length && series.buckets[next].count == 0) next++;
-                    return new Mark(timeMs, current, bucket.average(),
-                            series.connects(index, next) ? slope(series, index, next) : 0);
+                    return new Mark(timeMs, current, bucket.average());
                 }
                 if (!series.connects(previous, index)) return null;
                 double slope = slope(series, previous, index);
                 double bpm = series.buckets[previous].average()
                         + slope * (fraction - fraction(series, previous));
-                return new Mark(timeMs, fraction, bpm, slope);
+                return new Mark(timeMs, fraction, bpm);
             }
             previous = index;
         }
         if (previous != series.buckets.length - 1) return null;
-        int before = previous - 1;
-        while (before >= 0 && series.buckets[before].count == 0) before--;
-        return new Mark(timeMs, fraction(series, previous), series.buckets[previous].average(),
-                series.connects(before, previous) ? slope(series, before, previous) : 0);
+        return new Mark(timeMs, fraction(series, previous), series.buckets[previous].average());
     }
 
     private static double fraction(HistorySeries series, int index) {

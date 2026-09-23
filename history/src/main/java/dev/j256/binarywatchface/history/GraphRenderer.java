@@ -95,16 +95,10 @@ public final class GraphRenderer {
         paint.setAlpha(TIME_DETAIL_ALPHA);
         paint.setStrokeWidth(MARK_STROKE_WIDTH);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        double scale = (bottom - top) / (series.upperBound() - series.lowerBound());
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
             float x = (float) (left + (right - left) * mark.fraction());
             float y = y(mark.bpm(), series.lowerBound(), series.upperBound(), top, bottom);
-            double dx = right - left;
-            double dy = -mark.slope() * scale;
-            double length = Math.hypot(dx, dy);
-            float nx = (float) (-dy / length * MARK_HALF_LENGTH);
-            float ny = (float) (dx / length * MARK_HALF_LENGTH);
-            canvas.drawLine(x - nx, y - ny, x + nx, y + ny, paint);
+            canvas.drawLine(x, y - MARK_HALF_LENGTH, x, y + MARK_HALF_LENGTH, paint);
         }
     }
 

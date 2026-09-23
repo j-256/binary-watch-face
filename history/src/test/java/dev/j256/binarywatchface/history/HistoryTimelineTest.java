@@ -35,7 +35,6 @@ public class HistoryTimelineTest {
         }
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
             assertEquals(60 + 100 * mark.fraction(), mark.bpm(), 0.0001);
-            assertEquals(100, mark.slope(), 0.0001);
         }
     }
 
