@@ -49,7 +49,17 @@ jobs:
           python3 tools/check_layout.py
 
       - name: Build the APK and app bundle
-        run: ./gradlew --no-daemon check assembleDebug bundleRelease
+        run: ./gradlew --no-daemon check assembleDebug bundleRelease :watchface:assemblePrototype
+
+      - name: Preserve the side-by-side prototype APKs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heart-history-prototype
+          path: |
+            watchface/build/outputs/apk/prototype/watchface-prototype.apk
+            history/build/outputs/apk/debug/history-debug.apk
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Install the isolated cover emulator
         run: android --no-metrics --sdk="$ANDROID_HOME" sdk install platform-tools cmdline-tools/latest emulator system-images/android-37.0/android-wear-signed/x86_64

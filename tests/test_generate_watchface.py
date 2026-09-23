@@ -452,7 +452,8 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             if child.tag == "ListConfiguration" and child.get("id") == GENERATOR.TICK_STYLE_ID
         )
         complication_indexes = [
-            index for index, child in enumerate(children) if child.tag == "ComplicationSlot"
+            index for index, child in enumerate(children)
+            if child.tag == "ComplicationSlot" and child.get("slotId") != str(GENERATOR.HISTORY_SLOT_ID)
         ]
         self.assertLess(clock_index, tick_index)
         self.assertTrue(complication_indexes)
@@ -852,9 +853,9 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             option.get("id"): tuple(int(value) for value in option.get("complicationSlotIds", "").split())
             for option in configuration.findall("ListOption")
         }
-        self.assertEqual(options, GENERATOR.COMPLICATION_LAYOUTS)
+        self.assertEqual(options, GENERATOR.ALL_COMPLICATION_LAYOUTS)
         self.assertEqual(
-            options,
+            {key: options[key] for key in GENERATOR.COMPLICATION_LAYOUTS},
             {"0": (), "2": (0, 1), "3": (0, 1, 2), "4": (0, 1, 3, 4)},
         )
         zero = configuration.find("ListOption[@id='0']")
@@ -892,7 +893,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_complication_layout_preserves_prioritized_lower_pair(self) -> None:
         slots = {
             int(slot.get("slotId", "-1")): slot
-            for slot in self.root.findall("./Scene/ComplicationSlot")
+            for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]")
         }
         self.assertEqual(
             tuple(slots[0].get(attribute) for attribute in ("name", "x", "y", "width", "height")),
@@ -940,7 +941,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         base = next(size for size in GENERATOR.SIZE_CHOICES if size.option_id == GENERATOR.BASE_SIZE_ID)
         dot_size, _ = GENERATOR.bit_geometry(len(GENERATOR.SIX_BIT_WEIGHTS), base)
         clock_bottom = max(max(rows) for rows in GENERATOR.CLOCK_ROW_LAYOUT.values()) + dot_size / 2 * (1 + largest.scale)
-        slots = self.root.findall("./Scene/ComplicationSlot")
+        slots = self.root.findall("./Scene/ComplicationSlot[BoundingOval]")
         for bounds in self.native_readout_bounds():
             with self.subTest(bounds=bounds):
                 self.assertGreaterEqual(bounds[1] - clock_bottom, MIN_CONTENT_GAP)
@@ -977,7 +978,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                     right - corner_radius,
                     bottom - corner_radius,
                 )
-                for slot in self.root.findall("./Scene/ComplicationSlot"):
+                for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]"):
                     with self.subTest(slot=slot.get("name")):
                         gap = self.circle_rectangle_gap(slot, inset_bounds) - corner_radius
                         self.assertGreaterEqual(gap, margin)
@@ -985,7 +986,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_enabled_complications_keep_space_between_their_outlines(self) -> None:
         slots = {
             int(slot.get("slotId", "-1")): slot
-            for slot in self.root.findall("./Scene/ComplicationSlot")
+            for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]")
         }
         for count, ids in GENERATOR.COMPLICATION_LAYOUTS.items():
             for index, slot_id in enumerate(ids):
@@ -1014,7 +1015,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             dial_center - float(marker.get("y", "0")) for marker in tick_markers
         )
         complication_outer_radii = []
-        for slot in self.root.findall("./Scene/ComplicationSlot"):
+        for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]"):
             bounding_oval = slot.find("BoundingOval")
             self.assertIsNotNone(bounding_oval)
             assert bounding_oval is not None
@@ -1119,13 +1120,13 @@ class WatchFaceGeneratorTest(unittest.TestCase):
 
     def test_every_complication_supports_the_promised_types(self) -> None:
         expected = {"SHORT_TEXT", "MONOCHROMATIC_IMAGE", "SMALL_IMAGE", "RANGED_VALUE", "EMPTY"}
-        for slot in self.root.findall("./Scene/ComplicationSlot"):
+        for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]"):
             self.assertEqual(set(slot.get("supportedTypes", "").split()), expected)
             rendered = {complication.get("type") for complication in slot.findall("Complication")}
             self.assertEqual(rendered, expected)
 
     def test_default_complications_are_distinct_from_face_readouts(self) -> None:
-        policies = self.root.findall("./Scene/ComplicationSlot/DefaultProviderPolicy")
+        policies = self.root.findall("./Scene/ComplicationSlot[BoundingOval]/DefaultProviderPolicy")
         providers = [policy.get("defaultSystemProvider") for policy in policies]
         self.assertEqual(
             providers,
@@ -1146,6 +1147,40 @@ class WatchFaceGeneratorTest(unittest.TestCase):
 
     def test_face_has_no_custom_launch_actions(self) -> None:
         self.assertEqual(self.root.findall(".//Launch"), [])
+
+    def test_history_background_is_opt_in_under_time_and_hidden_in_ambient(self) -> None:
+        configuration = self.user_configuration(GENERATOR.COMPLICATION_COUNT_ID)
+        self.assertEqual(configuration.get("defaultValue"), "2")
+        for option in configuration.findall("ListOption"):
+            enabled = option.get("complicationSlotIds", "").split()
+            self.assertEqual(str(GENERATOR.HISTORY_SLOT_ID) in enabled,
+                             option.get("id") in GENERATOR.HISTORY_COMPLICATION_LAYOUTS)
+        scene = self.root.find("Scene")
+        history = scene.find("ComplicationSlot[@name='heart_history']")
+        self.assertIsNotNone(history)
+        self.assertEqual(tuple(int(history.get(key)) for key in ("x", "y", "width", "height")), GENERATOR.HISTORY_BOUNDS)
+        self.assertEqual(history.find("Variant[@mode='AMBIENT']").get("value"), "0")
+        self.assertEqual(history.find("DefaultProviderPolicy").get("primaryProvider"), GENERATOR.HISTORY_PROVIDER)
+        self.assertEqual(history.find("DefaultProviderPolicy").get("defaultSystemProvider"), "EMPTY")
+        self.assertEqual(history.find("Complication/PartImage/Image").get("resource"), "[COMPLICATION.PHOTO_IMAGE]")
+        clock = scene.find(f"ListConfiguration[@id='{GENERATOR.CLOCK_MODE_ID}']")
+        self.assertLess(list(scene).index(history), list(scene).index(clock))
+        all_ids = [slot.get("slotId") for slot in scene.findall("ComplicationSlot")]
+        self.assertEqual(len(all_ids), len(set(all_ids)))
+
+    def test_only_one_setting_controls_complication_slots(self) -> None:
+        controllers = [configuration.get("id") for configuration in self.user_configurations()
+                       if any("complicationSlotIds" in option.attrib for option in configuration)]
+        self.assertEqual(controllers, [GENERATOR.COMPLICATION_COUNT_ID])
+
+    def test_prototype_starts_with_history_without_changing_production_defaults(self) -> None:
+        prototype = GENERATOR.build_watchface(prototype=True)
+        background = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.BACKDROP_VISIBILITY_ID}']")
+        self.assertEqual(background.get("defaultValue"), "off")
+        layout = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.COMPLICATION_COUNT_ID}']")
+        self.assertEqual(layout.get("defaultValue"), "2_history_clear")
+        self.assertEqual(self.user_configuration(GENERATOR.BACKDROP_VISIBILITY_ID).get("defaultValue"), "active")
+        self.assertEqual(prototype.find(".//ComplicationSlot[@name='heart_history']").get("slotId"), str(GENERATOR.HISTORY_SLOT_ID))
 
     def test_ambient_mode_uses_dense_patterned_dots_and_suppresses_high_activity_elements(self) -> None:
         self.assertEqual(GENERATOR.COLOR_AMBIENT_MONO, "#FFFFFF")
@@ -1265,7 +1300,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             all(group.find("Variant[@mode='AMBIENT'][@target='alpha'][@value='0']") is not None for group in tick_groups)
         )
 
-        for slot in self.root.findall("./Scene/ComplicationSlot"):
+        for slot in self.root.findall("./Scene/ComplicationSlot[BoundingOval]"):
             self.assertIsNotNone(
                 slot.find(
                     f"Variant[@mode='AMBIENT'][@target='alpha'][@value='{brightness_expression}']"
@@ -1435,6 +1470,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
     def test_active_and_ambient_decimal_backgrounds_are_independently_configurable(self) -> None:
         expected_active_visibility = (
             f"({GENERATOR.configuration_matches_expression(GENERATOR.BACKDROP_VISIBILITY_ID, GENERATOR.BACKDROP_ACTIVE_OPTION_IDS)}) "
+            f"&& !({GENERATOR.configuration_matches_expression(GENERATOR.COMPLICATION_COUNT_ID, tuple(GENERATOR.HISTORY_COMPLICATION_LAYOUTS))}) "
             "? 255 : 0"
         )
         expected_ambient_visibility = (

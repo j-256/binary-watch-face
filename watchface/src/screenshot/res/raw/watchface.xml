@@ -174,6 +174,14 @@
             <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
             <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
             <ListOption id="4" displayName="complication_count_4" screenReaderText="complication_count_4" complicationSlotIds="0 1 3 4" />
+            <ListOption id="0_history" displayName="complication_count_0_history" screenReaderText="complication_count_0_history" complicationSlotIds="5" />
+            <ListOption id="2_history" displayName="complication_count_2_history" screenReaderText="complication_count_2_history" complicationSlotIds="0 1 5" />
+            <ListOption id="3_history" displayName="complication_count_3_history" screenReaderText="complication_count_3_history" complicationSlotIds="0 1 2 5" />
+            <ListOption id="4_history" displayName="complication_count_4_history" screenReaderText="complication_count_4_history" complicationSlotIds="0 1 3 4 5" />
+            <ListOption id="0_history_clear" displayName="complication_count_0_history_clear" screenReaderText="complication_count_0_history_clear" complicationSlotIds="5" />
+            <ListOption id="2_history_clear" displayName="complication_count_2_history_clear" screenReaderText="complication_count_2_history_clear" complicationSlotIds="0 1 5" />
+            <ListOption id="3_history_clear" displayName="complication_count_3_history_clear" screenReaderText="complication_count_3_history_clear" complicationSlotIds="0 1 2 5" />
+            <ListOption id="4_history_clear" displayName="complication_count_4_history_clear" screenReaderText="complication_count_4_history_clear" complicationSlotIds="0 1 3 4 5" />
         </ListConfiguration>
         <Flavors defaultValue="terminal">
             <Flavor id="terminal" displayName="flavor_terminal" screenReaderText="flavor_terminal">
@@ -325,6 +333,18 @@
                 </Rectangle>
             </PartDraw>
         </Group>
+        <ComplicationSlot name="heart_history" slotId="5" displayName="slot_heart_history" x="0" y="60" width="450" height="300" supportedTypes="PHOTO_IMAGE EMPTY" isCustomizable="TRUE" tintColor="[CONFIGURATION.textColor.0]">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <BoundingBox x="0" y="0" width="450" height="300" />
+            <DefaultProviderPolicy primaryProvider="dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication" primaryProviderType="PHOTO_IMAGE" defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />
+            <Complication type="PHOTO_IMAGE">
+                <PartImage x="0" y="0" width="450" height="300">
+                    <Transform target="alpha" value="([CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 255 : ([CONFIGURATION.complicationCount] == &quot;0_history&quot; || [CONFIGURATION.complicationCount] == &quot;2_history&quot; || [CONFIGURATION.complicationCount] == &quot;3_history&quot; || [CONFIGURATION.complicationCount] == &quot;4_history&quot; || [CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 142 : 0" />
+                    <Image resource="[COMPLICATION.PHOTO_IMAGE]" />
+                </PartImage>
+            </Complication>
+            <Complication type="EMPTY" />
+        </ComplicationSlot>
         <ListConfiguration id="clockMode">
             <ListOption id="12">
                 <Group name="clock_12_hour" x="0" y="0" width="450" height="450">
@@ -334,7 +354,7 @@
                                 <Group name="clock_12_hour_clock_with_seconds_active_backdrops" x="0" y="0" width="450" height="450">
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_12_hour_clock_with_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
-                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
+                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) &amp;&amp; !([CONFIGURATION.complicationCount] == &quot;0_history&quot; || [CONFIGURATION.complicationCount] == &quot;2_history&quot; || [CONFIGURATION.complicationCount] == &quot;3_history&quot; || [CONFIGURATION.complicationCount] == &quot;4_history&quot; || [CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 255 : 0" />
                                         <Group name="clock_12_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
                                             <Group name="clock_12_hour_clock_with_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
@@ -3086,7 +3106,7 @@
                                 <Group name="clock_12_hour_clock_without_seconds_active_backdrops" x="0" y="0" width="450" height="450">
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_12_hour_clock_without_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
-                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
+                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) &amp;&amp; !([CONFIGURATION.complicationCount] == &quot;0_history&quot; || [CONFIGURATION.complicationCount] == &quot;2_history&quot; || [CONFIGURATION.complicationCount] == &quot;3_history&quot; || [CONFIGURATION.complicationCount] == &quot;4_history&quot; || [CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 255 : 0" />
                                         <Group name="clock_12_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
                                             <Group name="clock_12_hour_clock_without_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
@@ -4876,7 +4896,7 @@
                                 <Group name="clock_24_hour_clock_with_seconds_active_backdrops" x="0" y="0" width="450" height="450">
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_24_hour_clock_with_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
-                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
+                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) &amp;&amp; !([CONFIGURATION.complicationCount] == &quot;0_history&quot; || [CONFIGURATION.complicationCount] == &quot;2_history&quot; || [CONFIGURATION.complicationCount] == &quot;3_history&quot; || [CONFIGURATION.complicationCount] == &quot;4_history&quot; || [CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 255 : 0" />
                                         <Group name="clock_24_hour_clock_with_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
                                             <Group name="clock_24_hour_clock_with_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
@@ -7781,7 +7801,7 @@
                                 <Group name="clock_24_hour_clock_without_seconds_active_backdrops" x="0" y="0" width="450" height="450">
                                     <Variant mode="AMBIENT" target="alpha" value="0" />
                                     <Group name="clock_24_hour_clock_without_seconds_active_backdrops_visibility" x="0" y="0" width="450" height="450">
-                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) ? 255 : 0" />
+                                        <Transform target="alpha" value="([CONFIGURATION.backdropVisibility] == &quot;active&quot; || [CONFIGURATION.backdropVisibility] == &quot;both&quot;) &amp;&amp; !([CONFIGURATION.complicationCount] == &quot;0_history&quot; || [CONFIGURATION.complicationCount] == &quot;2_history&quot; || [CONFIGURATION.complicationCount] == &quot;3_history&quot; || [CONFIGURATION.complicationCount] == &quot;4_history&quot; || [CONFIGURATION.complicationCount] == &quot;0_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;2_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;3_history_clear&quot; || [CONFIGURATION.complicationCount] == &quot;4_history_clear&quot;) ? 255 : 0" />
                                         <Group name="clock_24_hour_clock_without_seconds_active_backdrops_style" x="0" y="0" width="450" height="450">
                                             <Transform target="alpha" value="[CONFIGURATION.backdropOpacity] == &quot;5&quot; ? 13 : [CONFIGURATION.backdropOpacity] == &quot;10&quot; ? 26 : [CONFIGURATION.backdropOpacity] == &quot;15&quot; ? 38 : [CONFIGURATION.backdropOpacity] == &quot;50&quot; ? 128 : [CONFIGURATION.backdropOpacity] == &quot;75&quot; ? 191 : [CONFIGURATION.backdropOpacity] == &quot;100&quot; ? 255 : 77" />
                                             <Group name="clock_24_hour_clock_without_seconds_active_backdrops_full" x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
