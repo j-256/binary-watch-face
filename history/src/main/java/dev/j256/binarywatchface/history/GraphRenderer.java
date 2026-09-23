@@ -20,15 +20,16 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
-    private static final float MARK_HALF_LENGTH = 3.5f;
-    private static final float MARK_STROKE_WIDTH = 1.1f;
-    private static final int TIME_DETAIL_ALPHA = 210;
+    private static final int BACKGROUND_PLOT_ALPHA = 135;
+    private static final float MARK_HALF_LENGTH = 5.5f;
+    private static final float MARK_STROKE_WIDTH = 2;
+    private static final int TIME_DETAIL_ALPHA = 255;
     // Keep side labels between the moving bezel tick and the hour row
-    private static final float TIME_LABEL_INSET = 66;
-    private static final float DAY_LABEL_INSET = 6;
-    private static final float TIME_LABEL_BASELINE = 64;
-    private static final float TIME_LABEL_SIZE = 10;
-    private static final float DAY_LABEL_SIZE = 9;
+    private static final float TIME_LABEL_INSET = 58;
+    private static final float DAY_LABEL_INSET = 8;
+    private static final float TIME_LABEL_BASELINE = 78;
+    private static final float TIME_LABEL_SIZE = 14;
+    private static final float DAY_LABEL_SIZE = 11;
 
     private GraphRenderer() {}
 
@@ -55,7 +56,7 @@ public final class GraphRenderer {
         paint.setColor(Color.WHITE);
         if (series.sampleCount > 0) {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
-            if (background) fadeEdges(canvas, paint, width, height);
+            if (background) fadeBackground(canvas, paint, width, height);
             if (background && labels != HistorySettings.Labels.NONE) {
                 drawTimeMarks(canvas, paint, series, left, top, right, bottom);
             }
@@ -65,7 +66,7 @@ public final class GraphRenderer {
         paint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         paint.setTextSize(background ? 10.5f : 21);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(background ? 245 : TIME_DETAIL_ALPHA);
+        paint.setAlpha(background ? 245 : 210);
         float captionBaseline = background ? 13.5f : 27;
         long ageMinutes = (series.endMs - series.latestMs) / HistorySeries.MINUTE_MS;
         String range = String.format(Locale.ROOT, "%.0f-%.0f", series.minimum, series.maximum);
@@ -186,7 +187,7 @@ public final class GraphRenderer {
         canvas.drawPath(line, paint);
     }
 
-    private static void fadeEdges(Canvas canvas, Paint paint, int width, int height) {
+    private static void fadeBackground(Canvas canvas, Paint paint, int width, int height) {
         paint.setStyle(Paint.Style.FILL);
         paint.setAlpha(255);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
@@ -196,6 +197,10 @@ public final class GraphRenderer {
         canvas.drawRect(0, 0, width, height, paint);
         paint.setShader(new LinearGradient(0, 0, 0, height, colors,
                 new float[]{0, 0.07f, 0.8f, 1}, Shader.TileMode.CLAMP));
+        canvas.drawRect(0, 0, width, height, paint);
+        // Dim the plot before adding time marks and labels
+        paint.setShader(null);
+        paint.setAlpha(BACKGROUND_PLOT_ALPHA);
         canvas.drawRect(0, 0, width, height, paint);
     }
 

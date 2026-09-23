@@ -33,8 +33,9 @@ BACKDROP_LAYOUT_ID = "backdropLayout"
 BACKDROP_VISIBILITY_ID = "backdropVisibility"
 HISTORY_SLOT_ID = 5
 HISTORY_BOUNDS = (0, 60, 450, 300)
-HISTORY_ALPHA_SUBTLE = 75
-HISTORY_ALPHA_CLEAR = 135
+# The provider dims its plot separately so annotations remain readable
+HISTORY_ALPHA_SUBTLE = 142
+HISTORY_ALPHA_CLEAR = 255
 HISTORY_PROVIDER = "dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication"
 COLOR_DOT_ACTIVE = f"[CONFIGURATION.{DOT_COLOR_ID}.0]"
 COLOR_DOT_INACTIVE = f"[CONFIGURATION.{DOT_COLOR_ID}.1]"

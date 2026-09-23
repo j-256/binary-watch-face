@@ -208,7 +208,7 @@ public class HistoryIntegrationTest {
         int leftGutterEdge = 95;
         int rightGutterEdge = 357;
         int captionTop = 35;
-        int captionBottom = 65;
+        int captionBottom = 79;
         int bezelClearRadius = 194;
         int leftPixels = 0;
         int rightPixels = 0;

@@ -49,7 +49,7 @@ adb -s DEVICE_SERIAL install -r history/build/outputs/apk/debug/history-debug.ap
 adb -s DEVICE_SERIAL install -r watchface/build/outputs/apk/prototype/watchface-prototype.apk
 ```
 
-The SDK check must report `37` or newer. In the downloadable prototype bundle, the corresponding APKs are named `binary-heart-history.apk` and `binary-pulse-prototype.apk`.
+The SDK check must report `37` or newer. In the downloadable prototype bundle, the corresponding APKs are named `binary-heart-history.apk` and `binary-pulse-prototype.apk`. When updating the prototype, install both APKs together so the face and its graph provider use matching styles.
 
 1. Open **Binary Heart History** from the watch's app list, then tap **Settings** below the graph.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
@@ -112,7 +112,7 @@ Hiding labels leaves fresh history entirely free of captions in both preview and
 
 ### Reading the time marks
 
-Small strokes cross the trace at equal elapsed intervals. They follow the line's slope rather than forming an axis or grid. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+Brighter, thicker strokes cross the dim trace at equal elapsed intervals. They follow the line's slope without forming an axis or grid. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
 
 | Window | Time between marks |
 | --- | --- |
@@ -124,9 +124,19 @@ Small strokes cross the trace at equal elapsed intervals. They follow the line's
 Weekdays accompany the side times when the window crosses midnight. Times use the watch's local timezone; mark spacing remains elapsed time across daylight-saving changes. The captions sit in the outer margins beside the hour row so the four-slot layout cannot cover them. There is no on-face demo badge.
 
 <p align="center">
-  <img src="screenshots/history-time-marks.png" alt="Invented one-hour history with small marks directly on the trace and two side times" width="31%">
-  <img src="screenshots/history-time-marks-day.png" alt="Invented day-long history with four-hour marks and weekdays beside the endpoint times" width="31%">
-  <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="31%">
+  <img src="screenshots/history-time-marks.png" alt="Invented one-hour history with bright marks directly on the dim trace and readable side times" width="450">
+</p>
+
+<p align="center">
+  <img src="screenshots/history-time-marks-day.png" alt="Invented day-long history with four-hour marks and weekdays beside the endpoint times" width="45%">
+  <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="45%">
+</p>
+
+The same optional time cues remain visible with the subtle graph and in light appearance:
+
+<p align="center">
+  <img src="screenshots/history-time-marks-subtle.png" alt="Subtle history keeps its trace dim with brighter time marks and side captions" width="45%">
+  <img src="screenshots/history-time-marks-light.png" alt="Dark time marks and side captions on the light watch face" width="45%">
 </p>
 
 ## Architecture and privacy
