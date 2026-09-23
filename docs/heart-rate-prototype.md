@@ -89,7 +89,9 @@ Wear OS allows only one active setting to control complication-slot enablement. 
 
 The graph's window and annotation preferences belong to the history app and add no WFF settings. The face shares its existing Layout choices because the [WFF configuration schema](https://github.com/google/watchface/blob/main/third_party/wff/specification/documents/5/userConfiguration/userConfigurationsElement.xsd) permits at most twenty top-level entries, including the presets container. Generator tests enforce this limit.
 
-Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. Preview pauses recording and preserves eligible recorded data; **Start recording** resumes it. **Stop and erase history** clears it after confirmation. The decimal backdrop renders above the history graph, and its visibility stays independent of the selected history layout.
+Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. **Pause recording** and preview preserve eligible recorded data; **Start recording** resumes collection. **Stop and erase history** clears it after confirmation. The decimal backdrop renders above the history graph, and its visibility stays independent of the selected history layout.
+
+**Settings > Battery test** compares battery drain with recording and the background graph independently enabled or disabled. It includes guided setup, preserved recording preferences, local results, comparison charts, and a battery-only JSON export. Follow the [battery comparison guide](battery-testing.md) for matched runs and the limitations of whole-watch measurements.
 
 The time-window controls are under **Settings** in the on-watch app:
 

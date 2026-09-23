@@ -16,6 +16,8 @@ Wear OS supplies time, battery, heart rate, and user-selected complication data 
 
 Binary Heart History stores reading timestamps and beats per minute in its private on-watch database, with at most one reading per second. Its graph shows a selected window within the preceding 24 hours. Preview mode uses clearly labeled invented readings and pauses recording without adding sample data to the database. Diagnostic messages contain operation identifiers, outcomes, timings, and sample counts, but no heart-rate values or reading timestamps.
 
+Its optional battery test stores explicit battery observations, elapsed and wall-clock times, charging state, boot count, watch model and software build, selected test mode, graph preferences, and run validity in private on-watch storage. Battery reports do not contain heart-rate readings or account identifiers. The app does not upload these diagnostics. **Share results** creates a battery-only JSON report and grants the receiving app temporary read access to that file when the user chooses a recipient. A recipient's handling of an exported copy is governed by that app's privacy practices.
+
 ## Optional beta group
 
 Testers may voluntarily join the [Binary Watch Face Testers Google Group](https://groups.google.com/g/binary-watch-face-testers) to become eligible for the Google Play closed beta. Google records the membership and makes the member's Google Account email address and profile information available to the group owner. This information is used only to administer beta access. Posting, conversations, and the member list are restricted to the group owner. Google Groups is governed by Google's own privacy practices.
@@ -24,7 +26,9 @@ Testers may voluntarily join the [Binary Watch Face Testers Google Group](https:
 
 Binary does not collect or retain user data, so it has no app data to retain or delete. Watch-face settings are managed locally by Wear OS. Optional beta-group membership remains until the tester leaves the group or the group owner removes the membership.
 
-Binary Heart History removes readings outside the 24-hour window when it receives, reads, or maintains history. Background maintenance is requested every six hours and is scheduled by Wear OS; force-stopping the app can delay deletion until it runs again. **Stop and erase history** stops recording and deletes the stored readings. Permission-loss handling also disables recording and clears stored readings. Uninstalling Binary Heart History removes its app data.
+Binary Heart History removes readings outside the 24-hour window when it receives, reads, or maintains history. Background maintenance is requested every six hours while recording or preview is enabled and is scheduled by Wear OS. Pausing recording cancels maintenance; expired data is pruned on the next history read or recording operation. Force-stopping the app can also delay deletion until it runs again. **Stop and erase history** stops recording and deletes the stored readings. Permission-loss handling also disables recording and clears stored readings. Uninstalling Binary Heart History removes its app data.
+
+Completed battery tests have bounded retention, shown in the battery-test interface, and are pruned when results are opened. **Clear battery results** deletes completed tests and the cached report without erasing heart-rate history or cancelling an active test. The active test is kept until it is finished or cancelled and its recording mode is restored. An exported copy held by another app is not deleted by these controls.
 
 Wear OS receives the rendered graph as complication data and may cache that image. The provider requests a refresh after stopping, erasing, or changing preview mode, and limits each image's display validity to ten minutes. This does not promise immediate erasure of system-owned image caches. Removing the graph layout or uninstalling the provider removes its use by the face.
 

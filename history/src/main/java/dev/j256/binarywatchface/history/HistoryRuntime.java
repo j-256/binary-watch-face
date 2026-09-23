@@ -98,14 +98,22 @@ public final class HistoryRuntime {
     }
 
     public static void stop(Context context, boolean demo, Runnable complete) {
+        stop(context, demo, !demo, complete);
+    }
+
+    public static void pause(Context context, Runnable complete) {
+        stop(context, false, false, complete);
+    }
+
+    private static void stop(Context context, boolean demo, boolean erase, Runnable complete) {
         Context app = context.getApplicationContext();
         IO.execute(() -> {
             HistorySettings settings = new HistorySettings(app);
             settings.mode(false, demo);
-            settings.status(HistorySettings.STATUS_PAUSED);
+            settings.status(HistorySettings.STATUS_PAUSING);
             app.getSystemService(JobScheduler.class).cancel(REGISTRATION_JOB);
             try (HistoryStore store = new HistoryStore(app)) {
-                if (!demo) store.clear();
+                if (erase) store.clear();
                 else store.prune(System.currentTimeMillis());
             } catch (RuntimeException error) {
                 settings.status(HistorySettings.STATUS_STORAGE_ERROR);
@@ -114,14 +122,17 @@ public final class HistoryRuntime {
             HEALTH.execute(() -> {
                 try {
                     client(app).clearPassiveListenerServiceAsync().get(HEALTH_SERVICE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                    if (HistorySettings.STATUS_PAUSING.equals(settings.status())) settings.status(HistorySettings.STATUS_PAUSED);
                 } catch (Exception error) {
                     if (error instanceof InterruptedException) Thread.currentThread().interrupt();
+                    settings.status(HistorySettings.STATUS_PAUSE_ERROR);
                     Log.w(LOG_TAG, "event=unregister result=" + error.getClass().getSimpleName());
+                } finally {
+                    scheduleMaintenance(app);
+                    requestImage(app);
+                    complete.run();
                 }
             });
-            scheduleMaintenance(app);
-            requestImage(app);
-            complete.run();
         });
     }
 

@@ -9,6 +9,10 @@
     <string name="complication_name">Heart history graph</string>
     <string name="title">Heart history</string>
     <string name="settings">Settings</string>
+    <string name="battery_test">Battery test</string>
+    <string name="battery_layout_confirmed">Face layout matches this mode</string>
+    <string name="pause">Pause recording</string>
+    <string name="status_pause_error">Recording could not be fully paused. Retry pausing before a battery test.</string>
     <string name="view_graph">View graph</string>
     <string name="no_reading">No reading</string>
     <string name="no_readings">No readings yet</string>
@@ -23,7 +27,7 @@
     <string name="permissions">Open permissions</string>
     <string name="working">Working\u2026</string>
     <string name="status_sample">Sample preview. Invented readings; recording is paused.</string>
-    <string name="status_paused">Recording is off. Start to build your history, or explore a sample.</string>
+    <string name="status_paused">Recording is paused. Eligible stored readings are kept. Start recording to resume.</string>
     <string name="status_waiting">Recording is on. Waiting for the watch to deliver its first readings.</string>
     <plurals name="status_recording">
         <item quantity="one">Recording on this watch. Latest reading: %1$d minute ago.</item>

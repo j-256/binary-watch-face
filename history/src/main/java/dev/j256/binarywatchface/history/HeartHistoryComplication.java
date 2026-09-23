@@ -36,7 +36,7 @@ public final class HeartHistoryComplication extends ComplicationDataSourceServic
                 HistorySettings settings = new HistorySettings(this);
                 HistorySeries series;
                 if (settings.demo()) series = HistorySeries.demo(settings.span(), now);
-                else if (HistorySettings.hasPermissions(this) && settings.recording()) {
+                else if (HistorySettings.hasPermissions(this)) {
                     try (HistoryStore store = new HistoryStore(this)) {
                         series = store.read(settings.span(), now);
                     }

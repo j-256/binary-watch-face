@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
         <meta-data android:name="com.google.android.wearable.standalone" android:value="true" />
+        <activity android:name=".BatteryTestActivity" android:exported="false" android:taskAffinity="" />
+        <provider android:name=".BatteryReportProvider"
+            android:authorities="${applicationId}.battery-reports"
+            android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/battery_report_paths" />
+        </provider>
         <activity android:name=".HistoryActivity" android:exported="true" android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

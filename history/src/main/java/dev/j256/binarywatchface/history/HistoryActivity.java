@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,10 +17,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.window.OnBackInvokedDispatcher;
 
-import static dev.j256.binarywatchface.history.HistoryColors.ACCENT;
 import static dev.j256.binarywatchface.history.HistoryColors.INK;
 import static dev.j256.binarywatchface.history.HistoryColors.MUTED;
-import static dev.j256.binarywatchface.history.HistoryColors.SURFACE;
 
 public final class HistoryActivity extends Activity {
     private static final int PERMISSION_REQUEST = 21;
@@ -94,6 +91,8 @@ public final class HistoryActivity extends Activity {
             showingSettings = false;
             render(settings, series);
         }).setEnabled(true);
+        action(content, R.string.battery_test, false,
+                view -> startActivity(new Intent(this, BatteryTestActivity.class)));
         text(content, status(settings, series), 13, MUTED);
         TextView window = text(content, getString(R.string.span_heading), 14, INK);
         window.setPadding(0, dp(14), 0, dp(4));
@@ -134,6 +133,11 @@ public final class HistoryActivity extends Activity {
             text(content, getString(R.string.mark_spacing, interval), 12, MUTED);
         }
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
+        if (settings.recording()) action(content, R.string.pause, false, view -> {
+            working = true;
+            refresh();
+            HistoryRuntime.pause(this, this::finished);
+        });
         action(content, R.string.sample, false, view -> {
             working = true;
             refresh();
@@ -187,6 +191,8 @@ public final class HistoryActivity extends Activity {
             case HistorySettings.STATUS_ERROR -> R.string.status_error;
             case HistorySettings.STATUS_STORAGE_ERROR -> R.string.status_storage_error;
             case HistorySettings.STATUS_SCHEDULE_ERROR -> R.string.status_schedule_error;
+            case HistorySettings.STATUS_PAUSE_ERROR -> R.string.status_pause_error;
+            case HistorySettings.STATUS_PAUSING -> R.string.working;
             default -> 0;
         };
         if (error != 0) return getString(error);
@@ -232,27 +238,11 @@ public final class HistoryActivity extends Activity {
     }
 
     private TextView text(LinearLayout parent, String value, int size, int color) {
-        TextView view = new TextView(this);
-        view.setText(value);
-        view.setTextSize(size);
-        view.setTextColor(color);
-        view.setGravity(Gravity.CENTER);
-        view.setPadding(0, dp(3), 0, dp(3));
-        parent.addView(view, new LinearLayout.LayoutParams(-1, -2));
-        return view;
+        return HistoryUi.text(parent, value, size, color);
     }
 
     private Button button(String label, boolean selected) {
-        Button button = new Button(this);
-        button.setText(label);
-        button.setTextSize(13);
-        button.setAllCaps(false);
-        button.setTextColor(selected ? Color.BLACK : INK);
-        button.setPadding(dp(5), 0, dp(5), 0);
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(selected ? ACCENT : SURFACE);
-        background.setCornerRadius(dp(24));
-        button.setBackground(background);
+        Button button = HistoryUi.button(this, label, selected);
         button.setEnabled(!working);
         return button;
     }
@@ -267,6 +257,6 @@ public final class HistoryActivity extends Activity {
     }
 
     private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
+        return HistoryUi.dp(this, value);
     }
 }
