@@ -1,6 +1,6 @@
 # Heart-history prototype
 
-Binary Pulse places a wide, quiet heart-rate history behind the binary time. The dim trace and faint fill fade toward the edges of the face. Labels are hidden by default, with optional timespan and range captions beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and use a subtle or clear graph with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
+Binary Pulse places a wide, quiet heart-rate history behind the binary time. The dim trace and faint fill fade toward the edges of the face. Labels are hidden by default. Optional time marks cross the trace, with start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and use a subtle or clear graph with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
 
 This is an unreleased Wear OS 7 prototype. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
 
@@ -54,11 +54,13 @@ The SDK check must report `37` or newer. In the downloadable prototype bundle, t
 1. Open **Binary Heart History** from the watch's app list.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
 3. Choose the time window in the app. It applies to both the preview and watch-face graph.
-4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time window** or **Time + range**. This setting changes the face; the app's chart keeps its labels.
+4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time marks** or **Time + range**. Time marks sit directly on the trace; the small side captions give the window's start and end in local 24-hour time. The app explains the spacing for the selected window. This setting changes the face; the app's chart keeps its labels.
 5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the clear graph and two ordinary providers.
 6. In the face editor, use **Layout** to select subtle or clear heart history with no ordinary providers, or with two, three, or four. If automatic provider selection is unavailable, assign **Heart history graph** to **Heart history background** in the complication picker.
 
 Wear OS allows only one active setting to control complication-slot enablement. Graph visibility and provider count therefore share the Layout selector. Choosing a layout without history disables the image slot completely. Use the supplied **Heart history graph** provider, which supplies no tap action. The graph renders below the ordinary complications, whose opaque backgrounds preserve their contrast and whose normal actions remain reachable.
+
+The graph's window and annotation preferences belong to the history app and add no WFF settings. The face shares its existing Layout choices because the [WFF configuration schema](https://github.com/google/watchface/blob/main/third_party/wff/specification/documents/5/userConfiguration/userConfigurationsElement.xsd) permits at most twenty top-level entries, including the presets container. Generator tests enforce this limit.
 
 Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. Preview pauses recording and preserves eligible recorded data; **Start recording** resumes it. **Stop and erase history** clears it after confirmation. The decimal background is suppressed in active mode while history is selected; its configured AOD behavior remains independent.
 
@@ -79,7 +81,7 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 | Choice | Behavior |
 | --- | --- |
 | Window | Rolling 30 minutes, 1 hour, 6 hours, or 24 hours, ending at image generation |
-| Labels | None by default; optionally show the time window, or the time window and observed BPM range |
+| Labels | None by default; optionally show marks on the trace and side times, with or without the observed BPM range |
 | Refresh | Requests Wear OS updates about every five minutes; explicit setting changes request an immediate refresh |
 | Trace | Dim bucket averages with a faint min/max envelope to retain short peaks and a soft fill beneath each connected segment |
 | Missing data | Breaks both the trace and its fill when adjacent readings are more than two minutes apart; gaps shorter than a display bucket can disappear at long spans |
@@ -93,6 +95,25 @@ This is a periodically refreshed trend, not a beat-to-beat pulse or ECG waveform
 The on-watch app keeps a brighter chart with guide lines for closer inspection. The watch-face image uses the wider, dimmer treatment. The tiny lightning bolt beside the battery value means Wear OS reports charging; the separate bottom-center charging indicator belongs to the system.
 
 Hiding labels leaves fresh history entirely free of captions in both preview and recording modes. Stale or empty histories retain their status notices. See the [optional time and range captions](screenshots/history-labels.png) for the more detailed treatment.
+
+### Reading the time marks
+
+Small strokes cross the trace at equal elapsed intervals. They follow the line's slope rather than forming an axis or grid. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+
+| Window | Time between marks |
+| --- | --- |
+| 30 minutes | 5 minutes |
+| 1 hour | 10 minutes |
+| 6 hours | 1 hour |
+| 24 hours | 4 hours |
+
+Weekdays accompany the side times when the window crosses midnight. Times use the watch's local timezone; mark spacing remains elapsed time across daylight-saving changes. The captions sit in the outer margins beside the hour row so the four-slot layout cannot cover them. There is no on-face demo badge.
+
+<p align="center">
+  <img src="screenshots/history-time-marks.png" alt="Invented one-hour history with small marks directly on the trace and two side times" width="31%">
+  <img src="screenshots/history-time-marks-day.png" alt="Invented day-long history with four-hour marks and weekdays beside the endpoint times" width="31%">
+  <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="31%">
+</p>
 
 ## Architecture and privacy
 
@@ -119,7 +140,7 @@ Run database and lifecycle integration tests on a disposable emulator. These tes
 ANDROID_SERIAL=EMULATOR_SERIAL ./gradlew :history:connectedDebugAndroidTest
 ```
 
-The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, and unfilled gaps. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
+The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
 
 Physical-watch installation, long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified. No release or Play submission is part of this prototype. On-wrist testing and health-permission distribution requirements need review before publication.
 

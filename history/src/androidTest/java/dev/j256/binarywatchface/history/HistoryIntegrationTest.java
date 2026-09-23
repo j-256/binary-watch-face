@@ -178,9 +178,11 @@ public class HistoryIntegrationTest {
         HistorySeries series = new HistorySeries(HistorySeries.Span.HOUR, now);
         series.add(new HistorySeries.Sample(now - 45 * HistorySeries.MINUTE_MS, 70));
         series.add(new HistorySeries.Sample(now - 15 * HistorySeries.MINUTE_MS, 90));
-        Bitmap background = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
-        for (int y = 40; y < background.getHeight(); y++) {
-            assertEquals(0, background.getPixel(background.getWidth() / 2, y));
+        for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
+            Bitmap background = GraphRenderer.renderBackground(series, false, "", labels);
+            for (int y = 40; y < background.getHeight(); y++) {
+                assertEquals(0, background.getPixel(background.getWidth() / 2, y));
+            }
         }
     }
 
@@ -196,13 +198,42 @@ public class HistoryIntegrationTest {
         settings.labels(HistorySettings.Labels.NONE);
     }
 
+    @Test public void sideTimesAndWeekdaysClearTheBezelTickAndFitTheOuterHourGutters() {
+        HistorySeries series = new HistorySeries(HistorySeries.Span.DAY, now);
+        Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
+        int faceCenter = GraphRenderer.BACKGROUND_WIDTH / 2;
+        int graphTop = 60;
+        int leftGutterEdge = 95;
+        int rightGutterEdge = 357;
+        int captionTop = 35;
+        int captionBottom = 65;
+        int bezelClearRadius = 194;
+        int leftPixels = 0;
+        int rightPixels = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                if ((image.getPixel(x, y) >>> 24) == 0) continue;
+                String pixel = "Label pixel " + x + "," + y;
+                assertTrue(pixel + " overlaps the hour row", x <= leftGutterEdge || x >= rightGutterEdge);
+                assertTrue(pixel + " leaves the side gutter", y >= captionTop && y <= captionBottom);
+                assertTrue(pixel + " reaches the bezel tick",
+                        Math.hypot(x - faceCenter, y + graphTop - faceCenter) <= bezelClearRadius);
+                if (x < faceCenter) leftPixels++;
+                else rightPixels++;
+            }
+        }
+        assertTrue(leftPixels > 0);
+        assertTrue(rightPixels > 0);
+    }
+
     @Test public void labelsCanBeHiddenInEitherModeWithoutHidingStaleOrEmptyNotices() {
         HistorySeries series = HistorySeries.demo(HistorySeries.Span.HOUR, now);
         Bitmap hidden = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
         Bitmap window = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
         Bitmap range = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.RANGE);
         assertEquals(0, captionPixels(hidden));
-        assertTrue(captionPixels(window) > 0);
+        assertEquals(0, captionPixels(window));
+        assertFalse(hidden.sameAs(window));
         assertTrue(captionPixels(range) > captionPixels(window));
         for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
             assertTrue(GraphRenderer.renderBackground(series, false, "", labels)

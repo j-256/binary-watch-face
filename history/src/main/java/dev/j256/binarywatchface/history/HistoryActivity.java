@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 public final class HistoryActivity extends Activity {
     private static final int PERMISSION_REQUEST = 21;
+    private static final int MINUTES_PER_HOUR = 60;
     private static final int INK = Color.rgb(234, 244, 238);
     private static final int MUTED = Color.rgb(157, 179, 166);
     private static final int ACCENT = Color.rgb(147, 246, 189);
@@ -107,6 +108,11 @@ public final class HistoryActivity extends Activity {
                         refresh();
                     }).setNegativeButton(R.string.not_now, null).show();
         });
+        if (settings.labels() != HistorySettings.Labels.NONE) {
+            long minutes = HistoryTimeline.intervalMs(settings.span()) / HistorySeries.MINUTE_MS;
+            String interval = minutes < MINUTES_PER_HOUR ? minutes + " min" : minutes / MINUTES_PER_HOUR + " h";
+            text(content, getString(R.string.mark_spacing, interval), 12, MUTED);
+        }
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
         action(content, R.string.sample, false, view -> {
             working = true;

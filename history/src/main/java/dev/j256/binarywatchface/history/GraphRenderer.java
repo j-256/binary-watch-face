@@ -11,6 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 
+import java.time.ZoneId;
 import java.util.Locale;
 
 /** Transparent monochrome image which WFF tints to the selected text color */
@@ -19,6 +20,15 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
+    private static final float MARK_HALF_LENGTH = 3.5f;
+    private static final float MARK_STROKE_WIDTH = 1.1f;
+    private static final int TIME_DETAIL_ALPHA = 210;
+    // Keep side labels between the moving bezel tick and the hour row
+    private static final float TIME_LABEL_INSET = 66;
+    private static final float DAY_LABEL_INSET = 6;
+    private static final float TIME_LABEL_BASELINE = 64;
+    private static final float TIME_LABEL_SIZE = 10;
+    private static final float DAY_LABEL_SIZE = 9;
 
     private GraphRenderer() {}
 
@@ -46,33 +56,72 @@ public final class GraphRenderer {
         if (series.sampleCount > 0) {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
             if (background) fadeEdges(canvas, paint, width, height);
+            if (background && labels != HistorySettings.Labels.NONE) {
+                drawTimeMarks(canvas, paint, series, left, top, right, bottom);
+            }
         }
         paint.reset();
         paint.setAntiAlias(true);
         paint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         paint.setTextSize(background ? 10.5f : 21);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(background ? 245 : 210);
-        float captionLeft = background ? 114 : left;
-        float captionRight = background ? 336 : right;
+        paint.setAlpha(background ? 245 : TIME_DETAIL_ALPHA);
         float captionBaseline = background ? 13.5f : 27;
-        String header = labels == HistorySettings.Labels.NONE ? ""
-                : (demo && !background ? "SAMPLE  /  " : "HEART  /  ")
-                    + series.span.label.toUpperCase(Locale.ROOT);
         long ageMinutes = (series.endMs - series.latestMs) / HistorySeries.MINUTE_MS;
         String range = String.format(Locale.ROOT, "%.0f-%.0f", series.minimum, series.maximum);
         String status = series.sampleCount == 0 ? emptyLabel : series.isStale() ? "STALE " + ageMinutes + "m"
                 : labels == HistorySettings.Labels.RANGE
                     ? range + (!demo && ageMinutes > 0 ? " / " + ageMinutes + "m" : " BPM") : "";
-        if (labels == HistorySettings.Labels.NONE) {
+        if (background) {
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(status, width / 2f, captionBaseline, paint);
+            if (labels != HistorySettings.Labels.NONE) drawTimeLabels(canvas, paint, series, width);
         } else {
-            canvas.drawText(header, captionLeft, captionBaseline, paint);
+            String header = (demo ? "SAMPLE  /  " : "HEART  /  ")
+                    + series.span.label.toUpperCase(Locale.ROOT);
+            canvas.drawText(header, left, captionBaseline, paint);
             paint.setTextAlign(Paint.Align.RIGHT);
-            canvas.drawText(status, captionRight, captionBaseline, paint);
+            canvas.drawText(status, right, captionBaseline, paint);
         }
         return bitmap;
+    }
+
+    private static void drawTimeMarks(Canvas canvas, Paint paint, HistorySeries series,
+            float left, float top, float right, float bottom) {
+        paint.reset();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(TIME_DETAIL_ALPHA);
+        paint.setStrokeWidth(MARK_STROKE_WIDTH);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        double scale = (bottom - top) / (series.upperBound() - series.lowerBound());
+        for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
+            float x = (float) (left + (right - left) * mark.fraction());
+            float y = y(mark.bpm(), series.lowerBound(), series.upperBound(), top, bottom);
+            double dx = right - left;
+            double dy = -mark.slope() * scale;
+            double length = Math.hypot(dx, dy);
+            float nx = (float) (-dy / length * MARK_HALF_LENGTH);
+            float ny = (float) (dx / length * MARK_HALF_LENGTH);
+            canvas.drawLine(x - nx, y - ny, x + nx, y + ny, paint);
+        }
+    }
+
+    private static void drawTimeLabels(Canvas canvas, Paint paint, HistorySeries series, int width) {
+        paint.setAlpha(TIME_DETAIL_ALPHA);
+        ZoneId zone = ZoneId.systemDefault();
+        for (boolean end : new boolean[]{false, true}) {
+            HistoryTimeline.Label label = HistoryTimeline.label(series, end, zone);
+            float x = end ? width - TIME_LABEL_INSET : TIME_LABEL_INSET;
+            paint.setTextAlign(end ? Paint.Align.RIGHT : Paint.Align.LEFT);
+            paint.setTextSize(TIME_LABEL_SIZE);
+            canvas.drawText(label.time(), x, TIME_LABEL_BASELINE, paint);
+            if (!label.day().isEmpty()) {
+                float dayX = x + (end ? -DAY_LABEL_INSET : DAY_LABEL_INSET);
+                paint.setTextSize(DAY_LABEL_SIZE);
+                canvas.drawText(label.day(), dayX, TIME_LABEL_BASELINE - TIME_LABEL_SIZE, paint);
+            }
+        }
     }
 
     private static void drawPlot(Canvas canvas, Paint paint, HistorySeries series,
