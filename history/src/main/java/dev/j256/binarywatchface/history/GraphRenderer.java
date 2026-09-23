@@ -20,10 +20,11 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
-    private static final int BACKGROUND_PLOT_ALPHA = 135;
+    private static final int BACKGROUND_PLOT_ALPHA = 90;
     private static final float MARK_HALF_LENGTH = 5.5f;
     private static final float MARK_STROKE_WIDTH = 2;
-    private static final int TIME_DETAIL_ALPHA = 255;
+    private static final int TIME_MARK_ALPHA = 144;
+    private static final int TIME_LABEL_ALPHA = 255;
     // Keep side labels between the moving bezel tick and the hour row
     private static final float TIME_LABEL_INSET = 58;
     private static final float DAY_LABEL_INSET = 8;
@@ -92,7 +93,7 @@ public final class GraphRenderer {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(TIME_DETAIL_ALPHA);
+        paint.setAlpha(TIME_MARK_ALPHA);
         paint.setStrokeWidth(MARK_STROKE_WIDTH);
         paint.setStrokeCap(Paint.Cap.ROUND);
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
@@ -103,7 +104,7 @@ public final class GraphRenderer {
     }
 
     private static void drawTimeLabels(Canvas canvas, Paint paint, HistorySeries series, int width) {
-        paint.setAlpha(TIME_DETAIL_ALPHA);
+        paint.setAlpha(TIME_LABEL_ALPHA);
         ZoneId zone = ZoneId.systemDefault();
         for (boolean end : new boolean[]{false, true}) {
             HistoryTimeline.Label label = HistoryTimeline.label(series, end, zone);
