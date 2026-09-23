@@ -20,16 +20,16 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
-    private static final int BACKGROUND_PLOT_ALPHA = 90;
+    private static final int BACKGROUND_PLOT_ALPHA = 64;
     private static final float MARK_HALF_LENGTH = 5.5f;
     private static final float MARK_STROKE_WIDTH = 2;
-    private static final int TIME_MARK_ALPHA = 144;
-    private static final int TIME_LABEL_ALPHA = 255;
+    private static final int TIME_MARK_ALPHA = 88;
+    private static final int TIME_LABEL_ALPHA = 192;
     // Keep side labels between the moving bezel tick and the hour row
     private static final float TIME_LABEL_INSET = 58;
     private static final float DAY_LABEL_INSET = 8;
     private static final float TIME_LABEL_BASELINE = 78;
-    private static final float TIME_LABEL_SIZE = 14;
+    private static final float TIME_LABEL_SIZE = 13.5f;
     private static final float DAY_LABEL_SIZE = 11;
 
     private GraphRenderer() {}
@@ -57,7 +57,7 @@ public final class GraphRenderer {
         paint.setColor(Color.WHITE);
         if (series.sampleCount > 0) {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
-            if (background) fadeBackground(canvas, paint, width, height);
+            if (background) dimBackground(canvas, paint, width, height);
             if (background && labels != HistorySettings.Labels.NONE) {
                 drawTimeMarks(canvas, paint, series, left, top, right, bottom);
             }
@@ -182,17 +182,9 @@ public final class GraphRenderer {
         canvas.drawPath(line, paint);
     }
 
-    private static void fadeBackground(Canvas canvas, Paint paint, int width, int height) {
+    private static void dimBackground(Canvas canvas, Paint paint, int width, int height) {
         paint.setStyle(Paint.Style.FILL);
-        paint.setAlpha(255);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        int[] colors = {0x00FFFFFF, Color.WHITE, Color.WHITE, 0x00FFFFFF};
-        paint.setShader(new LinearGradient(0, 0, width, 0, colors,
-                new float[]{0, 0.16f, 0.84f, 1}, Shader.TileMode.CLAMP));
-        canvas.drawRect(0, 0, width, height, paint);
-        paint.setShader(new LinearGradient(0, 0, 0, height, colors,
-                new float[]{0, 0.07f, 0.8f, 1}, Shader.TileMode.CLAMP));
-        canvas.drawRect(0, 0, width, height, paint);
         // Dim the plot before adding time marks and labels
         paint.setShader(null);
         paint.setAlpha(BACKGROUND_PLOT_ALPHA);

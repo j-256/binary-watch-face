@@ -169,7 +169,7 @@
             <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
             <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
         </ListConfiguration>
-        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2_history_clear" highlight="@drawable/highlight_complications">
+        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2_history" highlight="@drawable/highlight_complications">
             <ListOption id="0" displayName="complication_count_0" screenReaderText="complication_count_0" />
             <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
             <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
@@ -203,7 +203,7 @@
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="iso" />
                 <Configuration id="batteryDisplay" optionId="decimal" />
-                <Configuration id="complicationCount" optionId="2_history_clear" />
+                <Configuration id="complicationCount" optionId="2_history" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>

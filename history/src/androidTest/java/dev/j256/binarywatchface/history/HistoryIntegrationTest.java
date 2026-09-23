@@ -22,6 +22,9 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.time.Duration;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -200,9 +203,28 @@ public class HistoryIntegrationTest {
         settings.labels(HistorySettings.Labels.NONE);
     }
 
-    @Test public void sideTimesAndWeekdaysClearTheBezelTickAndFitTheOuterHourGutters() {
-        HistorySeries series = new HistorySeries(HistorySeries.Span.DAY, now);
+    @Test public void everySideTimeAndWeekdayClearsTheBezelTickAndFitsTheOuterHourGutters() {
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDate monday = LocalDate.of(2026, 1, 5);
+        int[] pixels = new int[GraphRenderer.BACKGROUND_WIDTH * GraphRenderer.BACKGROUND_HEIGHT];
+        for (int minute = 0; minute < Duration.ofDays(1).toMinutes(); minute++) {
+            long time = monday.atStartOfDay().plusMinutes(minute).atZone(zone).toInstant().toEpochMilli();
+            assertSideLabelClearance(time, zone, pixels);
+        }
+        for (DayOfWeek day : DayOfWeek.values()) {
+            long time = monday.plusDays(day.getValue() - DayOfWeek.MONDAY.getValue())
+                    .atStartOfDay(zone).toInstant().toEpochMilli();
+            assertSideLabelClearance(time, zone, pixels);
+        }
+    }
+
+    private void assertSideLabelClearance(long time, ZoneId zone, int[] pixels) {
+        HistorySeries series = new HistorySeries(HistorySeries.Span.DAY, time);
         Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
+        int width = image.getWidth();
+        image.getPixels(pixels, 0, width, 0, 0, width, image.getHeight());
+        image.recycle();
+        String labels = HistoryTimeline.label(series, false, zone) + " / " + HistoryTimeline.label(series, true, zone);
         int faceCenter = GraphRenderer.BACKGROUND_WIDTH / 2;
         int graphTop = 60;
         int leftGutterEdge = 95;
@@ -212,20 +234,20 @@ public class HistoryIntegrationTest {
         int bezelClearRadius = 194;
         int leftPixels = 0;
         int rightPixels = 0;
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                if ((image.getPixel(x, y) >>> 24) == 0) continue;
-                String pixel = "Label pixel " + x + "," + y;
-                assertTrue(pixel + " overlaps the hour row", x <= leftGutterEdge || x >= rightGutterEdge);
-                assertTrue(pixel + " leaves the side gutter", y >= captionTop && y <= captionBottom);
-                assertTrue(pixel + " reaches the bezel tick",
-                        Math.hypot(x - faceCenter, y + graphTop - faceCenter) <= bezelClearRadius);
-                if (x < faceCenter) leftPixels++;
-                else rightPixels++;
-            }
+        for (int index = 0; index < pixels.length; index++) {
+            if ((pixels[index] >>> 24) == 0) continue;
+            int x = index % width;
+            int y = index / width;
+            String pixel = labels + " pixel " + x + "," + y;
+            assertTrue(pixel + " overlaps the hour row", x <= leftGutterEdge || x >= rightGutterEdge);
+            assertTrue(pixel + " leaves the side gutter", y >= captionTop && y <= captionBottom);
+            assertTrue(pixel + " reaches the bezel tick",
+                    Math.hypot(x - faceCenter, y + graphTop - faceCenter) <= bezelClearRadius);
+            if (x < faceCenter) leftPixels++;
+            else rightPixels++;
         }
-        assertTrue(leftPixels > 0);
-        assertTrue(rightPixels > 0);
+        assertTrue(labels + " has no start label", leftPixels > 0);
+        assertTrue(labels + " has no end label", rightPixels > 0);
     }
 
     @Test public void labelsCanBeHiddenInEitherModeWithoutHidingStaleOrEmptyNotices() {

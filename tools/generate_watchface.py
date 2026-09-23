@@ -2688,7 +2688,7 @@ def build_watchface(*, heart_rate: int | None = None, prototype: bool = False) -
     if prototype:
         overrides = {
             BACKDROP_VISIBILITY_ID: "off",
-            COMPLICATION_COUNT_ID: "2_history_clear",
+            COMPLICATION_COUNT_ID: "2_history",
             SHOW_WEIGHTS_ID: WEIGHTS_HIDDEN_ID,
             TICK_STYLE_ID: "single",
         }

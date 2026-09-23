@@ -1,6 +1,6 @@
 # Heart-history prototype
 
-Binary Pulse places a wide, quiet heart-rate history behind the binary time. The dim trace and faint fill fade toward the edges of the face. Labels are hidden by default. Optional time marks cross the trace, with start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and use a subtle or clear graph with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
+Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a very faint trace and a soft fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional time marks cross the trace, with start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and use the subtle graph or its higher-contrast clear alternative with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
 
 This is an unreleased Wear OS 7 prototype. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
 
@@ -55,8 +55,10 @@ The SDK check must report `37` or newer. In the downloadable prototype bundle, t
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
 3. Choose the time window in the app. It applies to both the preview and watch-face graph.
 4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time marks** or **Time + range**. Time marks sit directly on the trace; the small side captions give the window's start and end in local 24-hour time. The app explains the spacing for the selected window. This setting changes the face; the app's chart keeps its labels.
-5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the clear graph and two ordinary providers.
+5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the subtle graph and two ordinary providers.
 6. In the face editor, use **Layout** to select subtle or clear heart history with no ordinary providers, or with two, three, or four. If automatic provider selection is unavailable, assign **Heart history graph** to **Heart history background** in the complication picker.
+
+Updating an existing installation preserves its chosen layout. To use the quieter default on that installation, select **Layout: Two slots + heart history, subtle**, or the subtle option for your preferred provider count. Keep **Graph labels: None** in Binary Heart History to show timestamps only in the app.
 
 Wear OS allows only one active setting to control complication-slot enablement. Graph visibility and provider count therefore share the Layout selector. Choosing a layout without history disables the image slot completely. Use the supplied **Heart history graph** provider. Tapping an exposed part of its background opens Binary Heart History; ordinary complications retain their own actions. The graph renders below the ordinary complications, whose opaque backgrounds preserve their contrast and whose normal actions remain reachable.
 
@@ -95,6 +97,7 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 | Choice | Behavior |
 | --- | --- |
 | Window | Rolling 30 minutes, 1 hour, 6 hours, or 24 hours, ending at image generation |
+| Contrast | Subtle by default in Binary Pulse; Clear increases the graph's opacity through the face's Layout setting |
 | Labels | None by default; optionally show marks on the trace and side times, with or without the observed BPM range |
 | Refresh | Requests Wear OS updates about every five minutes; explicit setting changes request an immediate refresh |
 | Trace | Dim bucket averages with a faint min/max envelope to retain short peaks and a soft fill beneath each connected segment |
@@ -112,7 +115,7 @@ Hiding labels leaves fresh history entirely free of captions in both preview and
 
 ### Reading the time marks
 
-Vertical strokes mark the trace at equal elapsed intervals. They are brighter than the trace and dimmer than the primary time and readouts; side timestamps retain their readable contrast. Each stroke stays upright and centered on the trace as it rises and falls. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+Vertical strokes mark the trace at equal elapsed intervals. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
 
 | Window | Time between marks |
 | --- | --- |
@@ -132,10 +135,10 @@ Weekdays accompany the side times when the window crosses midnight. Times use th
   <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="45%">
 </p>
 
-The same optional time cues remain visible with the subtle graph and in light appearance:
+The clear layout raises the graph's contrast. Light appearance retains the subtle treatment by default:
 
 <p align="center">
-  <img src="screenshots/history-time-marks-subtle.png" alt="Subtle history keeps its trace dim with brighter time marks and side captions" width="45%">
+  <img src="screenshots/history-time-marks-clear.png" alt="Clear history increases contrast while keeping the trace fainter than its marks and side captions" width="45%">
   <img src="screenshots/history-time-marks-light.png" alt="Dark time marks and side captions on the light watch face" width="45%">
 </p>
 

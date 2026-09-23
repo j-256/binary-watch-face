@@ -1173,12 +1173,12 @@ class WatchFaceGeneratorTest(unittest.TestCase):
                        if any("complicationSlotIds" in option.attrib for option in configuration)]
         self.assertEqual(controllers, [GENERATOR.COMPLICATION_COUNT_ID])
 
-    def test_prototype_starts_with_history_without_changing_production_defaults(self) -> None:
+    def test_prototype_starts_with_subtle_history_without_changing_production_defaults(self) -> None:
         prototype = GENERATOR.build_watchface(prototype=True)
         background = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.BACKDROP_VISIBILITY_ID}']")
         self.assertEqual(background.get("defaultValue"), "off")
         layout = prototype.find(f"./UserConfigurations/ListConfiguration[@id='{GENERATOR.COMPLICATION_COUNT_ID}']")
-        self.assertEqual(layout.get("defaultValue"), "2_history_clear")
+        self.assertEqual(layout.get("defaultValue"), "2_history")
         self.assertEqual(self.user_configuration(GENERATOR.BACKDROP_VISIBILITY_ID).get("defaultValue"), "active")
         self.assertEqual(prototype.find(".//ComplicationSlot[@name='heart_history']").get("slotId"), str(GENERATOR.HISTORY_SLOT_ID))
 
