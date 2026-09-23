@@ -51,22 +51,36 @@ adb -s DEVICE_SERIAL install -r watchface/build/outputs/apk/prototype/watchface-
 
 The SDK check must report `37` or newer. In the downloadable prototype bundle, the corresponding APKs are named `binary-heart-history.apk` and `binary-pulse-prototype.apk`.
 
-1. Open **Binary Heart History** from the watch's app list.
+1. Open **Binary Heart History** from the watch's app list, then tap **Settings** below the graph.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
 3. Choose the time window in the app. It applies to both the preview and watch-face graph.
 4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time marks** or **Time + range**. Time marks sit directly on the trace; the small side captions give the window's start and end in local 24-hour time. The app explains the spacing for the selected window. This setting changes the face; the app's chart keeps its labels.
 5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the clear graph and two ordinary providers.
 6. In the face editor, use **Layout** to select subtle or clear heart history with no ordinary providers, or with two, three, or four. If automatic provider selection is unavailable, assign **Heart history graph** to **Heart history background** in the complication picker.
 
-Wear OS allows only one active setting to control complication-slot enablement. Graph visibility and provider count therefore share the Layout selector. Choosing a layout without history disables the image slot completely. Use the supplied **Heart history graph** provider, which supplies no tap action. The graph renders below the ordinary complications, whose opaque backgrounds preserve their contrast and whose normal actions remain reachable.
+Wear OS allows only one active setting to control complication-slot enablement. Graph visibility and provider count therefore share the Layout selector. Choosing a layout without history disables the image slot completely. Use the supplied **Heart history graph** provider. Tapping an exposed part of its background opens Binary Heart History; ordinary complications retain their own actions. The graph renders below the ordinary complications, whose opaque backgrounds preserve their contrast and whose normal actions remain reachable.
 
 The graph's window and annotation preferences belong to the history app and add no WFF settings. The face shares its existing Layout choices because the [WFF configuration schema](https://github.com/google/watchface/blob/main/third_party/wff/specification/documents/5/userConfiguration/userConfigurationsElement.xsd) permits at most twenty top-level entries, including the presets container. Generator tests enforce this limit.
 
 Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. Preview pauses recording and preserves eligible recorded data; **Start recording** resumes it. **Stop and erase history** clears it after confirmation. The decimal background is suppressed in active mode while history is selected; its configured AOD behavior remains independent.
 
-The time-window controls are in the on-watch app:
+The time-window controls are under **Settings** in the on-watch app:
 
 <img src="screenshots/history-settings.png" alt="On-watch controls for 30 minutes, 1 hour, 6 hours, and 24 hours" width="260">
+
+## Touch inspection
+
+Tap the exposed history background on the active face to open Binary Heart History. The app opens to a larger graph; tap **Settings** for recording, time windows, and face labels. The ordinary complications keep their provider actions, and the bottom system indicator keeps its return action. A layout without history has no graph shortcut.
+
+Hold a finger on the app's plot and drag horizontally. A vertical line and point mark the selected reading while its local timestamp and BPM appear above the graph. Lift your finger to dismiss them. The cursor also clears if the gesture is cancelled or the chart loses focus. **View graph** or the system Back gesture returns from settings to the chart.
+
+Inspection shows the original recorded timestamp and value, even when the overview combines readings into display buckets. It snaps to the nearest reading within one minute of the touched time; farther from recorded data it shows the touched time and **No reading**. It does not interpolate heart-rate values across gaps. Times include seconds and the weekday, so a day-long view remains unambiguous across midnight.
+
+<p align="center">
+  <img src="screenshots/history-inspection.png" alt="Heart History app showing an invented one-hour trend and a Settings button" width="31%">
+  <img src="screenshots/history-inspection-held.png" alt="A held finger reveals a vertical cursor and the selected recorded time and BPM" width="31%">
+  <img src="screenshots/history-inspection-gap.png" alt="Dragging into a missing-data gap shows its time without inventing a heart-rate value" width="31%">
+</p>
 
 ## Preview data
 
@@ -92,7 +106,7 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 
 This is a periodically refreshed trend, not a beat-to-beat pulse or ECG waveform. Sensor cadence, batching, and availability belong to the device's Health Services implementation. The native heart-rate readout and this stored history can update at different times. A graph image expires after ten minutes if it is not refreshed. See Android's [passive monitoring guide](https://developer.android.com/health-and-fitness/health-services/monitor-background) and [complication update guidance](https://developer.android.com/training/wearables/complications/exposing-data).
 
-The on-watch app keeps a brighter chart with guide lines for closer inspection. The watch-face image uses the wider, dimmer treatment. The tiny lightning bolt beside the battery value means Wear OS reports charging; the separate bottom-center charging indicator belongs to the system.
+The on-watch app keeps a brighter chart with guide lines and touch inspection. The watch-face image uses the wider, dimmer treatment. The tiny lightning bolt beside the battery value means Wear OS reports charging; the separate bottom-center charging indicator belongs to the system.
 
 Hiding labels leaves fresh history entirely free of captions in both preview and recording modes. Stale or empty histories retain their status notices. See the [optional time and range captions](screenshots/history-labels.png) for the more detailed treatment.
 
@@ -140,7 +154,7 @@ Run database and lifecycle integration tests on a disposable emulator. These tes
 ANDROID_SERIAL=EMULATOR_SERIAL ./gradlew :history:connectedDebugAndroidTest
 ```
 
-The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
+The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Touch tests cover dragging and clearing the cursor on release, cancellation, visibility changes, and focus loss. Inspection tests cover original timestamps and values, out-of-order readings, empty history, and missing intervals. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
 
 Physical-watch installation, long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified. No release or Play submission is part of this prototype. On-wrist testing and health-permission distribution requirements need review before publication.
 

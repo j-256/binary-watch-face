@@ -1,6 +1,7 @@
 package dev.j256.binarywatchface.history;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Bounded graph projections with honest gaps and preserved extrema */
@@ -64,6 +65,7 @@ public final class HistorySeries {
     public final long endMs;
     public final long startMs;
     public final Bucket[] buckets = new Bucket[BUCKET_COUNT];
+    private final List<Sample> readings = new ArrayList<>();
     public int sampleCount;
     public long latestMs;
     public double latestBpm;
@@ -86,6 +88,7 @@ public final class HistorySeries {
 
     public void add(Sample sample) {
         if (!valid(sample, endMs) || sample.timeMs() < startMs) return;
+        readings.add(sample);
         int index = (int) ((sample.timeMs() - startMs) * BUCKET_COUNT / span.durationMs);
         buckets[Math.min(BUCKET_COUNT - 1, index)].add(sample);
         sampleCount++;
@@ -95,6 +98,10 @@ public final class HistorySeries {
             latestMs = sample.timeMs();
             latestBpm = sample.bpm();
         }
+    }
+
+    public List<Sample> readings() {
+        return Collections.unmodifiableList(readings);
     }
 
     public boolean isStale() {

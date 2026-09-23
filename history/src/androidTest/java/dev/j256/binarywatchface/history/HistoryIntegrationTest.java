@@ -156,7 +156,7 @@ public class HistoryIntegrationTest {
         settings.span(HistorySeries.Span.HOUR);
     }
 
-    @Test public void imagePayloadIsTransparentBoundedExpiresAndHasNoTapAction() {
+    @Test public void imagePayloadIsTransparentBoundedExpiresAndOpensHistory() {
         for (HistorySeries.Span span : HistorySeries.Span.values()) {
             HistorySeries series = HistorySeries.demo(span, now);
             Bitmap bitmap = GraphRenderer.render(series, true, "Sample");
@@ -168,8 +168,10 @@ public class HistoryIntegrationTest {
                 assertEquals(0, background.getPixel(0, y));
                 assertEquals(0, background.getPixel(background.getWidth() - 1, y));
             }
-            var data = HeartHistoryComplication.image(series, true, "Sample", HistorySettings.Labels.NONE);
-            assertNull(data.getTapAction());
+            var data = HeartHistoryComplication.image(context, series, true, "Sample", HistorySettings.Labels.NONE);
+            assertNotNull(data.getTapAction());
+            assertTrue(data.getTapAction().isImmutable());
+            assertTrue(data.getTapAction().isActivity());
             assertFalse(data.getValidTimeRange().contains(java.time.Instant.ofEpochMilli(now + 11 * HistorySeries.MINUTE_MS)));
         }
     }

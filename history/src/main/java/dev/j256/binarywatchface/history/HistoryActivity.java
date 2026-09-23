@@ -13,24 +13,41 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.window.OnBackInvokedDispatcher;
+
+import static dev.j256.binarywatchface.history.HistoryColors.ACCENT;
+import static dev.j256.binarywatchface.history.HistoryColors.INK;
+import static dev.j256.binarywatchface.history.HistoryColors.MUTED;
+import static dev.j256.binarywatchface.history.HistoryColors.SURFACE;
 
 public final class HistoryActivity extends Activity {
     private static final int PERMISSION_REQUEST = 21;
     private static final int MINUTES_PER_HOUR = 60;
-    private static final int INK = Color.rgb(234, 244, 238);
-    private static final int MUTED = Color.rgb(157, 179, 166);
-    private static final int ACCENT = Color.rgb(147, 246, 189);
-    private static final int SURFACE = Color.rgb(23, 35, 29);
+    private static final String SETTINGS_SCREEN = "settings-screen";
     private boolean working;
+    private boolean showingSettings;
     private ScrollView scroll;
+    private HistorySettings displayedSettings;
+    private HistorySeries displayedSeries;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         getWindow().setNavigationBarColor(Color.BLACK);
+        showingSettings = state != null && state.getBoolean(SETTINGS_SCREEN);
+        getOnBackInvokedDispatcher().registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {
+            if (showingSettings && displayedSeries != null) {
+                showingSettings = false;
+                render(displayedSettings, displayedSeries);
+            } else finish();
+        });
+    }
+
+    @Override protected void onSaveInstanceState(Bundle state) {
+        state.putBoolean(SETTINGS_SCREEN, showingSettings);
+        super.onSaveInstanceState(state);
     }
 
     @Override public void onResume() {
@@ -57,6 +74,12 @@ public final class HistoryActivity extends Activity {
     }
 
     private void render(HistorySettings settings, HistorySeries series) {
+        displayedSettings = settings;
+        displayedSeries = series;
+        if (!showingSettings) {
+            renderGraph(settings, series);
+            return;
+        }
         int offset = scroll == null ? 0 : scroll.getScrollY();
         scroll = new ScrollView(this);
         scroll.setBackgroundColor(Color.BLACK);
@@ -65,15 +88,12 @@ public final class HistoryActivity extends Activity {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(28), dp(30), dp(28), dp(42));
         scroll.addView(content);
-        text(content, getString(R.string.eyebrow), 10, ACCENT);
-        TextView title = text(content, getString(R.string.title), 24, INK);
+        TextView title = text(content, getString(R.string.settings), 24, INK);
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        ImageView preview = new ImageView(this);
-        preview.setImageBitmap(GraphRenderer.render(series, settings.demo(), "No readings yet"));
-        preview.setColorFilter(ACCENT);
-        preview.setContentDescription(getString(R.string.graph_description));
-        preview.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        content.addView(preview, new LinearLayout.LayoutParams(-1, dp(100)));
+        action(content, R.string.view_graph, false, view -> {
+            showingSettings = false;
+            render(settings, series);
+        }).setEnabled(true);
         text(content, status(settings, series), 13, MUTED);
         TextView window = text(content, getString(R.string.span_heading), 14, INK);
         window.setPadding(0, dp(14), 0, dp(4));
@@ -137,6 +157,26 @@ public final class HistoryActivity extends Activity {
         text(content, getString(R.string.privacy), 12, MUTED);
         setContentView(scroll);
         scroll.post(() -> scroll.scrollTo(0, offset));
+    }
+
+    private void renderGraph(HistorySettings settings, HistorySeries series) {
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setBackgroundColor(Color.BLACK);
+        content.setPadding(0, dp(10), 0, dp(20));
+        content.addView(new HistoryGraphView(this, series, settings.demo()), new LinearLayout.LayoutParams(-1, 0, 1));
+        Button settingsButton = button(getString(R.string.settings), false);
+        settingsButton.setGravity(Gravity.CENTER);
+        settingsButton.setEnabled(true);
+        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(dp(112), dp(40));
+        layout.topMargin = dp(7);
+        content.addView(settingsButton, layout);
+        settingsButton.setOnClickListener(view -> {
+            showingSettings = true;
+            render(settings, series);
+        });
+        setContentView(content);
     }
 
     private String status(HistorySettings settings, HistorySeries series) {
@@ -217,12 +257,13 @@ public final class HistoryActivity extends Activity {
         return button;
     }
 
-    private void action(LinearLayout parent, int label, boolean primary, View.OnClickListener listener) {
+    private Button action(LinearLayout parent, int label, boolean primary, View.OnClickListener listener) {
         Button button = button(getString(label), primary);
         LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(-1, dp(52));
         layout.setMargins(0, dp(7), 0, 0);
         parent.addView(button, layout);
         button.setOnClickListener(listener);
+        return button;
     }
 
     private int dp(int value) {

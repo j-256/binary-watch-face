@@ -17,7 +17,7 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
 
-The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide, dim graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. Labels are hidden by default, with optional timespan and range captions. It includes a separate on-watch recorder and a **Binary Pulse** face that installs alongside Binary. This is an unreleased prototype; the guide includes screenshots, setup, privacy behavior, and removal instructions.
+The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide, dim graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. Labels are hidden by default, with optional marks on the trace and side times. Tapping the graph opens touch inspection and settings in the separate on-watch recorder. The **Binary Pulse** face installs alongside Binary. This is an unreleased prototype; the guide includes screenshots, setup, privacy behavior, and removal instructions.
 
 ## Features
 
@@ -29,7 +29,7 @@ The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide
 - Gives the decimal backdrop independent color, opacity, size, position, and active/AOD visibility controls
 - Includes tiny through huge display sizes, none/glow/bezel dot effects, and none/single/wave/boost/all tick styles
 - Provides two complications by default and configurable zero-, two-, three-, and four-slot layouts
-- Preserves normal provider actions on complications without defining any whole-face or custom tap actions
+- Preserves normal provider actions on complications; tapping the optional history background opens its graph and settings
 - Uses dense patterned dots with configurable brightness and the selected color in always-on display mode by default, with optional decimal values, date, weekday, battery, and heart rate while keeping complications legible
 
 ## Compatibility

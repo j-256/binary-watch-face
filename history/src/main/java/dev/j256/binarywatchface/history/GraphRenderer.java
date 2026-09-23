@@ -124,7 +124,7 @@ public final class GraphRenderer {
         }
     }
 
-    private static void drawPlot(Canvas canvas, Paint paint, HistorySeries series,
+    static void drawPlot(Canvas canvas, Paint paint, HistorySeries series,
             float left, float top, float right, float bottom, boolean background) {
         double lower = series.lowerBound();
         double upper = series.upperBound();
