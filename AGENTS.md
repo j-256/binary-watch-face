@@ -1,6 +1,6 @@
 # Repository guidance
 
-This repository contains a resource-only Wear OS watch face implemented with Watch Face Format. Keep `android:hasCode="false"` and do not add executable Android code unless the product architecture is explicitly reconsidered.
+This repository contains a resource-only Wear OS watch face implemented with Watch Face Format. Keep `android:hasCode="false"` in the `watchface` module. The optional `history` module is a separate on-watch application for passive heart-rate collection and image complications; keep executable code and health permissions there.
 
 Read `docs/design-considerations.md` before changing the layout. Preserve the centered primary time display and verify the reserved system area with an ongoing-activity indicator, not only the notification dot.
 

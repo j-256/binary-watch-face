@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "BinaryWatchFace"
 include(":watchface")
+include(":history")

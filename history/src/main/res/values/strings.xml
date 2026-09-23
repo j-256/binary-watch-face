@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="labels_heading">Graph labels</string>
+    <string name="labels_none">None</string>
+    <string name="labels_window">Time marks</string>
+    <string name="labels_range">Time + range</string>
+    <string name="mark_spacing">%1$s between marks on the line. Side labels show the window\'s start and end in local 24-hour time.</string>
+    <string name="app_name">Binary Heart History</string>
+    <string name="complication_name">Heart history graph</string>
+    <string name="title">Heart history</string>
+    <string name="settings">Settings</string>
+    <string name="view_graph">View graph</string>
+    <string name="no_reading">No reading</string>
+    <string name="no_readings">No readings yet</string>
+    <string name="inspect_hint">Touch and drag to inspect</string>
+    <string name="inspect_preview">Preview data / Drag to inspect</string>
+    <string name="inspect_empty">Open Settings to get started</string>
+    <string name="inspect_stale">Readings are stale / Drag to inspect</string>
+    <string name="span_heading">Time window</string>
+    <string name="start">Start recording</string>
+    <string name="sample">Preview sample data</string>
+    <string name="erase">Stop and erase history</string>
+    <string name="permissions">Open permissions</string>
+    <string name="working">Working\u2026</string>
+    <string name="status_sample">Sample preview. Invented readings; recording is paused.</string>
+    <string name="status_paused">Recording is off. Start to build your history, or explore a sample.</string>
+    <string name="status_waiting">Recording is on. Waiting for the watch to deliver its first readings.</string>
+    <plurals name="status_recording">
+        <item quantity="one">Recording on this watch. Latest reading: %1$d minute ago.</item>
+        <item quantity="other">Recording on this watch. Latest reading: %1$d minutes ago.</item>
+    </plurals>
+    <string name="status_permission">Heart-rate and background access are needed to record. You can still use sample preview.</string>
+    <string name="status_unsupported">This watch does not offer passive heart-rate readings. Sample preview is available.</string>
+    <string name="status_error">Recording could not start. Check permissions and try Start recording again.</string>
+    <string name="status_storage_error">History could not be saved or read. Try stopping and erasing history.</string>
+    <string name="status_schedule_error">Background recovery could not be scheduled. Reopen the app after restarting the watch.</string>
+    <string name="background_title">Build history in the background</string>
+    <string name="background_explanation">Allow heart-rate access while this app is closed. Readings stay on your watch, with a rolling 24-hour history. Stop and erase at any time.</string>
+    <string name="allow_background">Allow background access</string>
+    <string name="not_now">Not now</string>
+    <string name="erase_title">Erase your history?</string>
+    <string name="erase_explanation">Recording will stop and stored heart-rate readings will be deleted from this watch.</string>
+    <string name="show_on_face">On Binary, edit Layout and choose an option with heart history. The window above applies to the face too.</string>
+    <string name="privacy">Only on your watch. No account, network access, analytics, or backup. The graph refreshes about every five minutes; sensor delivery and battery impact vary by watch. Missing readings stay as gaps.</string>
+    <string name="graph_description">Heart-rate history for %1$s. Touch and drag for a recorded time and heart rate. Lift your finger to dismiss.</string>
+</resources>
