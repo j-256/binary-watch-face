@@ -21,6 +21,7 @@ SCREENSHOT_HEART_RATE = 72
 HEART_RATE_ACTIVE_GLYPH = "\u2665\ufe0e"
 HEART_RATE_AMBIENT_GLYPH = "\u2661"
 BATTERY_LOW_GLYPH = "\u2022"
+BATTERY_MAX_BITS = 7
 XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>\n'
 
 DOT_COLOR_ID = "dotColor"
@@ -2207,11 +2208,12 @@ def add_battery(scene: ET.Element) -> None:
     binary_group = element(binary, "Group", name="battery_binary", x=0, y=0, width=WATCH_SIZE, height=WATCH_SIZE)
     condition = element(binary_group, "Condition")
     binary_expressions = element(condition, "Expressions")
-    for bit_count in range(7, 1, -1):
+    for bit_count in range(BATTERY_MAX_BITS, 1, -1):
         threshold = 2 ** (bit_count - 1)
         expression = element(binary_expressions, "Expression", name=f"battery_uses_{bit_count}_bits")
-        expression.text = f"[BATTERY_PERCENT] >= {threshold}"
-    for bit_count in range(7, 1, -1):
+        # Disjoint ranges avoid overlapping matches falling through on Wear OS 7
+        expression.text = f"[BATTERY_PERCENT] >= {threshold} && [BATTERY_PERCENT] < {threshold * 2}"
+    for bit_count in range(BATTERY_MAX_BITS, 1, -1):
         compare = element(condition, "Compare", expression=f"battery_uses_{bit_count}_bits")
         compare_group = element(
             compare,

@@ -14069,12 +14069,12 @@
                 <Group name="battery_binary" x="0" y="0" width="450" height="450">
                     <Condition>
                         <Expressions>
-                            <Expression name="battery_uses_7_bits">[BATTERY_PERCENT] &gt;= 64</Expression>
-                            <Expression name="battery_uses_6_bits">[BATTERY_PERCENT] &gt;= 32</Expression>
-                            <Expression name="battery_uses_5_bits">[BATTERY_PERCENT] &gt;= 16</Expression>
-                            <Expression name="battery_uses_4_bits">[BATTERY_PERCENT] &gt;= 8</Expression>
-                            <Expression name="battery_uses_3_bits">[BATTERY_PERCENT] &gt;= 4</Expression>
-                            <Expression name="battery_uses_2_bits">[BATTERY_PERCENT] &gt;= 2</Expression>
+                            <Expression name="battery_uses_7_bits">[BATTERY_PERCENT] &gt;= 64 &amp;&amp; [BATTERY_PERCENT] &lt; 128</Expression>
+                            <Expression name="battery_uses_6_bits">[BATTERY_PERCENT] &gt;= 32 &amp;&amp; [BATTERY_PERCENT] &lt; 64</Expression>
+                            <Expression name="battery_uses_5_bits">[BATTERY_PERCENT] &gt;= 16 &amp;&amp; [BATTERY_PERCENT] &lt; 32</Expression>
+                            <Expression name="battery_uses_4_bits">[BATTERY_PERCENT] &gt;= 8 &amp;&amp; [BATTERY_PERCENT] &lt; 16</Expression>
+                            <Expression name="battery_uses_3_bits">[BATTERY_PERCENT] &gt;= 4 &amp;&amp; [BATTERY_PERCENT] &lt; 8</Expression>
+                            <Expression name="battery_uses_2_bits">[BATTERY_PERCENT] &gt;= 2 &amp;&amp; [BATTERY_PERCENT] &lt; 4</Expression>
                         </Expressions>
                         <Compare expression="battery_uses_7_bits">
                             <Group name="battery_binary_7_bits" x="0" y="0" width="450" height="450">

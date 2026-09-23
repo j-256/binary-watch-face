@@ -606,6 +606,48 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             )
             self.assertEqual(low.find(".//Font").text, GENERATOR.BATTERY_LOW_GLYPH)
 
+    def test_binary_battery_ranges_are_exclusive_and_render_every_percentage(self) -> None:
+        condition = self.root.find(
+            ".//Compare[@expression='battery_binary_visible']/Group/Condition"
+        )
+        self.assertIsNotNone(condition)
+        assert condition is not None
+        expressions = {
+            expression.get("name"): expression.text
+            for expression in condition.findall("./Expressions/Expression")
+        }
+
+        for percent in range(101):
+            with self.subTest(percent=percent):
+                def evaluate(expression: str) -> int | bool:
+                    return eval(
+                        expression.replace("[BATTERY_PERCENT]", str(percent)).replace("&&", "and"),
+                        {"__builtins__": {}, "floor": math.floor},
+                    )
+
+                matches = [
+                    compare
+                    for compare in condition.findall("Compare")
+                    if evaluate(expressions[compare.get("expression")])
+                ]
+                self.assertLessEqual(len(matches), 1)
+                branch = matches[0] if matches else condition.find("Default")
+                assert branch is not None
+                readouts = [
+                    text
+                    for text in branch.findall(".//PartText")
+                    if text.get("name", "").endswith("_text")
+                ]
+                self.assertTrue(readouts)
+                for readout in readouts:
+                    template = readout.find(".//Template")
+                    assert template is not None and template.text is not None
+                    values = tuple(
+                        evaluate(parameter.get("expression"))
+                        for parameter in template.findall("Parameter")
+                    )
+                    self.assertEqual(template.text % values, "0b" + format(percent, "b"))
+
     def test_native_heart_rate_balances_battery_above_complications(self) -> None:
         scene_configuration = next(
             condition
