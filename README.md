@@ -17,7 +17,7 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
 
-The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide, very faint graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. The **Binary Pulse** face installs alongside Binary and defaults to the subtle graph. Labels are hidden by default, with optional marks on the trace and side times. Tapping the graph opens touch inspection and settings in the separate on-watch recorder. This is an unreleased prototype; the guide includes screenshots, setup, privacy behavior, and removal instructions.
+The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide, very faint graph behind the binary time with 30-minute, 1-hour, 6-hour, and 24-hour windows. The **Binary Pulse** face installs alongside Binary and defaults to the subtle graph. Labels are hidden by default, with optional marks on the trace and side times. Tapping the graph opens touch inspection and settings in the separate on-watch recorder. The guide includes private Play installation without ADB, screenshots, setup, privacy behavior, and removal instructions.
 
 ## Features
 

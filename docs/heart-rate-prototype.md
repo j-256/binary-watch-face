@@ -2,7 +2,7 @@
 
 Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a very faint trace and a soft fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional time marks cross the trace, with start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and use the subtle graph or its higher-contrast clear alternative with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
 
-This is an unreleased Wear OS 7 prototype. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
+This is a Wear OS 7 prototype distributed through private internal testing. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
 
 ## Preview
 
@@ -25,6 +25,20 @@ Light appearance uses the same image tinted to the selected text color. The larg
 </p>
 
 ## Try it
+
+### Install through Google Play without ADB
+
+Check that the watch runs Wear OS 7 or newer. The maintainer must add the Google account used by the watch's Play Store to both apps' internal tester lists. The original Binary closed beta is a separate test and does not grant access to these packages.
+
+1. Open each private test invitation with that Google account and choose **Become a tester**.
+2. Follow the invitation's Google Play link and select the watch as the installation target. Install **Binary Heart History** first, then **Binary Pulse**.
+3. Wait for both installations to finish on the watch, then follow [Configure the graph](#configure-the-graph).
+
+Play can initially display the package names `dev.j256.binarywatchface.history (unreviewed)` and `dev.j256.binarywatchface.prototype (unreviewed)`. A newly published internal test can take time to become installable. If an invitation reports that the app is unavailable, confirm the selected account matches the tester list before retrying. See Google's [internal testing guide](https://support.google.com/googleplay/android-developer/answer/9845334?hl=en).
+
+A debug APK and a Play-installed app use different signing certificates. If either prototype was previously installed from a debug APK, remove that prototype before switching to Play. Uninstalling Binary Heart History erases its local readings; uninstalling Binary Pulse resets its face settings.
+
+### Build and install with ADB
 
 Use the [repository toolchain](../README.md#toolchain), including JDK 17 and Android API 37, to build both APKs:
 
@@ -50,6 +64,8 @@ adb -s DEVICE_SERIAL install -r watchface/build/outputs/apk/prototype/watchface-
 ```
 
 The SDK check must report `37` or newer. In the downloadable prototype bundle, the corresponding APKs are named `binary-heart-history.apk` and `binary-pulse-prototype.apk`. When updating the prototype, install both APKs together so the face and its graph provider use matching styles.
+
+### Configure the graph
 
 1. Open **Binary Heart History** from the watch's app list, then tap **Settings** below the graph.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
@@ -169,11 +185,25 @@ ANDROID_SERIAL=EMULATOR_SERIAL ./gradlew :history:connectedDebugAndroidTest
 
 The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Touch tests cover dragging and clearing the cursor on release, cancellation, visibility changes, and focus loss. Inspection tests cover original timestamps and values, out-of-order readings, empty history, and missing intervals. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
 
-Physical-watch installation, long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified. No release or Play submission is part of this prototype. On-wrist testing and health-permission distribution requirements need review before publication.
+Physical-watch installation, long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified. Private Play internal testing enables on-wrist evaluation; it does not establish public release readiness. On-wrist testing and health-permission distribution requirements need review before wider publication.
+
+## Prepare a private Play update
+
+Use separate Play applications for `dev.j256.binarywatchface.history` and `dev.j256.binarywatchface.prototype`, each with the Wear OS form factor and a Wear OS-only internal testing track. Keep their tester lists explicit. These packages must not be uploaded to the original Binary application. Google's [Wear OS publishing guide](https://developer.android.com/training/wearables/watch-face-designer/publish) covers form-factor and internal-track setup.
+
+Set the upload-key environment variables using the [signing instructions](../README.md#play-release-signing), then build the two upload bundles with configuration caching disabled:
+
+```sh
+./gradlew --no-configuration-cache check :history:bundleRelease :watchface:bundlePrototypeRelease
+```
+
+Upload `history/build/outputs/bundle/release/history-release.aab` to Binary Heart History and `watchface/build/outputs/bundle/prototypeRelease/watchface-prototypeRelease.aab` to Binary Pulse. The `prototypeRelease` variant shares the prototype face resources while remaining non-debuggable and resource-only. Both bundles use the configured upload key; leaving both signing variables unset produces unsigned bundles for local checks.
+
+Before uploading, verify each bundle's signature, package, version, and checksum, and run the official WFF validator and memory evaluator for the face. Check each app's highest uploaded version code before building an update, and increase its code because Play does not accept a reused code. Review the internal track, tester audience, and release notes before publishing. Confirm availability in Play separately from upload completion and separately from installation on the watch.
 
 ## Remove the prototype
 
-Select the original Binary face, then uninstall the two prototype packages:
+Select the original Binary face, then uninstall **Binary Pulse** and **Binary Heart History** through the watch's app settings or Play Store. For an ADB installation, the equivalent commands are:
 
 ```sh
 adb -s DEVICE_SERIAL uninstall dev.j256.binarywatchface.prototype

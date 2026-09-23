@@ -57,7 +57,14 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+        create("prototypeRelease") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".prototype"
+            versionNameSuffix = "-history-prototype"
+        }
     }
+
+    sourceSets.getByName("prototypeRelease").res.srcDir("src/prototype/res")
 
     lint {
         abortOnError = true
