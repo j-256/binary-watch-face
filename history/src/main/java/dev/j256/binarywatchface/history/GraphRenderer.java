@@ -20,6 +20,8 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
+    private static final float BACKGROUND_PLOT_TOP = 40;
+    private static final float BACKGROUND_PLOT_BOTTOM = BACKGROUND_HEIGHT;
     private static final int BACKGROUND_PLOT_ALPHA = 64;
     private static final float MARK_HALF_LENGTH = 5.5f;
     private static final float MARK_STROKE_WIDTH = 2;
@@ -49,8 +51,8 @@ public final class GraphRenderer {
         int height = background ? BACKGROUND_HEIGHT : HEIGHT;
         float left = 16;
         float right = width - left;
-        float top = background ? 28 : 79;
-        float bottom = background ? height - 12 : height - 40;
+        float top = background ? BACKGROUND_PLOT_TOP : 79;
+        float bottom = background ? BACKGROUND_PLOT_BOTTOM : height - 40;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
