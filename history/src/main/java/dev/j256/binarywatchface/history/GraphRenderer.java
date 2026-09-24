@@ -20,23 +20,10 @@ public final class GraphRenderer {
     public static final int BACKGROUND_HEIGHT = 300;
     private static final float BACKGROUND_PLOT_TOP = 80;
     private static final float BACKGROUND_PLOT_BOTTOM = BACKGROUND_HEIGHT;
-    private static final int BACKGROUND_TRACE_ALPHA = 145;
-    private static final float BACKGROUND_TRACE_WIDTH = 2.25f;
-    private static final int BACKGROUND_RANGE_ALPHA = 14;
-    private static final int BACKGROUND_FILL_COLOR = 0x0CFFFFFF;
-    private static final float MARK_HALF_LENGTH = 5.5f;
-    private static final float MARK_STROKE_WIDTH = 2;
-    private static final float MARK_DOT_RADIUS = 2.7f;
-    private static final float MARK_TRIANGLE_HALF_WIDTH = 3.5f;
-    private static final float MARK_TRIANGLE_HALF_HEIGHT = 4;
-    private static final int TIME_MARK_ALPHA = 168;
-    private static final int TIME_LABEL_ALPHA = 232;
     // Keep side labels between the moving bezel tick and the hour row
     private static final float TIME_LABEL_INSET = 58;
     private static final float DAY_LABEL_INSET = 8;
     private static final float TIME_LABEL_BASELINE = 78;
-    private static final float TIME_LABEL_SIZE = 13.5f;
-    private static final float DAY_LABEL_SIZE = 11;
 
     private GraphRenderer() {}
 
@@ -76,9 +63,9 @@ public final class GraphRenderer {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        paint.setTextSize(background ? 10.5f : 21);
+        paint.setTextSize(background ? GraphVisibility.STATUS_SIZE : 21);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(background ? 245 : 210);
+        paint.setAlpha(background ? GraphVisibility.STATUS_ALPHA : 210);
         float captionBaseline = background ? 13.5f : 27;
         long ageMinutes = (series.endMs - series.latestMs) / HistorySeries.MINUTE_MS;
         String range = String.format(Locale.ROOT, "%.0f-%.0f", series.minimum, series.maximum);
@@ -104,20 +91,20 @@ public final class GraphRenderer {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(TIME_MARK_ALPHA);
-        paint.setStrokeWidth(MARK_STROKE_WIDTH);
+        paint.setAlpha(GraphVisibility.MARKS_ALPHA);
+        paint.setStrokeWidth(GraphVisibility.MARK_STROKE_WIDTH);
         paint.setStrokeCap(Paint.Cap.ROUND);
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series, density)) {
             float x = (float) (left + (right - left) * mark.fraction());
             float y = y(mark.bpm(), series.lowerBound(), series.upperBound(), top, bottom);
             switch (markers) {
-                case TICKS -> canvas.drawLine(x, y - MARK_HALF_LENGTH, x, y + MARK_HALF_LENGTH, paint);
-                case DOTS -> canvas.drawCircle(x, y, MARK_DOT_RADIUS, paint);
+                case TICKS -> canvas.drawLine(x, y - GraphVisibility.MARK_HALF_LENGTH, x, y + GraphVisibility.MARK_HALF_LENGTH, paint);
+                case DOTS -> canvas.drawCircle(x, y, GraphVisibility.MARK_DOT_RADIUS, paint);
                 case TRIANGLES -> {
                     Path triangle = new Path();
-                    triangle.moveTo(x, y - MARK_TRIANGLE_HALF_HEIGHT);
-                    triangle.lineTo(x + MARK_TRIANGLE_HALF_WIDTH, y + MARK_TRIANGLE_HALF_HEIGHT);
-                    triangle.lineTo(x - MARK_TRIANGLE_HALF_WIDTH, y + MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.moveTo(x, y - GraphVisibility.MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.lineTo(x + GraphVisibility.MARK_TRIANGLE_HALF_WIDTH, y + GraphVisibility.MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.lineTo(x - GraphVisibility.MARK_TRIANGLE_HALF_WIDTH, y + GraphVisibility.MARK_TRIANGLE_HALF_HEIGHT);
                     triangle.close();
                     canvas.drawPath(triangle, paint);
                 }
@@ -127,18 +114,18 @@ public final class GraphRenderer {
     }
 
     private static void drawTimeLabels(Canvas canvas, Paint paint, HistorySeries series, int width) {
-        paint.setAlpha(TIME_LABEL_ALPHA);
+        paint.setAlpha(GraphVisibility.TIME_LABELS_ALPHA);
         ZoneId zone = ZoneId.systemDefault();
         for (boolean end : new boolean[]{false, true}) {
             HistoryTimeline.Label label = HistoryTimeline.label(series, end, zone);
             float x = end ? width - TIME_LABEL_INSET : TIME_LABEL_INSET;
             paint.setTextAlign(end ? Paint.Align.RIGHT : Paint.Align.LEFT);
-            paint.setTextSize(TIME_LABEL_SIZE);
+            paint.setTextSize(GraphVisibility.TIME_LABEL_SIZE);
             canvas.drawText(label.time(), x, TIME_LABEL_BASELINE, paint);
             if (!label.day().isEmpty()) {
                 float dayX = x + (end ? -DAY_LABEL_INSET : DAY_LABEL_INSET);
-                paint.setTextSize(DAY_LABEL_SIZE);
-                canvas.drawText(label.day(), dayX, TIME_LABEL_BASELINE - TIME_LABEL_SIZE, paint);
+                paint.setTextSize(GraphVisibility.DAY_LABEL_SIZE);
+                canvas.drawText(label.day(), dayX, TIME_LABEL_BASELINE - GraphVisibility.TIME_LABEL_SIZE, paint);
             }
         }
     }
@@ -167,7 +154,7 @@ public final class GraphRenderer {
             }
             float x = left + (right - left) * (index + 0.5f) / series.buckets.length;
             float y = y(bucket.average(), lower, upper, top, bottom);
-            paint.setAlpha(background ? BACKGROUND_RANGE_ALPHA : 85);
+            paint.setAlpha(background ? GraphVisibility.RANGE_ALPHA : 85);
             paint.setStrokeWidth((right - left) / series.buckets.length);
             canvas.drawLine(x, y(bucket.minimum, lower, upper, top, bottom),
                     x, y(bucket.maximum, lower, upper, top, bottom), paint);
@@ -197,15 +184,15 @@ public final class GraphRenderer {
             fill.close();
             paint.setAlpha(255);
             paint.setShader(new LinearGradient(0, top, 0, bottom,
-                    BACKGROUND_FILL_COLOR, 0x00FFFFFF, Shader.TileMode.CLAMP));
+                    Color.argb(GraphVisibility.FILL_ALPHA, 255, 255, 255), 0x00FFFFFF, Shader.TileMode.CLAMP));
             canvas.drawPath(fill, paint);
             paint.setShader(null);
         }
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeWidth(background ? BACKGROUND_TRACE_WIDTH : 3);
-        paint.setAlpha(background ? BACKGROUND_TRACE_ALPHA : 230);
+        paint.setStrokeWidth(background ? GraphVisibility.TRACE_WIDTH : 3);
+        paint.setAlpha(background ? GraphVisibility.TRACE_ALPHA : 230);
         canvas.drawPath(line, paint);
     }
 

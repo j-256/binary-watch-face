@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary visibility lab</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101411; color: #e6ece7; }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; padding: 32px 24px 48px; max-width: 1080px; }
+  h1 { font-size: clamp(28px, 5vw, 42px); letter-spacing: -.04em; margin: 0 0 12px; }
+  h2 { font-size: 18px; margin: 0 0 16px; }
+  p { line-height: 1.6; max-width: 75ch; color: #abb9ae; }
+  .eyebrow { color: #98df9b; text-transform: uppercase; letter-spacing: .15em; font-size: 11px; }
+  .layout { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(300px, 1.1fr); gap: 36px; align-items: start; margin: 28px 0; }
+  figure { margin: 0; position: sticky; top: 24px; }
+  svg { display: block; width: 100%; max-width: 450px; margin: auto; }
+  figcaption { color: #9caaa0; font-size: 13px; text-align: center; margin-top: 16px; line-height: 1.5; }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { display: grid; gap: 7px; font-size: 13px; color: #bdcabe; }
+  select { width: 100%; min-height: 44px; border-radius: 8px; border: 1px solid #425046; padding: 8px 12px; background: #1d2820; color: #f0f5f1; font: inherit; }
+  select:focus-visible { outline: 2px solid #a3f3a8; outline-offset: 3px; }
+  select:disabled { opacity: .5; }
+  .metrics { margin-top: 28px; padding-top: 24px; border-top: 1px solid #344038; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 10px 6px; border-bottom: 1px solid #2b362e; text-align: right; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  th { font-weight: 500; color: #aabbad; }
+  .warn { color: #f1c77c; }
+  #status { display: block; min-height: 48px; margin-top: 16px; font-size: 13px; line-height: 1.5; }
+  .notes { padding: 22px; border: 1px solid #344038; border-radius: 12px; }
+  .notes p { margin-bottom: 0; font-size: 14px; }
+  code { color: #bdeac1; font-size: .93em; }
+  @media (max-width: 720px) { body { padding: 24px 18px; } .layout { grid-template-columns: 1fr; } figure { position: static; } svg { max-width: 380px; } }
+</style>
+<header>
+  <p class="eyebrow">Binary / design tools</p>
+  <h1>Visibility, with a reference.</h1>
+  <p>Compare the graph, marks and timestamps against the foreground. The weights describe contrast above the background; they are not opacity percentages or a measurement of human perception.</p>
+</header>
+<main>
+  <div class="layout">
+    <figure>
+      <svg viewBox="0 0 450 450" role="img" aria-label="Illustrative watch face with invented heart-rate data" id="face"></svg>
+      <figcaption>Illustrative geometry with invented readings.<br>Use Wear OS captures to verify actual rendering.</figcaption>
+    </figure>
+    <section aria-label="Visibility controls">
+      <div class="controls">
+        <label>Display mode<select id="mode"><option value="active">Active</option><option value="ambient">Always-on, color</option><option value="mono">Always-on, white</option></select></label>
+        <label>Theme<select id="appearance"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+        <label>Foreground color<select id="color"></select></label>
+        <label id="preset-label">Graph brightness<select id="preset"><option value="faint">Faint</option><option value="subtle" selected>Subtle</option><option value="clear">Clear</option></select></label>
+        <label>Always-on brightness<select id="ambient"><option value="dim">Dim</option><option value="normal" selected>Normal</option><option value="bright">Bright</option></select></label>
+        <label>Decimal backdrop<select id="backdrop"><option value="off">Hidden</option></select></label>
+      </div>
+      <div class="metrics">
+        <h2>Final composite</h2>
+        <table><thead><tr><th>Component</th><th>Opacity</th><th>Contrast</th><th>Weight</th></tr></thead><tbody id="metrics"></tbody></table>
+        <output id="status" aria-live="polite"></output>
+      </div>
+    </section>
+  </div>
+  <section class="notes">
+    <h2>What the model guarantees</h2>
+    <p><code>target contrast = 1 + weight &times; (foreground contrast - 1)</code>. The build solves the provider alpha first, then the face opacity needed for each preset. The same source supplies the stroke and text sizes. Reference floors guard against accidental extra dimming.</p>
+    <p>Other colors retain the calibrated alphas. Some combinations cannot reach the reference floors even with opaque foreground. Anti-aliasing, scaling, overlapping marks and the decimal backdrop alter individual pixels. Screen brightness, outdoor light and eyesight still require watch testing. The graph is hidden in AOD; numeric heart rate remains an independent setting.</p>
+  </section>
+</main>
+<script id="visibility-data" type="application/json">__VISIBILITY_DATA__</script>
+<script>
+  const data = JSON.parse(document.getElementById('visibility-data').textContent);
+  const byId = id => document.getElementById(id);
+  const colorName = name => name.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
+  for (const name of Object.keys(data.colors)) byId('color').add(new Option(colorName(name), name));
+  for (const [name] of Object.entries(data.backdrop_opacity).sort((first,second) => first[1]-second[1])) byId('backdrop').add(new Option(name.replace('_', '.') + '%', name));
+  byId('color').value = 'terminal';
+  byId('backdrop').value = '30';
+  const rgb = hex => [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16));
+  const luminance = color => color.map(channel => channel / 255).map(channel => channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4).reduce((sum, channel, i) => sum + channel * [.2126, .7152, .0722][i], 0);
+  const contrast = (fg, bg) => (Math.max(luminance(fg), luminance(bg)) + .05) / (Math.min(luminance(fg), luminance(bg)) + .05);
+  const composite = (fg, bg, alpha) => fg.map((channel, index) => channel * alpha + bg[index] * (1 - alpha));
+  const number = value => value.toFixed(2);
+
+  function update() {
+    const active = byId('mode').value === 'active';
+    const color = byId('color').value;
+    const preset = byId('preset').value;
+    const foreground = byId('mode').value === 'mono' ? '#FFFFFF' : data.colors[color][active ? 0 : 2];
+    const background = active ? data.backgrounds[byId('appearance').value] : '#000000';
+    const fg = rgb(foreground), bg = rgb(background);
+    const mainAlpha = active ? 1 : data.ambient_alpha[byId('ambient').value] / 255;
+    const mainContrast = contrast(composite(fg, bg, mainAlpha), bg);
+    const referenceContrast = contrast(fg, bg);
+    const faceAlpha = active ? data.face_alpha[preset] / 255 : 0;
+    const roleAlpha = role => data.provider_alpha[role] / 255;
+    const geometry = data.model.graph.geometry;
+    const backdropAlpha = active && byId('backdrop').value !== 'off' ? data.backdrop_opacity[byId('backdrop').value] / 255 : 0;
+    byId('appearance').disabled = !active;
+    byId('preset').disabled = !active;
+    byId('ambient').disabled = active;
+    byId('backdrop').disabled = !active;
+    byId('color').disabled = byId('mode').value === 'mono';
+
+    const points = [[16,296],[42,293],[68,283],[94,296],[120,278],[146,279],[172,249],[198,263],[224,230],[250,273],[276,265],[302,281],[328,276],[354,288],[380,276],[406,279],[434,262]];
+    const path = 'M' + points.map(point => point.join(',')).join(' L');
+    const marks = points.filter((_, index) => index % 3 === 1).map(([x,y]) => `<path d="M${x},${y-geometry.mark_half_length} V${y+geometry.mark_half_length}"/>`).join('');
+    let dots = '';
+    for (const [value,count,y] of [[23,5,150],[37,6,210]]) for (let index = 0; index < count; index++) {
+      const lit = (value >> (count-index-1)) & 1;
+      dots += `<circle cx="${131 + index*188/(count-1)}" cy="${y}" r="12" fill="${lit && active ? foreground : 'none'}" stroke="${foreground}" stroke-opacity="${lit || !active ? 1 : .3}" stroke-width="${active ? 1 : 2}"/>`;
+    }
+    byId('face').innerHTML = `<defs><clipPath id="round"><circle cx="225" cy="225" r="224"/></clipPath><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${foreground}" stop-opacity="${roleAlpha('fill')}"/><stop offset="1" stop-color="${foreground}" stop-opacity="0"/></linearGradient></defs>
+      <g clip-path="url(#round)"><circle cx="225" cy="225" r="225" fill="${background}"/>
+      <g opacity="${faceAlpha}" stroke-linecap="round" stroke-linejoin="round">
+        <path d="${path} L434,360 L16,360 Z" fill="url(#fill)"/>
+        <path d="${path}" fill="none" stroke="${foreground}" stroke-opacity="${roleAlpha('trace')}" stroke-width="${geometry.trace_width}"/>
+        <g stroke="${foreground}" stroke-opacity="${roleAlpha('marks')}" stroke-width="${geometry.mark_stroke_width}">${marks}</g>
+        <g fill="${foreground}" opacity="${roleAlpha('time_labels')}" font-family="sans-serif" font-size="${geometry.time_label_size}"><text x="58" y="138">12:00</text><text x="392" y="138" text-anchor="end">13:00</text></g>
+      </g>
+      <g fill="#757575" opacity="${backdropAlpha}" font-size="180" text-anchor="middle" font-family="sans-serif"><text x="225" y="211">23</text><text x="225" y="374">37</text></g>
+      <g opacity="${mainAlpha}">${dots}<g fill="${foreground}" text-anchor="middle" font-family="sans-serif"><text x="225" y="78" font-size="17">THU 24 SEP</text><text x="225" y="271" font-size="18">72 &#9825; &#183; 93%</text></g></g></g>`;
+
+    const rows = [['Foreground', mainAlpha, mainContrast, null]];
+    if (active) for (const [role,name] of [['trace','Graph'],['marks','Time marks'],['time_labels','Timestamps']]) {
+      const opacity = roleAlpha(role)*faceAlpha;
+      rows.push([name, opacity, contrast(composite(fg,bg,opacity),bg), data.model.graph.presets[preset].minimum_contrast[role]]);
+    }
+    if (active && backdropAlpha > 0) rows.push(['Decimal backdrop', backdropAlpha, contrast(composite(rgb('#757575'),bg,backdropAlpha),bg), null]);
+    byId('metrics').innerHTML = rows.map(([name,opacity,value,floor]) => `<tr><td>${name}</td><td>${(opacity*100).toFixed(1)}%</td><td class="${floor && value < floor ? 'warn' : ''}">${number(value)}:1</td><td>${referenceContrast > 1.00001 ? number((value-1)/(referenceContrast-1)) : 'n/a'}</td></tr>`).join('');
+    const failures = rows.filter(([, ,value,floor]) => floor && value < floor);
+    byId('status').className = failures.length || !data.passed ? 'warn' : '';
+    byId('status').textContent = !data.passed ? 'Reference calibration fails. Review the machine-readable report before generating app resources.' : !active ? 'History is hidden. Shown: foreground brightness; the actual AOD uses patterned dots. Backdrop and numeric readout visibility have separate settings.' : failures.length ? `${failures.map(row=>row[0]).join(', ')} below the reference floor for this palette. Those floors are calibrated to terminal green on black.` : 'This palette meets the reference floors. Pixel coverage and watch conditions still matter.';
+  }
+  document.querySelectorAll('select').forEach(select => select.addEventListener('change', update));
+  update();
+</script>
+</html>

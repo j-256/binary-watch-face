@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "reference": {"foreground": "#28FE14", "background": "#000000"},
+  "bit_weights": {"uniform": 0.6451, "lit": 1.0, "unlit": 0.1031},
+  "graph": {
+    "roles": {
+      "trace": {"visibility": 0.2841},
+      "marks": {"visibility": 0.3925},
+      "time_labels": {"visibility": 0.8073},
+      "status": {"visibility": 0.9133},
+      "fill": {"visibility": 0.00387},
+      "range": {"visibility": 0.00461}
+    },
+    "geometry": {
+      "trace_width": 2.25,
+      "mark_half_length": 5.5,
+      "mark_stroke_width": 2.0,
+      "mark_dot_radius": 2.7,
+      "mark_triangle_half_width": 3.5,
+      "mark_triangle_half_height": 4.0,
+      "time_label_size": 13.5,
+      "day_label_size": 11.0,
+      "status_size": 10.5
+    },
+    "presets": {
+      "faint": {
+        "trace_visibility": 0.0286,
+        "minimum_contrast": {"trace": 1.35, "marks": 1.45, "time_labels": 1.9},
+        "minimum_rendered_contrast": {"trace": 1.3, "marks": 1.45, "time_labels": 1.9}
+      },
+      "subtle": {
+        "trace_visibility": 0.0826,
+        "minimum_contrast": {"trace": 2.0, "marks": 2.4, "time_labels": 3.8},
+        "minimum_rendered_contrast": {"trace": 1.8, "marks": 2.4, "time_labels": 3.8}
+      },
+      "clear": {
+        "trace_visibility": 0.2841,
+        "minimum_contrast": {"trace": 4.5, "marks": 6.0, "time_labels": 11.0},
+        "minimum_rendered_contrast": {"trace": 3.9, "marks": 6.0, "time_labels": 11.0}
+      }
+    }
+  },
+  "ambient": {
+    "reference": {"foreground": "#FFFFFF", "background": "#000000"},
+    "main_visibility": {"dim": 0.2159, "normal": 0.5271, "bright": 1.0},
+    "graph_visibility": 0.0
+  }
+}

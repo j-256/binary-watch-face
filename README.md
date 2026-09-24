@@ -17,6 +17,8 @@ The leftmost dot in each row is the most significant bit. Add the weights above 
 
 See [design considerations](docs/design-considerations.md) for the visual hierarchy, complication layout, system-indicator clearance, and verification requirements.
 
+The [visibility model](docs/visibility-model.md) derives graph, bit-weight and AOD alphas from shared contrast budgets. It includes palette reports and a standalone interactive calibration preview.
+
 The optional [heart-history prototype](docs/heart-rate-prototype.md) adds a wide graph behind the binary time with Faint, Subtle, and Clear contrast and 30-minute, 1-hour, 6-hour, and 24-hour windows. The **Binary Pulse** face installs alongside Binary and defaults to the subtle graph. Labels are hidden by default, with optional marks on the trace and side times. Tapping the graph opens touch inspection and settings in the separate on-watch recorder. The guide includes private Play installation without ADB, screenshots, setup, privacy behavior, and removal instructions.
 
 The recorder also includes an optional [battery comparison diagnostic](docs/battery-testing.md) with independent tracking/graph trials, local observations, comparison charts, and a battery-only JSON export. It measures whole-watch drain without background polling or network telemetry.
@@ -192,6 +194,7 @@ Run the generator tests, generated-file check, and Android build with:
 python3 -m unittest discover -s tests -v
 python3 tools/generate_watchface.py --check
 python3 tools/check_layout.py
+python3 tools/check_visibility.py
 ./gradlew check assembleDebug bundleRelease
 ```
 
