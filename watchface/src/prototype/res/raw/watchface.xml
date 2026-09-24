@@ -336,7 +336,7 @@
                 </Rectangle>
             </PartDraw>
         </Group>
-        <ComplicationSlot name="heart_history" slotId="5" displayName="slot_heart_history" x="0" y="60" width="450" height="300" supportedTypes="PHOTO_IMAGE EMPTY" isCustomizable="TRUE" tintColor="[CONFIGURATION.textColor.0]">
+        <ComplicationSlot name="heart_history" slotId="5" displayName="slot_heart_history" x="0" y="60" width="450" height="300" supportedTypes="PHOTO_IMAGE EMPTY" isCustomizable="FALSE" tintColor="[CONFIGURATION.textColor.0]">
             <Variant mode="AMBIENT" target="alpha" value="0" />
             <BoundingBox x="0" y="0" width="450" height="300" />
             <DefaultProviderPolicy primaryProvider="dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication" primaryProviderType="PHOTO_IMAGE" defaultSystemProvider="EMPTY" defaultSystemProviderType="EMPTY" />

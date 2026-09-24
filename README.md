@@ -112,7 +112,7 @@ The complication layouts keep the larger lower-left and lower-right providers st
 
 The binary time keeps the same position and size across complication layouts. Native readouts sit above the lower complications, leaving the bottom center available for Wear OS notification and ongoing-activity indicators.
 
-Heart-history layouts add a separate background image slot and hide the active decimal backdrop. The graph requires Binary Heart History, follows the text color, and is hidden in always-on mode. The original layouts keep the graph slot disabled.
+Heart-history layouts add a background image slot dedicated to Binary Heart History. The graph follows the text color and is hidden in always-on mode; the decimal backdrop keeps its independent visibility settings. Choose a layout without history to hide the graph. Ordinary complication slots remain customizable.
 
 ## Toolchain
 

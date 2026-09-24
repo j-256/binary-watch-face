@@ -1158,6 +1158,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         scene = self.root.find("Scene")
         history = scene.find("ComplicationSlot[@name='heart_history']")
         self.assertIsNotNone(history)
+        self.assertEqual(history.get("isCustomizable"), "FALSE")
         self.assertEqual(tuple(int(history.get(key)) for key in ("x", "y", "width", "height")), GENERATOR.HISTORY_BOUNDS)
         self.assertEqual(history.find("Variant[@mode='AMBIENT']").get("value"), "0")
         self.assertEqual(history.find("DefaultProviderPolicy").get("primaryProvider"), GENERATOR.HISTORY_PROVIDER)

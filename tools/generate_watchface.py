@@ -2662,7 +2662,7 @@ def add_history_background(scene: ET.Element) -> None:
     slot = element(
         scene, "ComplicationSlot", name="heart_history", slotId=HISTORY_SLOT_ID,
         displayName="slot_heart_history", x=x, y=y, width=width, height=height,
-        supportedTypes="PHOTO_IMAGE EMPTY", isCustomizable="TRUE", tintColor=COLOR_TEXT_ACTIVE,
+        supportedTypes="PHOTO_IMAGE EMPTY", isCustomizable="FALSE", tintColor=COLOR_TEXT_ACTIVE,
     )
     add_variant(slot, "alpha", 0)
     element(slot, "BoundingBox", x=0, y=0, width=width, height=height)
