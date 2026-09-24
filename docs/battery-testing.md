@@ -6,7 +6,7 @@ For a step-by-step experiment, download the [standalone battery test plan](batte
 
 ## Prepare a comparison
 
-Use Binary Pulse throughout the experiment. Keep the same ordinary complications, brightness, always-on display, colors, decimal backdrop, graph contrast, time window, labels, connectivity, and usual routine. Use similar starting charge levels and avoid comparing a quiet day with a workout, software update, or unusually poor signal. Recordings made during tracking-off runs are not recoverable later.
+Use Binary Pulse throughout the experiment. Keep the same ordinary complications, brightness, always-on display, colors, decimal backdrop, graph contrast, time window, labels, markers, spacing, connectivity, and usual routine. Use similar starting charge levels and avoid comparing a quiet day with a workout, software update, or unusually poor signal. Recordings made during tracking-off runs are not recoverable later.
 
 | Mode | Recording | Watch-face Layout | Graph source |
 | --- | --- | --- | --- |
@@ -36,7 +36,7 @@ These screenshots use invented battery results on a disposable Wear OS emulator.
 
 The comparison chart uses a shared zero-based scale. Each bar is total battery percentage points lost divided by total elapsed hours for that mode; dots show the individual runs. A long run therefore contributes more than a short run. The displayed differences use percentage points per hour, abbreviated **pp/h**, rather than a percentage change relative to the baseline. Results remain preliminary until both compared modes have repeated eligible runs. Day-to-day variation and coarse battery gauges still limit attribution after repeats.
 
-Only uninterrupted runs of at least twelve hours enter the chart. Comparisons are grouped by app version, watch model, OS build, graph time window, and label setting. Older or different configurations remain visible as individual runs. Other face settings and routine are controlled by the wearer, not automatically measured.
+Only uninterrupted runs of at least twelve hours enter the chart. Comparisons are grouped by app version, watch model, OS build, graph time window, labels, markers, and spacing. Older or different configurations remain visible as individual runs. Other face settings and routine are controlled by the wearer, not automatically measured.
 
 Open a saved run for its start/end levels, elapsed time, optional charge-counter rate, and a plot of its actual observations. The plot shows separate dots without connecting them into an invented discharge curve. It has no measurement between those points. Whole-percent battery readings are coarse; a small difference can be rounding or normal variation. Percentage comes from Android's [system battery status](https://developer.android.com/training/monitoring-device-state/battery-monitoring). A supported [charge counter](https://developer.android.com/reference/android/os/BatteryManager) supplies additional detail, not proof of greater accuracy.
 

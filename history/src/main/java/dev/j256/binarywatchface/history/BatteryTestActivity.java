@@ -201,7 +201,7 @@ public final class BatteryTestActivity extends Activity {
         text(content, "Percentage points per hour (pp/h)", 12, MUTED);
         content.addView(new BatteryComparisonView(this, runs, configuration), new LinearLayout.LayoutParams(-1, dp(160)));
         text(content, "Lower uses less battery. Bars show the duration-weighted average; dots show individual runs.", 12, MUTED);
-        text(content, "Only uninterrupted runs of at least 12 hours with this app build, time window, labels, and markers enter the comparison.", 12, MUTED);
+        text(content, "Only uninterrupted runs of at least 12 hours with this app build, time window, labels, markers, and spacing enter the comparison.", 12, MUTED);
         BatteryTrial.Summary baseline = BatteryTrial.summarize(runs, BatteryTrial.Mode.BASELINE, configuration);
         for (BatteryTrial.Mode mode : BatteryTrial.Mode.values()) {
             BatteryTrial.Summary summary = BatteryTrial.summarize(runs, mode, configuration);

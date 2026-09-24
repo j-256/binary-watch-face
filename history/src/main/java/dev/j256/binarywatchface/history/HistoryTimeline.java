@@ -9,7 +9,22 @@ import java.util.Locale;
 
 /** Time marks follow the same connected bucket segments as the visible trace */
 public final class HistoryTimeline {
-    public static final int INTERVAL_COUNT = 6;
+    public enum Density {
+        SPARSE("Sparse", 3), REGULAR("Regular", 6), DENSE("Dense", 12);
+
+        public final String title;
+        private final int intervals;
+
+        Density(String title, int intervals) {
+            this.title = title;
+            this.intervals = intervals;
+        }
+
+        public int intervalCount(HistorySeries.Span span) {
+            // Two-minute spacing keeps the shortest dense window easy to count
+            return this == DENSE && span == HistorySeries.Span.HALF_HOUR ? 15 : intervals;
+        }
+    }
     private static final DateTimeFormatter CLOCK = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT);
     private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("EEE", Locale.ROOT);
 
@@ -19,14 +34,23 @@ public final class HistoryTimeline {
     private HistoryTimeline() {}
 
     public static long intervalMs(HistorySeries.Span span) {
-        return span.durationMs / INTERVAL_COUNT;
+        return intervalMs(span, Density.REGULAR);
+    }
+
+    public static long intervalMs(HistorySeries.Span span, Density density) {
+        return span.durationMs / density.intervalCount(span);
     }
 
     public static List<Mark> marks(HistorySeries series) {
+        return marks(series, Density.REGULAR);
+    }
+
+    public static List<Mark> marks(HistorySeries series, Density density) {
         List<Mark> result = new ArrayList<>();
-        for (int step = 0; step <= INTERVAL_COUNT; step++) {
-            long timeMs = series.startMs + step * intervalMs(series.span);
-            Mark mark = at(series, timeMs, (double) step / INTERVAL_COUNT);
+        int intervals = density.intervalCount(series.span);
+        for (int step = 0; step <= intervals; step++) {
+            long timeMs = series.startMs + step * intervalMs(series.span, density);
+            Mark mark = at(series, timeMs, (double) step / intervals);
             if (mark != null) result.add(mark);
         }
         return result;

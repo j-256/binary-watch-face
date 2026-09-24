@@ -141,10 +141,26 @@ public final class HistoryActivity extends Activity {
                         refresh();
                     }).setNegativeButton(R.string.not_now, null));
         });
+        TextView densityHeading = text(content, getString(R.string.density_heading, settings.span().label), 14, INK);
+        densityHeading.setPadding(0, dp(14), 0, dp(4));
+        HistoryUi.action(content, settings.density().title, false, view -> {
+            HistorySeries.Span span = settings.span();
+            HistoryTimeline.Density[] choices = HistoryTimeline.Density.values();
+            String[] titles = new String[choices.length];
+            for (int index = 0; index < choices.length; index++) {
+                titles[index] = choices[index].title + " / " + intervalLabel(span, choices[index]);
+            }
+            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(getString(R.string.density_heading, span.label))
+                    .setSingleChoiceItems(titles, settings.density(span).ordinal(), (dialog, index) -> {
+                        settings.density(span, choices[index]);
+                        HistoryRuntime.requestImage(this);
+                        dialog.dismiss();
+                        refresh();
+                    }).setNegativeButton(R.string.not_now, null));
+        });
+        text(content, getString(R.string.density_help), 12, MUTED);
         if (settings.markers() != HistorySettings.Markers.NONE) {
-            long minutes = HistoryTimeline.intervalMs(settings.span()) / HistorySeries.MINUTE_MS;
-            String interval = minutes < MINUTES_PER_HOUR ? minutes + " min" : minutes / MINUTES_PER_HOUR + " h";
-            text(content, getString(R.string.mark_spacing, interval), 12, MUTED);
+            text(content, getString(R.string.mark_spacing, intervalLabel(settings.span(), settings.density())), 12, MUTED);
         }
         text(content, getString(R.string.brightness_help), 12, MUTED).setPadding(0, dp(12), 0, dp(4));
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
@@ -211,6 +227,11 @@ public final class HistoryActivity extends Activity {
             refresh();
         });
         setContentView(content);
+    }
+
+    private static String intervalLabel(HistorySeries.Span span, HistoryTimeline.Density density) {
+        long minutes = HistoryTimeline.intervalMs(span, density) / HistorySeries.MINUTE_MS;
+        return minutes < MINUTES_PER_HOUR ? minutes + " min" : minutes / MINUTES_PER_HOUR + " h";
     }
 
     private String status(HistorySettings settings, HistorySeries series) {

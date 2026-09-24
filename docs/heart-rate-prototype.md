@@ -127,6 +127,7 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 | Contrast | Faint, Subtle (default), or Clear through the face's Layout & brightness setting |
 | Labels | None by default; optionally show side times, with or without the observed BPM range |
 | Markers | None, vertical ticks, dots, or upright triangles on the trace, independent of labels |
+| Marker spacing | Sparse, Regular (default), or Dense, remembered independently for each window |
 | Refresh | Requests Wear OS updates about every five minutes; explicit setting changes request an immediate refresh |
 | Trace | Dim bucket averages with a faint min/max envelope to retain short peaks and a soft fill beneath each connected segment |
 | Missing data | Breaks both the trace and its fill when adjacent readings are more than two minutes apart; gaps shorter than a display bucket can disappear at long spans |
@@ -143,14 +144,14 @@ Hiding labels leaves fresh history entirely free of captions in both preview and
 
 ### Reading the time marks
 
-Optional vertical ticks, dots, or upright triangles mark the trace at equal elapsed intervals. Choose None to hide them without hiding the timestamps. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+Optional vertical ticks, dots, or upright triangles mark the trace at equal elapsed intervals. Choose None to hide them without hiding the timestamps. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Each window remembers its **Sparse**, **Regular**, or **Dense** spacing preset. Regular preserves the original spacing. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
 
-| Window | Time between marks |
-| --- | --- |
-| 30 minutes | 5 minutes |
-| 1 hour | 10 minutes |
-| 6 hours | 1 hour |
-| 24 hours | 4 hours |
+| Window | Sparse | Regular | Dense |
+| --- | --- | --- | --- |
+| 30 minutes | 10 minutes | 5 minutes | 2 minutes |
+| 1 hour | 20 minutes | 10 minutes | 5 minutes |
+| 6 hours | 2 hours | 1 hour | 30 minutes |
+| 24 hours | 8 hours | 4 hours | 2 hours |
 
 Weekdays accompany the side times when the window crosses midnight. Times use the watch's local timezone; mark spacing remains elapsed time across daylight-saving changes. The captions sit in the outer margins beside the hour row so the four-slot layout cannot cover them. There is no on-face demo badge.
 

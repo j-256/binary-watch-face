@@ -16,7 +16,7 @@ public class HistoryTimelineTest {
             HistorySeries series = filled(span, NOW);
             var marks = HistoryTimeline.marks(series);
             assertEquals(minutes[span.ordinal()] * HistorySeries.MINUTE_MS, HistoryTimeline.intervalMs(span));
-            assertEquals(HistoryTimeline.INTERVAL_COUNT + 1, marks.size());
+            assertEquals(7, marks.size());
             assertEquals(series.startMs, marks.get(0).timeMs());
             assertEquals(series.endMs, marks.get(marks.size() - 1).timeMs());
             for (int index = 1; index < marks.size(); index++) {
@@ -35,6 +35,42 @@ public class HistoryTimelineTest {
         }
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
             assertEquals(60 + 100 * mark.fraction(), mark.bpm(), 0.0001);
+        }
+    }
+
+    @Test public void densitiesUseCountableIntervalsInEveryWindowIncludingAcrossDaylightSaving() {
+        long[][] minutes = {{10, 5, 2}, {20, 10, 5}, {120, 60, 30}, {480, 240, 120}};
+        long dstEnd = Instant.parse("2026-11-01T07:30:00Z").toEpochMilli();
+        for (HistorySeries.Span span : HistorySeries.Span.values()) {
+            for (HistoryTimeline.Density density : HistoryTimeline.Density.values()) {
+                HistorySeries series = filled(span, dstEnd);
+                long interval = minutes[span.ordinal()][density.ordinal()] * HistorySeries.MINUTE_MS;
+                assertEquals(interval, HistoryTimeline.intervalMs(span, density));
+                var marks = HistoryTimeline.marks(series, density);
+                assertEquals(span.durationMs / interval + 1, marks.size());
+                assertEquals(series.startMs, marks.get(0).timeMs());
+                assertEquals(series.endMs, marks.get(marks.size() - 1).timeMs());
+                for (int index = 1; index < marks.size(); index++) {
+                    assertEquals(interval, marks.get(index).timeMs() - marks.get(index - 1).timeMs());
+                }
+            }
+        }
+    }
+
+    @Test public void noDensityPlacesMarkersInGapsOrOutsideRecordedHistory() {
+        HistorySeries series = new HistorySeries(HistorySeries.Span.HOUR, NOW);
+        for (int minute = 10; minute <= 50; minute++) {
+            if (minute >= 24 && minute <= 36) continue;
+            series.add(new HistorySeries.Sample(series.startMs + minute * HistorySeries.MINUTE_MS, 70));
+        }
+        for (HistoryTimeline.Density density : HistoryTimeline.Density.values()) {
+            var marks = HistoryTimeline.marks(series, density);
+            assertFalse(marks.isEmpty());
+            for (HistoryTimeline.Mark mark : marks) {
+                long minute = (mark.timeMs() - series.startMs) / HistorySeries.MINUTE_MS;
+                assertTrue(minute >= 10 && minute <= 50);
+                assertTrue(minute < 24 || minute > 36);
+            }
         }
     }
 

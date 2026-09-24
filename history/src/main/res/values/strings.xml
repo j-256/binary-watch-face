@@ -9,6 +9,8 @@
     <string name="markers_ticks">Ticks</string>
     <string name="markers_dots">Dots</string>
     <string name="markers_triangles">Triangles</string>
+    <string name="density_heading">Marker spacing / %1$s</string>
+    <string name="density_help">Each time window remembers its spacing. Applies to ticks, dots, and triangles.</string>
     <string name="mark_spacing">%1$s between marks on the line. Optional side labels show the window\'s start and end in local 24-hour time.</string>
     <string name="app_name">Binary Heart History</string>
     <string name="complication_name">Heart history graph</string>

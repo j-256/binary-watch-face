@@ -171,7 +171,7 @@ public class HistoryIntegrationTest {
                 assertEquals(0, background.getPixel(0, y));
                 assertEquals(0, background.getPixel(background.getWidth() - 1, y));
             }
-            var data = HeartHistoryComplication.image(context, series, true, "Sample", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
+            var data = HeartHistoryComplication.image(context, series, true, "Sample", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE, HistoryTimeline.Density.REGULAR);
             assertNotNull(data.getTapAction());
             assertTrue(data.getTapAction().isImmutable());
             assertTrue(data.getTapAction().isActivity());
@@ -245,6 +245,21 @@ public class HistoryIntegrationTest {
             labeled.recycle();
         }
         for (Bitmap image : images) image.recycle();
+    }
+
+    @Test public void eachTimeWindowRemembersItsOwnDensityAcrossRecreation() {
+        HistorySettings settings = new HistorySettings(context);
+        for (HistorySeries.Span span : HistorySeries.Span.values()) settings.density(span, HistoryTimeline.Density.REGULAR);
+        settings.density(HistorySeries.Span.HALF_HOUR, HistoryTimeline.Density.SPARSE);
+        settings.density(HistorySeries.Span.DAY, HistoryTimeline.Density.DENSE);
+        for (HistorySeries.Span span : HistorySeries.Span.values()) {
+            settings.span(span);
+            HistoryTimeline.Density expected = span == HistorySeries.Span.HALF_HOUR ? HistoryTimeline.Density.SPARSE
+                    : span == HistorySeries.Span.DAY ? HistoryTimeline.Density.DENSE : HistoryTimeline.Density.REGULAR;
+            assertEquals(expected, new HistorySettings(context).density());
+        }
+        for (HistorySeries.Span span : HistorySeries.Span.values()) settings.density(span, HistoryTimeline.Density.REGULAR);
+        settings.span(HistorySeries.Span.HOUR);
     }
 
     @Test public void everySideTimeAndWeekdayClearsTheBezelTickAndFitsTheOuterHourGutters() {

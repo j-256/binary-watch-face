@@ -19,6 +19,7 @@ public final class HistorySettings {
     public static final String STATUS_SCHEDULE_ERROR = "schedule_error";
     static final String LABELS_KEY = "labels";
     static final String MARKERS_KEY = "markers";
+    private static final String DENSITY_PREFIX = "marker-density-";
 
     public enum Labels {
         NONE(R.string.labels_none), WINDOW(R.string.labels_window), RANGE(R.string.labels_range);
@@ -81,6 +82,21 @@ public final class HistorySettings {
     public void markers(Markers value) {
         if (value != markers()) BatteryTestStore.invalidate(context, BatteryTrial.Issue.SETTINGS_CHANGED);
         preferences.edit().putString(MARKERS_KEY, value.name()).apply();
+    }
+
+    public HistoryTimeline.Density density() { return density(span()); }
+
+    public HistoryTimeline.Density density(HistorySeries.Span span) {
+        String name = preferences.getString(DENSITY_PREFIX + span.name(), HistoryTimeline.Density.REGULAR.name());
+        for (HistoryTimeline.Density value : HistoryTimeline.Density.values()) if (value.name().equals(name)) return value;
+        return HistoryTimeline.Density.REGULAR;
+    }
+
+    public void density(HistorySeries.Span span, HistoryTimeline.Density value) {
+        if (span == span() && value != density(span)) {
+            BatteryTestStore.invalidate(context, BatteryTrial.Issue.SETTINGS_CHANGED);
+        }
+        preferences.edit().putString(DENSITY_PREFIX + span.name(), value.name()).apply();
     }
 
     public boolean recording() { return preferences.getBoolean("recording", false); }

@@ -140,6 +140,22 @@ public class BatteryTestIntegrationTest {
         assertEquals(Issue.SETTINGS_CHANGED, store.active().issue());
     }
 
+    @Test public void onlyTheActiveWindowsDensityAffectsBatteryComparisons() {
+        HistorySettings settings = new HistorySettings(context);
+        settings.span(HistorySeries.Span.HOUR);
+        settings.density(HistorySeries.Span.HOUR, HistoryTimeline.Density.REGULAR);
+        String original = BatteryReader.configuration(context);
+        store.active(run("density", now).observe(reading(0, 90), false, true));
+        settings.density(HistorySeries.Span.DAY, HistoryTimeline.Density.DENSE);
+        assertEquals(original, BatteryReader.configuration(context));
+        assertEquals(Issue.NONE, store.active().issue());
+        settings.density(HistorySeries.Span.HOUR, HistoryTimeline.Density.SPARSE);
+        assertNotEquals(original, BatteryReader.configuration(context));
+        settings.density(HistorySeries.Span.HOUR, HistoryTimeline.Density.REGULAR);
+        assertEquals(original, BatteryReader.configuration(context));
+        assertEquals(Issue.SETTINGS_CHANGED, store.active().issue());
+    }
+
     @Test public void resultsAreBoundedExpiredAndExportedWithRawBatteryObservations() throws Exception {
         for (int index = 0; index < BatteryTestStore.MAX_RUNS + 3; index++) {
             Run run = run("run-" + index, now).observe(reading(0, 90), false, true).observe(reading(12, 75), true, true);

@@ -40,16 +40,22 @@ public final class GraphRenderer {
     private GraphRenderer() {}
 
     public static Bitmap render(HistorySeries series, boolean demo, String emptyLabel) {
-        return render(series, demo, emptyLabel, false, HistorySettings.Labels.RANGE, HistorySettings.Markers.NONE);
+        return render(series, demo, emptyLabel, false, HistorySettings.Labels.RANGE,
+                HistorySettings.Markers.NONE, HistoryTimeline.Density.REGULAR);
     }
 
     public static Bitmap renderBackground(HistorySeries series, boolean demo, String emptyLabel,
             HistorySettings.Labels labels, HistorySettings.Markers markers) {
-        return render(series, demo, emptyLabel, true, labels, markers);
+        return renderBackground(series, demo, emptyLabel, labels, markers, HistoryTimeline.Density.REGULAR);
+    }
+
+    public static Bitmap renderBackground(HistorySeries series, boolean demo, String emptyLabel,
+            HistorySettings.Labels labels, HistorySettings.Markers markers, HistoryTimeline.Density density) {
+        return render(series, demo, emptyLabel, true, labels, markers, density);
     }
 
     private static Bitmap render(HistorySeries series, boolean demo, String emptyLabel, boolean background,
-            HistorySettings.Labels labels, HistorySettings.Markers markers) {
+            HistorySettings.Labels labels, HistorySettings.Markers markers, HistoryTimeline.Density density) {
         int width = background ? BACKGROUND_WIDTH : WIDTH;
         int height = background ? BACKGROUND_HEIGHT : HEIGHT;
         float left = 16;
@@ -64,7 +70,7 @@ public final class GraphRenderer {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
             if (background) dimBackground(canvas, paint, width, height);
             if (background && markers != HistorySettings.Markers.NONE) {
-                drawTimeMarks(canvas, paint, series, markers, left, top, right, bottom);
+                drawTimeMarks(canvas, paint, series, markers, density, left, top, right, bottom);
             }
         }
         paint.reset();
@@ -94,14 +100,14 @@ public final class GraphRenderer {
     }
 
     private static void drawTimeMarks(Canvas canvas, Paint paint, HistorySeries series, HistorySettings.Markers markers,
-            float left, float top, float right, float bottom) {
+            HistoryTimeline.Density density, float left, float top, float right, float bottom) {
         paint.reset();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
         paint.setAlpha(TIME_MARK_ALPHA);
         paint.setStrokeWidth(MARK_STROKE_WIDTH);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
+        for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series, density)) {
             float x = (float) (left + (right - left) * mark.fraction());
             float y = y(mark.bpm(), series.lowerBound(), series.upperBound(), top, bottom);
             switch (markers) {

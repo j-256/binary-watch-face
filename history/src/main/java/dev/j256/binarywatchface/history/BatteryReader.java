@@ -43,7 +43,7 @@ final class BatteryReader {
         return "v" + version(context) + " / " + Build.MODEL + " / " + Build.VERSION.RELEASE
                 + " / " + Build.VERSION.INCREMENTAL
                 + " / " + settings.span().name() + " / " + settings.labels().name()
-                + " / " + settings.markers().name();
+                + " / " + settings.markers().name() + " / " + settings.density().name();
     }
 
     private BatteryReader() {}
