@@ -10,6 +10,7 @@
     <string name="markers_dots">Dots</string>
     <string name="markers_triangles">Triangles</string>
     <string name="density_heading">Marker spacing / %1$s</string>
+    <string name="density_dialog">Spacing / %1$s</string>
     <string name="density_help">Each time window remembers its spacing. Applies to ticks, dots, and triangles.</string>
     <string name="mark_spacing">%1$s between marks on the line. Optional side labels show the window\'s start and end in local 24-hour time.</string>
     <string name="app_name">Binary Heart History</string>
@@ -50,7 +51,7 @@
     <string name="background_title">Build history in the background</string>
     <string name="background_explanation">Allow heart-rate access while this app is closed. Readings stay on your watch, with a rolling 24-hour history. Stop and erase at any time.</string>
     <string name="allow_background">Allow background access</string>
-    <string name="not_now">Not now</string>
+    <string name="cancel">Cancel</string>
     <string name="erase_title">Erase your history?</string>
     <string name="erase_explanation">Recording will stop and stored heart-rate readings will be deleted from this watch.</string>
     <string name="show_on_face">On Binary Pulse, edit Layout &amp; brightness to choose Faint, Subtle, or Clear with your preferred number of complications. The time window above applies to the face too.</string>

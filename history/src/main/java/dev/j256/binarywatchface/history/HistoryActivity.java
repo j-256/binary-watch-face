@@ -119,13 +119,11 @@ public final class HistoryActivity extends Activity {
             HistorySettings.Labels[] choices = HistorySettings.Labels.values();
             String[] titles = new String[choices.length];
             for (int index = 0; index < choices.length; index++) titles[index] = getString(choices[index].title);
-            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.labels_heading)
-                    .setSingleChoiceItems(titles, settings.labels().ordinal(), (dialog, index) -> {
-                        settings.labels(choices[index]);
-                        HistoryRuntime.requestImage(this);
-                        dialog.dismiss();
-                        refresh();
-                    }).setNegativeButton(R.string.not_now, null));
+            HistoryUi.showChoices(this, getString(R.string.labels_heading), titles, settings.labels().ordinal(), index -> {
+                settings.labels(choices[index]);
+                HistoryRuntime.requestImage(this);
+                refresh();
+            });
         });
         TextView markersHeading = text(content, getString(R.string.markers_heading), 14, INK);
         markersHeading.setPadding(0, dp(14), 0, dp(4));
@@ -133,13 +131,11 @@ public final class HistoryActivity extends Activity {
             HistorySettings.Markers[] choices = HistorySettings.Markers.values();
             String[] titles = new String[choices.length];
             for (int index = 0; index < choices.length; index++) titles[index] = getString(choices[index].title);
-            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.markers_heading)
-                    .setSingleChoiceItems(titles, settings.markers().ordinal(), (dialog, index) -> {
-                        settings.markers(choices[index]);
-                        HistoryRuntime.requestImage(this);
-                        dialog.dismiss();
-                        refresh();
-                    }).setNegativeButton(R.string.not_now, null));
+            HistoryUi.showChoices(this, getString(R.string.markers_heading), titles, settings.markers().ordinal(), index -> {
+                settings.markers(choices[index]);
+                HistoryRuntime.requestImage(this);
+                refresh();
+            });
         });
         TextView densityHeading = text(content, getString(R.string.density_heading, settings.span().label), 14, INK);
         densityHeading.setPadding(0, dp(14), 0, dp(4));
@@ -150,13 +146,11 @@ public final class HistoryActivity extends Activity {
             for (int index = 0; index < choices.length; index++) {
                 titles[index] = choices[index].title + " / " + intervalLabel(span, choices[index]);
             }
-            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(getString(R.string.density_heading, span.label))
-                    .setSingleChoiceItems(titles, settings.density(span).ordinal(), (dialog, index) -> {
-                        settings.density(span, choices[index]);
-                        HistoryRuntime.requestImage(this);
-                        dialog.dismiss();
-                        refresh();
-                    }).setNegativeButton(R.string.not_now, null));
+            HistoryUi.showChoices(this, getString(R.string.density_dialog, span.shortLabel), titles, settings.density(span).ordinal(), index -> {
+                settings.density(span, choices[index]);
+                HistoryRuntime.requestImage(this);
+                refresh();
+            });
         });
         text(content, getString(R.string.density_help), 12, MUTED);
         if (settings.markers() != HistorySettings.Markers.NONE) {
@@ -177,7 +171,7 @@ public final class HistoryActivity extends Activity {
         if (settings.recording() || settings.demo() || series.sampleCount > 0) {
             action(content, R.string.erase, false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle(R.string.erase_title).setMessage(R.string.erase_explanation)
-                    .setNegativeButton(R.string.not_now, null)
+                    .setNegativeButton(R.string.cancel, null)
                     .setPositiveButton(R.string.erase, (dialog, which) -> {
                         working = true;
                         refresh();
@@ -260,7 +254,7 @@ public final class HistoryActivity extends Activity {
         } else if (checkSelfPermission(HistorySettings.BACKGROUND_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.background_title)
                     .setMessage(R.string.background_explanation)
-                    .setNegativeButton(R.string.not_now, null)
+                    .setNegativeButton(R.string.cancel, null)
                     .setPositiveButton(R.string.allow_background, (dialog, which) ->
                             requestPermissions(new String[]{HistorySettings.BACKGROUND_PERMISSION}, PERMISSION_REQUEST)));
         } else {

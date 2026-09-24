@@ -103,7 +103,7 @@ public final class BatteryTestActivity extends Activity {
                     action(content, "Reset battery tests", false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                             .setTitle("Reset battery tests?")
                             .setMessage("Removes unreadable tests and results. Heart-rate history is kept. Confirm your recording mode in History settings afterward.")
-                            .setNegativeButton(R.string.not_now, null).setPositiveButton("Reset", (dialog, which) -> {
+                            .setNegativeButton(R.string.cancel, null).setPositiveButton("Reset", (dialog, which) -> {
                                 HistoryRuntime.IO.execute(() -> {
                                     try { new BatteryTestStore(this).reset(); refresh(); }
                                     catch (RuntimeException failure) { completed(failure.getMessage()); }
@@ -129,13 +129,11 @@ public final class BatteryTestActivity extends Activity {
                 BatteryTrial.Mode[] choices = BatteryTrial.Mode.values();
                 String[] titles = new String[choices.length];
                 for (int index = 0; index < choices.length; index++) titles[index] = BatteryText.mode(choices[index]);
-                HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle("Test mode")
-                        .setSingleChoiceItems(titles, selected.ordinal(), (dialog, which) -> {
-                            selected = choices[which];
-                            dialog.dismiss();
-                            message = null;
-                            refresh();
-                        }).setNegativeButton(R.string.not_now, null));
+                HistoryUi.showChoices(this, "Test mode", titles, selected.ordinal(), which -> {
+                    selected = choices[which];
+                    message = null;
+                    refresh();
+                });
             });
             text(content, description(selected), 13, INK);
             action(content, "Set up mode", true, view -> {
@@ -231,7 +229,7 @@ public final class BatteryTestActivity extends Activity {
             action(content, "Share results", false, view -> share());
             action(content, "Clear battery results", false, view -> HistoryUi.showDialog(new AlertDialog.Builder(this)
                     .setTitle("Clear battery results?").setMessage("Heart-rate history and an active test are kept.")
-                    .setNegativeButton(R.string.not_now, null).setPositiveButton("Clear", (dialog, which) -> {
+                    .setNegativeButton(R.string.cancel, null).setPositiveButton("Clear", (dialog, which) -> {
                         HistoryRuntime.IO.execute(() -> {
                             try { new BatteryTestStore(this).clearResults(); refresh(); }
                             catch (RuntimeException error) { completed(error.getMessage()); }

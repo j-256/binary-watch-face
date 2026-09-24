@@ -40,6 +40,8 @@ Native readouts must not look like labels belonging to unrelated complication pr
 
 Binary Heart History opens to an enlarged chart with visible Settings and round time-window buttons. Keep both within the round screen, with at least a 48 dp touch target, and retain the window choices in settings. Keep the timestamp and BPM above the plot so the finger does not cover them. A vertical inspection line exists only during the active touch and clears on release, cancellation, loss of focus, or leaving the chart. Snap to recorded readings near the touched time; preserve missing-data gaps. The chart is cached during a gesture so dragging does not read storage or rebuild the image. Back from settings returns to the chart.
 
+Choice menus use centered, wrapping text with equal side padding. Keep their title, choices, and Cancel action in one scrolling list so a fixed footer cannot cover an option. The crown must scroll the open menu and return to the underlying screen after dismissal. Check both the normal watch size and a smaller display with enlarged system text.
+
 ## Verification and release checkpoints
 
 Geometry tests protect the reserved system region, readout separation, clock clearance, and complication separation. They complement rendered checks because glyphs, provider content, system overlays, and device scaling are not fully represented by simple bounds.

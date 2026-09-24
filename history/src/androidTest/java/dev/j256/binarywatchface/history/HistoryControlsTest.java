@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inspector.WindowInspector;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
@@ -113,11 +114,98 @@ public class HistoryControlsTest {
                 assertTrue("The crown must scroll the open dialog", list.getFirstVisiblePosition() > first
                         || list.getChildAt(0).getTop() < top);
                 assertEquals("The screen behind the dialog must stay still", screenOffset, scroll(activity).getScrollY());
-                list.performItemClick(null, BatteryTrial.Mode.GRAPH.ordinal(), BatteryTrial.Mode.GRAPH.ordinal());
+                choose("Graph only");
             });
             await(scenario, activity -> choices() == null && scrollReady(activity) && button(activity, "Graph only") != null);
             scenario.onActivity(this::scrollBothWays);
         }
+    }
+
+    @Test public void graphChoiceMenusKeepTextCenteredAndCancelWithoutChangingPreferences() {
+        var context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        HistorySettings settings = new HistorySettings(context);
+        settings.labels(HistorySettings.Labels.NONE);
+        settings.markers(HistorySettings.Markers.NONE);
+        settings.span(HistorySeries.Span.HOUR);
+        settings.density(settings.span(), HistoryTimeline.Density.REGULAR);
+        try (ActivityScenario<HistoryActivity> scenario = ActivityScenario.launch(HistoryActivity.class)) {
+            await(scenario, activity -> button(activity, "Settings") != null);
+            scenario.onActivity(activity -> button(activity, "Settings").performClick());
+            await(scenario, HistoryControlsTest::scrollReady);
+            scenario.onActivity(activity -> button(activity, "None").performClick());
+            await(scenario, activity -> choices() != null && choices().getChildCount() > 0);
+            scenario.onActivity(activity -> {
+                assertChoiceLayout(activity);
+                choices().setSelection(choices().getCount() - 1);
+            });
+            await(scenario, activity -> cancelButton() != null && cancelButton().isLaidOut());
+            scenario.onActivity(activity -> {
+                assertTrue(cancelButton().getHeight() >= HistoryUi.dp(activity, 48));
+                cancelButton().performClick();
+            });
+            await(scenario, activity -> choices() == null);
+            assertEquals(HistorySettings.Labels.NONE, settings.labels());
+            scenario.onActivity(activity -> button(activity, "None").performClick());
+            await(scenario, activity -> choices() != null && choices().getChildCount() > 0);
+            scenario.onActivity(activity -> choose("Time"));
+            await(scenario, activity -> choices() == null && button(activity, "Time") != null);
+            assertEquals(HistorySettings.Labels.WINDOW, settings.labels());
+            scenario.onActivity(activity -> button(activity, "None").performClick());
+            await(scenario, activity -> choices() != null && choices().getChildCount() > 0);
+            scenario.onActivity(activity -> {
+                assertChoiceLayout(activity);
+                choose("Triangles");
+            });
+            await(scenario, activity -> choices() == null && button(activity, "Triangles") != null);
+            assertEquals(HistorySettings.Markers.TRIANGLES, settings.markers());
+            scenario.onActivity(activity -> button(activity, "Regular").performClick());
+            await(scenario, activity -> choices() != null && choices().getChildCount() > 0);
+            scenario.onActivity(activity -> {
+                assertChoiceLayout(activity);
+                choose("Dense / 5 min");
+            });
+            await(scenario, activity -> choices() == null && button(activity, "Dense") != null);
+            assertEquals(HistoryTimeline.Density.DENSE, settings.density());
+        }
+    }
+
+    private static void assertChoiceLayout(Activity activity) {
+        ListView list = choices();
+        int[] location = new int[2];
+        list.getLocationOnScreen(location);
+        int width = activity.getResources().getDisplayMetrics().widthPixels;
+        assertEquals("The choices must be centered on the screen", width / 2f, location[0] + list.getWidth() / 2f, 1);
+        assertTrue("Leave space before the round edge", location[0] >= HistoryUi.dp(activity, 24));
+        for (int index = 0; index < list.getChildCount(); index++) {
+            if (!(list.getChildAt(index) instanceof CheckedTextView label)) continue;
+            assertTrue(label.getPaddingLeft() >= HistoryUi.dp(activity, 12));
+            assertEquals(label.getPaddingLeft(), label.getPaddingRight());
+            int available = label.getWidth() - label.getCompoundPaddingLeft() - label.getCompoundPaddingRight();
+            for (int line = 0; line < label.getLayout().getLineCount(); line++) {
+                assertEquals(0, label.getLayout().getEllipsisCount(line));
+                assertEquals("Center the text itself, not only its containing view", available / 2f,
+                        (label.getLayout().getLineLeft(line) + label.getLayout().getLineRight(line)) / 2f, 1);
+                assertTrue(label.getText() + " line " + line + " needs " + label.getLayout().getLineMax(line)
+                        + " pixels, available " + available, label.getLayout().getLineMax(line) <= available);
+            }
+        }
+    }
+
+    private static Button cancelButton() {
+        if (choices() == null) return null;
+        return (Button) find(choices().getRootView(), view -> view instanceof Button button
+                && "Cancel".contentEquals(button.getText()));
+    }
+
+    private static void choose(String label) {
+        ListView list = choices();
+        for (int position = 0; position < list.getCount(); position++) {
+            if (label.equals(list.getAdapter().getItem(position))) {
+                list.performItemClick(null, position, list.getItemIdAtPosition(position));
+                return;
+            }
+        }
+        fail("Missing choice: " + label);
     }
 
     private void scrollBothWays(Activity activity) {
