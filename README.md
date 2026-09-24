@@ -100,7 +100,7 @@ Choose a curated preset from the companion app, or long-press the active face an
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
 | Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden, with a low-battery cue; paired with active-only by default, active and AOD, or hidden heart rate |
-| Layout | None, two by default, three, or four provider slots; optional subtle or clear heart-history background |
+| Layout & brightness | None, two by default, three, or four provider slots; optional faint, subtle, or clear heart-history background |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
 The complication layouts keep the larger lower-left and lower-right providers stable when the count changes:

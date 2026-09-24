@@ -20,6 +20,7 @@
     <string name="inspect_preview">Preview data / Drag to inspect</string>
     <string name="inspect_empty">Open Settings to get started</string>
     <string name="inspect_stale">Readings are stale / Drag to inspect</string>
+    <string name="brightness_help">Graph brightness lives in the watch face editor: Layout &amp; brightness. Choose Faint, Subtle, or Clear.</string>
     <string name="span_heading">Time window</string>
     <string name="start">Start recording</string>
     <string name="sample">Preview sample data</string>
@@ -44,7 +45,7 @@
     <string name="not_now">Not now</string>
     <string name="erase_title">Erase your history?</string>
     <string name="erase_explanation">Recording will stop and stored heart-rate readings will be deleted from this watch.</string>
-    <string name="show_on_face">On Binary, edit Layout and choose an option with heart history. The window above applies to the face too.</string>
+    <string name="show_on_face">On Binary Pulse, edit Layout &amp; brightness to choose Faint, Subtle, or Clear with your preferred number of complications. The time window above applies to the face too.</string>
     <string name="privacy">Only on your watch. No account, network access, analytics, or backup. The graph refreshes about every five minutes; sensor delivery and battery impact vary by watch. Missing readings stay as gaps.</string>
     <string name="graph_description">Heart-rate history for %1$s. Touch and drag for a recorded time and heart rate. Lift your finger to dismiss.</string>
 </resources>

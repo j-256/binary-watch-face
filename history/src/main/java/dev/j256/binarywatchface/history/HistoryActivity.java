@@ -131,6 +131,7 @@ public final class HistoryActivity extends Activity {
             String interval = minutes < MINUTES_PER_HOUR ? minutes + " min" : minutes / MINUTES_PER_HOUR + " h";
             text(content, getString(R.string.mark_spacing, interval), 12, MUTED);
         }
+        text(content, getString(R.string.brightness_help), 12, MUTED).setPadding(0, dp(12), 0, dp(4));
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
         if (settings.recording()) action(content, R.string.pause, false, view -> {
             working = true;

@@ -34,6 +34,7 @@ BACKDROP_VISIBILITY_ID = "backdropVisibility"
 HISTORY_SLOT_ID = 5
 HISTORY_BOUNDS = (0, 60, 450, 300)
 # The provider dims its plot separately so annotations remain readable
+HISTORY_ALPHA_FAINT = 82
 HISTORY_ALPHA_SUBTLE = 142
 HISTORY_ALPHA_CLEAR = 255
 HISTORY_PROVIDER = "dev.j256.binarywatchface.history/dev.j256.binarywatchface.history.HeartHistoryComplication"
@@ -474,7 +475,7 @@ COMPLICATION_LAYOUTS = {
 }
 HISTORY_COMPLICATION_LAYOUTS = {
     f"{count}_{style}": (*slots, HISTORY_SLOT_ID)
-    for style in ("history", "history_clear")
+    for style in ("history_faint", "history", "history_clear")
     for count, slots in COMPLICATION_LAYOUTS.items()
 }
 ALL_COMPLICATION_LAYOUTS = {**COMPLICATION_LAYOUTS, **HISTORY_COMPLICATION_LAYOUTS}
@@ -2672,6 +2673,7 @@ def add_history_background(scene: ET.Element) -> None:
     part = element(complication, "PartImage", x=0, y=0, width=width, height=height)
     element(part, "Transform", target="alpha", value=(
         f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(key for key in HISTORY_COMPLICATION_LAYOUTS if key.endswith("_clear")))}) ? {HISTORY_ALPHA_CLEAR} : '
+        f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(key for key in HISTORY_COMPLICATION_LAYOUTS if key.endswith("_faint")))}) ? {HISTORY_ALPHA_FAINT} : '
         f'({configuration_matches_expression(COMPLICATION_COUNT_ID, tuple(HISTORY_COMPLICATION_LAYOUTS))}) ? {HISTORY_ALPHA_SUBTLE} : 0'
     ))
     element(part, "Image", resource="[COMPLICATION.PHOTO_IMAGE]")
