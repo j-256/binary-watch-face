@@ -99,7 +99,7 @@ The time-window controls are under **Settings** in the on-watch app. Turn the cr
 
 ## Touch inspection
 
-Tap the exposed history background on the active face to open Binary Heart History. The app opens to a larger graph; tap **Settings** for recording, time windows, and face labels. The ordinary complications keep their provider actions, and the bottom system indicator keeps its return action. A layout without history has no graph shortcut.
+Tap the exposed history background on the active face to open Binary Heart History. The app opens to a larger graph. The round button beside **Settings** cycles **30m → 1h → 6h → 24h → 30m** without scrolling; it also updates the face. Time windows remain available in **Settings**, alongside recording and face labels. The ordinary complications keep their provider actions, and the bottom system indicator keeps its return action. A layout without history has no graph shortcut.
 
 Hold a finger on the app's plot and drag horizontally. A vertical line and point mark the selected reading while its local timestamp and BPM appear above the graph. Lift your finger to dismiss them. The cursor also clears if the gesture is cancelled or the chart loses focus. **View graph** or the system Back gesture returns from settings to the chart.
 

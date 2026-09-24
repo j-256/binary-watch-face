@@ -1,6 +1,7 @@
 package dev.j256.binarywatchface.history;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -27,6 +28,37 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class HistoryControlsTest {
     private static final long UI_TIMEOUT_MS = 5_000;
+
+    @Test public void graphShortcutCyclesEveryWindowAndKeepsSettingsInSync() {
+        var context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        HistorySettings settings = new HistorySettings(context);
+        settings.span(HistorySeries.Span.HALF_HOUR);
+        try (ActivityScenario<HistoryActivity> scenario = ActivityScenario.launch(HistoryActivity.class)) {
+            for (HistorySeries.Span span : HistorySeries.Span.values()) {
+                await(scenario, activity -> button(activity, span.shortLabel) != null);
+                scenario.onActivity(activity -> {
+                    Button shortcut = button(activity, span.shortLabel);
+                    Rect visible = new Rect();
+                    assertTrue(shortcut.getGlobalVisibleRect(visible));
+                    assertEquals(shortcut.getHeight(), visible.height());
+                    assertEquals(shortcut.getWidth(), visible.width());
+                    assertTrue(shortcut.getHeight() >= HistoryUi.dp(activity, 48));
+                    assertTrue(shortcut.getContentDescription().toString().contains(span.next().label));
+                    shortcut.performClick();
+                });
+            }
+            await(scenario, activity -> button(activity, "30m") != null);
+            assertEquals(HistorySeries.Span.HALF_HOUR, new HistorySettings(context).span());
+            scenario.recreate();
+            await(scenario, activity -> button(activity, "30m") != null);
+            scenario.onActivity(activity -> button(activity, "Settings").performClick());
+            await(scenario, HistoryControlsTest::scrollReady);
+            scenario.onActivity(activity -> button(activity, "6 hours").performClick());
+            await(scenario, activity -> new HistorySettings(activity).span() == HistorySeries.Span.SIX_HOURS);
+            scenario.onActivity(activity -> button(activity, "View graph").performClick());
+            await(scenario, activity -> button(activity, "6h") != null);
+        }
+    }
 
     @Test public void crownScrollsSettingsBeforeTouchAndAfterChangingASettingOrRecreating() {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);

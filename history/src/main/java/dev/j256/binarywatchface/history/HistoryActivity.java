@@ -24,6 +24,7 @@ public final class HistoryActivity extends Activity {
     private static final int PERMISSION_REQUEST = 21;
     private static final int MINUTES_PER_HOUR = 60;
     private static final String SETTINGS_SCREEN = "settings-screen";
+    private static final int TIME_WINDOW_BUTTON_DP = 48;
     private boolean working;
     private boolean showingSettings;
     private ScrollView scroll;
@@ -168,17 +169,32 @@ public final class HistoryActivity extends Activity {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
         content.setBackgroundColor(Color.BLACK);
-        content.setPadding(0, dp(10), 0, dp(20));
+        content.setPadding(0, dp(10), 0, dp(24));
         content.addView(new HistoryGraphView(this, series, settings.demo()), new LinearLayout.LayoutParams(-1, 0, 1));
+        LinearLayout controls = new LinearLayout(this);
+        controls.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams controlsLayout = new LinearLayout.LayoutParams(-2, -2);
+        controlsLayout.topMargin = dp(7);
+        content.addView(controls, controlsLayout);
         Button settingsButton = button(getString(R.string.settings), false);
         settingsButton.setEnabled(true);
-        settingsButton.setMinHeight(dp(40));
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(dp(112), -2);
-        layout.topMargin = dp(7);
-        content.addView(settingsButton, layout);
+        controls.addView(settingsButton, new LinearLayout.LayoutParams(dp(84), -2));
         settingsButton.setOnClickListener(view -> {
             showingSettings = true;
             render(settings, series);
+        });
+        Button windowButton = button(settings.span().shortLabel, false);
+        windowButton.setContentDescription(getString(R.string.cycle_window,
+                settings.span().label, settings.span().next().label));
+        windowButton.setPadding(0, 0, 0, 0);
+        LinearLayout.LayoutParams windowLayout = new LinearLayout.LayoutParams(
+                dp(TIME_WINDOW_BUTTON_DP), dp(TIME_WINDOW_BUTTON_DP));
+        windowLayout.leftMargin = dp(8);
+        controls.addView(windowButton, windowLayout);
+        windowButton.setOnClickListener(view -> {
+            settings.span(settings.span().next());
+            HistoryRuntime.requestImage(this);
+            refresh();
         });
         setContentView(content);
     }

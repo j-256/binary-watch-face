@@ -16,18 +16,22 @@ public final class HistorySeries {
     public static final double MAX_BPM = 240;
 
     public enum Span {
-        HALF_HOUR("30 min", 30 * MINUTE_MS),
-        HOUR("1 hour", 60 * MINUTE_MS),
-        SIX_HOURS("6 hours", 6 * 60 * MINUTE_MS),
-        DAY("24 hours", RETENTION_MS);
+        HALF_HOUR("30 min", "30m", 30 * MINUTE_MS),
+        HOUR("1 hour", "1h", 60 * MINUTE_MS),
+        SIX_HOURS("6 hours", "6h", 6 * 60 * MINUTE_MS),
+        DAY("24 hours", "24h", RETENTION_MS);
 
         public final String label;
+        public final String shortLabel;
         public final long durationMs;
 
-        Span(String label, long durationMs) {
+        Span(String label, String shortLabel, long durationMs) {
             this.label = label;
+            this.shortLabel = shortLabel;
             this.durationMs = durationMs;
         }
+
+        public Span next() { return values()[(ordinal() + 1) % values().length]; }
 
         public static Span fromName(String name) {
             for (Span span : values()) {
