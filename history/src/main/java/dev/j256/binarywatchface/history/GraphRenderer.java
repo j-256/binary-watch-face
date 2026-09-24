@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 
@@ -22,14 +20,17 @@ public final class GraphRenderer {
     public static final int BACKGROUND_HEIGHT = 300;
     private static final float BACKGROUND_PLOT_TOP = 80;
     private static final float BACKGROUND_PLOT_BOTTOM = BACKGROUND_HEIGHT;
-    private static final int BACKGROUND_PLOT_ALPHA = 64;
+    private static final int BACKGROUND_TRACE_ALPHA = 145;
+    private static final float BACKGROUND_TRACE_WIDTH = 2.25f;
+    private static final int BACKGROUND_RANGE_ALPHA = 14;
+    private static final int BACKGROUND_FILL_COLOR = 0x0CFFFFFF;
     private static final float MARK_HALF_LENGTH = 5.5f;
     private static final float MARK_STROKE_WIDTH = 2;
     private static final float MARK_DOT_RADIUS = 2.7f;
     private static final float MARK_TRIANGLE_HALF_WIDTH = 3.5f;
     private static final float MARK_TRIANGLE_HALF_HEIGHT = 4;
-    private static final int TIME_MARK_ALPHA = 88;
-    private static final int TIME_LABEL_ALPHA = 192;
+    private static final int TIME_MARK_ALPHA = 168;
+    private static final int TIME_LABEL_ALPHA = 232;
     // Keep side labels between the moving bezel tick and the hour row
     private static final float TIME_LABEL_INSET = 58;
     private static final float DAY_LABEL_INSET = 8;
@@ -68,7 +69,6 @@ public final class GraphRenderer {
         paint.setColor(Color.WHITE);
         if (series.sampleCount > 0) {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
-            if (background) dimBackground(canvas, paint, width, height);
             if (background && markers != HistorySettings.Markers.NONE) {
                 drawTimeMarks(canvas, paint, series, markers, density, left, top, right, bottom);
             }
@@ -167,7 +167,7 @@ public final class GraphRenderer {
             }
             float x = left + (right - left) * (index + 0.5f) / series.buckets.length;
             float y = y(bucket.average(), lower, upper, top, bottom);
-            paint.setAlpha(background ? 55 : 85);
+            paint.setAlpha(background ? BACKGROUND_RANGE_ALPHA : 85);
             paint.setStrokeWidth((right - left) / series.buckets.length);
             canvas.drawLine(x, y(bucket.minimum, lower, upper, top, bottom),
                     x, y(bucket.maximum, lower, upper, top, bottom), paint);
@@ -180,11 +180,15 @@ public final class GraphRenderer {
                     fill.close();
                 }
                 line.moveTo(x, y);
+                // A round-capped zero-length segment keeps isolated readings visible
+                if (background) line.lineTo(x, y);
                 fill.moveTo(x, bottom);
                 fill.lineTo(x, y);
             }
-            paint.setAlpha(background ? 170 : 220);
-            canvas.drawCircle(x, y, background ? 0.8f : 2, paint);
+            if (!background) {
+                paint.setAlpha(220);
+                canvas.drawCircle(x, y, 2, paint);
+            }
             previous = index;
             previousX = x;
         }
@@ -193,25 +197,16 @@ public final class GraphRenderer {
             fill.close();
             paint.setAlpha(255);
             paint.setShader(new LinearGradient(0, top, 0, bottom,
-                    0x30FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP));
+                    BACKGROUND_FILL_COLOR, 0x00FFFFFF, Shader.TileMode.CLAMP));
             canvas.drawPath(fill, paint);
             paint.setShader(null);
         }
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeWidth(background ? 1.5f : 3);
-        paint.setAlpha(background ? 180 : 230);
+        paint.setStrokeWidth(background ? BACKGROUND_TRACE_WIDTH : 3);
+        paint.setAlpha(background ? BACKGROUND_TRACE_ALPHA : 230);
         canvas.drawPath(line, paint);
-    }
-
-    private static void dimBackground(Canvas canvas, Paint paint, int width, int height) {
-        paint.setStyle(Paint.Style.FILL);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        // Dim the plot before adding time marks and labels
-        paint.setShader(null);
-        paint.setAlpha(BACKGROUND_PLOT_ALPHA);
-        canvas.drawRect(0, 0, width, height, paint);
     }
 
     private static float y(double bpm, double lower, double upper, float top, float bottom) {

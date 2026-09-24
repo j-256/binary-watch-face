@@ -192,6 +192,45 @@ public class HistoryIntegrationTest {
         }
     }
 
+    @Test public void backgroundTraceRemainsVisibleAboveItsFaintFill() {
+        for (HistorySeries.Span span : HistorySeries.Span.values()) {
+            HistorySeries series = new HistorySeries(span, now);
+            for (long time = series.startMs; time <= now; time += HistorySeries.MINUTE_MS) {
+                series.add(new HistorySeries.Sample(time, 80));
+            }
+            Bitmap image = GraphRenderer.renderBackground(series, false, "",
+                    HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
+            int middle = image.getWidth() / 2;
+            int traceAlpha = maxAlpha(image, middle, 80, middle + 1, image.getHeight());
+            assertTrue("The trace must survive the face's additional opacity", traceAlpha >= 140);
+            assertTrue("The trace must remain secondary to markers and labels", traceAlpha <= 160);
+            int visibleRows = 0;
+            for (int y = 80; y < image.getHeight(); y++) {
+                if ((image.getPixel(middle, y) >>> 24) >= traceAlpha / 3) visibleRows++;
+            }
+            assertTrue("The trace must span more than a hairline", visibleRows >= 3);
+            int fillAlpha = maxAlpha(image, middle, 245, middle + 1, 275);
+            assertTrue("The fill must remain present but faint", fillAlpha > 0 && fillAlpha <= 12);
+            image.recycle();
+
+            HistorySeries isolated = new HistorySeries(span, now);
+            isolated.add(new HistorySeries.Sample(now, 80));
+            Bitmap point = GraphRenderer.renderBackground(isolated, false, "",
+                    HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
+            assertTrue("An isolated reading must retain the trace's brightness",
+                    maxAlpha(point, 0, 80, point.getWidth(), point.getHeight()) >= traceAlpha - 30);
+            point.recycle();
+        }
+    }
+
+    private int maxAlpha(Bitmap image, int left, int top, int right, int bottom) {
+        int maximum = 0;
+        for (int y = top; y < bottom; y++) for (int x = left; x < right; x++) {
+            maximum = Math.max(maximum, image.getPixel(x, y) >>> 24);
+        }
+        return maximum;
+    }
+
     @Test public void labelsDefaultToNoneAndPersistAcrossSettingsInstances() {
         context.getSharedPreferences("history-settings", Context.MODE_PRIVATE).edit()
                 .remove(HistorySettings.LABELS_KEY).commit();
@@ -234,10 +273,11 @@ public class HistoryIntegrationTest {
             Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE, markers);
             for (Bitmap previous : images) assertFalse(previous.sameAs(image));
             images.add(image);
-            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
-                assertTrue("Markers must remain below interface brightness", (image.getPixel(x, y) >>> 24) < 160);
-            }
             Bitmap labeled = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW, markers);
+            int labelAlpha = maxAlpha(labeled, 0, 0, labeled.getWidth(), 80);
+            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                assertTrue("Trace and markers must remain dimmer than timestamps", (image.getPixel(x, y) >>> 24) < labelAlpha);
+            }
             assertFalse(image.sameAs(labeled));
             for (int y = 90; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
                 assertEquals("Labels must not change the trace or markers", image.getPixel(x, y), labeled.getPixel(x, y));

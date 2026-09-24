@@ -1,6 +1,6 @@
 # Heart-history prototype
 
-Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a very faint trace and a soft fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional vertical ticks, dots, or upright triangles mark the trace. Independent labels show start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and choose Faint, Subtle, or Clear graph brightness with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
+Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a visible trace and a faint fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional vertical ticks, dots, or upright triangles mark the trace. Independent labels show start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and choose Faint, Subtle, or Clear graph brightness with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
 
 This is a Wear OS 7 prototype distributed through private internal testing. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
 
@@ -152,7 +152,7 @@ Hiding labels leaves fresh history entirely free of captions in both preview and
 
 ### Reading the time marks
 
-Optional vertical ticks, dots, or upright triangles mark the trace at equal elapsed intervals. Choose None to hide them without hiding the timestamps. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Each window remembers its **Sparse**, **Regular**, or **Dense** spacing preset. Regular preserves the original spacing. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+Optional vertical ticks, dots, or upright triangles mark the trace at equal elapsed intervals. Choose None to hide them without hiding the timestamps. The trace remains subordinate to the binary clock, the marks have slightly more contrast, and the side timestamps have more still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Each window remembers its **Sparse**, **Regular**, or **Dense** spacing preset. Regular preserves the original spacing. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
 
 | Window | Sparse | Regular | Dense |
 | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ Weekdays accompany the side times when the window crosses midnight. Times use th
   <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="45%">
 </p>
 
-Graph brightness has three levels. These use the same 7.5% decimal backdrop and keep labels and markers brighter than the trace:
+Graph brightness has three levels: Faint for a restrained trace, Subtle for a balance with the binary clock, and Clear for stronger contrast. The line is thicker than a hairline, while the fill and range shading stay faint. These examples use the same 7.5% decimal backdrop and keep labels and markers brighter than the trace:
 
 | Faint | Subtle (default) | Clear |
 | --- | --- | --- |
