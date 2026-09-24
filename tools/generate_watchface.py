@@ -482,26 +482,27 @@ HISTORY_COMPLICATION_LAYOUTS = {
 ALL_COMPLICATION_LAYOUTS = {**COMPLICATION_LAYOUTS, **HISTORY_COMPLICATION_LAYOUTS}
 
 DEFAULT_FLAVOR_ID = "terminal"
+# Request frequently adjusted controls first; native editors may group slot controls separately
 DEFAULT_CONFIGURATION_VALUES = (
+    (COMPLICATION_COUNT_ID, "2"),
+    (BACKDROP_OPACITY_ID, DEFAULT_BACKDROP_OPACITY_ID),
     (DOT_COLOR_ID, "terminal"),
     (TEXT_COLOR_ID, "terminal"),
-    (APPEARANCE_ID, "dark"),
-    (BACKDROP_COLOR_ID, DEFAULT_BACKDROP_COLOR_ID),
-    (BACKDROP_OPACITY_ID, DEFAULT_BACKDROP_OPACITY_ID),
-    (BACKDROP_LAYOUT_ID, DEFAULT_BACKDROP_LAYOUT_ID),
-    (BACKDROP_VISIBILITY_ID, DEFAULT_BACKDROP_VISIBILITY_ID),
     (SIZE_ID, DEFAULT_SIZE_ID),
-    (CLOCK_MODE_ID, "24"),
-    (DOT_EFFECT_ID, "glow"),
-    (TICK_STYLE_ID, "all"),
+    (APPEARANCE_ID, "dark"),
+    (BACKDROP_VISIBILITY_ID, DEFAULT_BACKDROP_VISIBILITY_ID),
+    (BACKDROP_LAYOUT_ID, DEFAULT_BACKDROP_LAYOUT_ID),
+    (BACKDROP_COLOR_ID, DEFAULT_BACKDROP_COLOR_ID),
     (SHOW_SECONDS_ID, "FALSE"),
+    (TICK_STYLE_ID, "all"),
     (SHOW_WEIGHTS_ID, WEIGHTS_SHOWN_ID),
-    (SHOW_WEEKDAY_ID, "TRUE"),
+    (DOT_EFFECT_ID, "glow"),
+    (BATTERY_DISPLAY_ID, "decimal"),
     (AMBIENT_COLOR_ID, DEFAULT_AMBIENT_APPEARANCE_ID),
     (AMBIENT_INFO_ID, "off"),
     (DATE_FORMAT_ID, "iso"),
-    (BATTERY_DISPLAY_ID, "decimal"),
-    (COMPLICATION_COUNT_ID, "2"),
+    (SHOW_WEEKDAY_ID, "TRUE"),
+    (CLOCK_MODE_ID, "24"),
 )
 
 
@@ -1012,6 +1013,12 @@ def add_user_configurations(root: ET.Element) -> None:
                 str(slot_id) for slot_id in slot_ids
             )
         element(complication_count, "ListOption", **attributes)
+
+    by_id = {configuration.get("id"): configuration for configuration in configurations}
+    ordered_ids = [configuration_id for configuration_id, _ in DEFAULT_CONFIGURATION_VALUES]
+    if set(by_id) != set(ordered_ids):
+        raise ValueError("Editor order must include every user configuration")
+    configurations[:] = [by_id[configuration_id] for configuration_id in ordered_ids]
 
     flavors = element(configurations, "Flavors", defaultValue=DEFAULT_FLAVOR_ID)
     slots_by_id = {slot.slot_id: slot for slot in COMPLICATION_SLOTS}

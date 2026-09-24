@@ -91,6 +91,14 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         self.assertLessEqual(len(configurations_container), 20)
         self.assertFalse(any("touch" in str(configuration_id).lower() for configuration_id in actual))
 
+    def test_editor_prioritizes_frequent_controls_without_changing_ids(self) -> None:
+        actual = [configuration.get("id") for configuration in self.user_configurations()]
+        self.assertEqual(actual[:5], ["complicationCount", "backdropOpacity", "dotColor", "textColor", "displaySize"])
+        self.assertEqual(actual[-3:], ["dateFormat", "showWeekday", "clockMode"])
+        prototype = GENERATOR.build_watchface(prototype=True).find("UserConfigurations")
+        self.assertIsNotNone(prototype)
+        self.assertEqual([configuration.get("id") for configuration in prototype if configuration.tag in USER_CONFIGURATION_TAGS], actual)
+
     def test_flavors_cover_every_setting_and_match_the_default(self) -> None:
         configurations = self.user_configurations()
         configurations_by_id = {

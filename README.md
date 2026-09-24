@@ -84,6 +84,8 @@ After installation, long-press the active watch face, scroll to **Add new**, and
 
 Choose a curated preset from the companion app, or long-press the active face and choose **Edit** to tune every setting individually. Every choice names both the setting and selected value, such as **Dots: Terminal green** or **Seconds: Hidden**, and the package supplies a matching highlight overlay for editors that support it. Each enabled complication can be assigned through the normal Wear OS complication picker.
 
+The requested editor order puts layout, opacity, colors, and size before less frequently changed formats. In the tested Wear OS 7 editor, **Layout & brightness** and the native **Complications** page are grouped at the end regardless of the XML order; **Backdrop opacity** is the first page there. This grouping is controlled by Wear OS. Reordering retains the existing setting IDs, selections, and presets.
+
 | Setting | Options |
 | --- | --- |
 | Dots color | Terminal green by default, plus white, warm colors, cool colors, greens, and grays |

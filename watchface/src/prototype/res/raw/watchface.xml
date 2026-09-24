@@ -4,6 +4,34 @@
     <Metadata key="CLOCK_TYPE" value="DIGITAL" />
     <Metadata key="PREVIEW_TIME" value="15:23:37" />
     <UserConfigurations>
+        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2_history" highlight="@drawable/highlight_complications">
+            <ListOption id="0" displayName="complication_count_0" screenReaderText="complication_count_0" />
+            <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
+            <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
+            <ListOption id="4" displayName="complication_count_4" screenReaderText="complication_count_4" complicationSlotIds="0 1 3 4" />
+            <ListOption id="0_history_faint" displayName="complication_count_0_history_faint" screenReaderText="complication_count_0_history_faint" complicationSlotIds="5" />
+            <ListOption id="2_history_faint" displayName="complication_count_2_history_faint" screenReaderText="complication_count_2_history_faint" complicationSlotIds="0 1 5" />
+            <ListOption id="3_history_faint" displayName="complication_count_3_history_faint" screenReaderText="complication_count_3_history_faint" complicationSlotIds="0 1 2 5" />
+            <ListOption id="4_history_faint" displayName="complication_count_4_history_faint" screenReaderText="complication_count_4_history_faint" complicationSlotIds="0 1 3 4 5" />
+            <ListOption id="0_history" displayName="complication_count_0_history" screenReaderText="complication_count_0_history" complicationSlotIds="5" />
+            <ListOption id="2_history" displayName="complication_count_2_history" screenReaderText="complication_count_2_history" complicationSlotIds="0 1 5" />
+            <ListOption id="3_history" displayName="complication_count_3_history" screenReaderText="complication_count_3_history" complicationSlotIds="0 1 2 5" />
+            <ListOption id="4_history" displayName="complication_count_4_history" screenReaderText="complication_count_4_history" complicationSlotIds="0 1 3 4 5" />
+            <ListOption id="0_history_clear" displayName="complication_count_0_history_clear" screenReaderText="complication_count_0_history_clear" complicationSlotIds="5" />
+            <ListOption id="2_history_clear" displayName="complication_count_2_history_clear" screenReaderText="complication_count_2_history_clear" complicationSlotIds="0 1 5" />
+            <ListOption id="3_history_clear" displayName="complication_count_3_history_clear" screenReaderText="complication_count_3_history_clear" complicationSlotIds="0 1 2 5" />
+            <ListOption id="4_history_clear" displayName="complication_count_4_history_clear" screenReaderText="complication_count_4_history_clear" complicationSlotIds="0 1 3 4 5" />
+        </ListConfiguration>
+        <ListConfiguration id="backdropOpacity" displayName="setting_backdrop_opacity" screenReaderText="setting_backdrop_opacity" defaultValue="30" highlight="@drawable/highlight_clock">
+            <ListOption id="5" displayName="backdrop_opacity_5" screenReaderText="backdrop_opacity_5" />
+            <ListOption id="7_5" displayName="backdrop_opacity_7_5" screenReaderText="backdrop_opacity_7_5" />
+            <ListOption id="10" displayName="backdrop_opacity_10" screenReaderText="backdrop_opacity_10" />
+            <ListOption id="15" displayName="backdrop_opacity_15" screenReaderText="backdrop_opacity_15" />
+            <ListOption id="30" displayName="backdrop_opacity_30" screenReaderText="backdrop_opacity_30" />
+            <ListOption id="50" displayName="backdrop_opacity_50" screenReaderText="backdrop_opacity_50" />
+            <ListOption id="75" displayName="backdrop_opacity_75" screenReaderText="backdrop_opacity_75" />
+            <ListOption id="100" displayName="backdrop_opacity_100" screenReaderText="backdrop_opacity_100" />
+        </ListConfiguration>
         <ColorConfiguration id="dotColor" displayName="setting_dot_color" screenReaderText="setting_dot_color" defaultValue="terminal" highlight="@drawable/highlight_dots">
             <ColorOption id="terminal" displayName="dots_color_terminal" screenReaderText="dots_color_terminal" colors="#28FE14 #0C4A06 #28FE14" />
             <ColorOption id="white" displayName="dots_color_white" screenReaderText="dots_color_white" colors="#FFFFFF #4A4A4A #FFFFFF" />
@@ -40,10 +68,35 @@
             <ColorOption id="medium_gray" displayName="text_color_medium_gray" screenReaderText="text_color_medium_gray" colors="#757575 #282828 #BDBDBD" />
             <ColorOption id="dark_gray" displayName="text_color_dark_gray" screenReaderText="text_color_dark_gray" colors="#424242 #171717 #8A8A8A" />
         </ColorConfiguration>
+        <ListConfiguration id="displaySize" displayName="setting_display_size" screenReaderText="setting_display_size" defaultValue="large" highlight="@drawable/highlight_clock">
+            <ListOption id="tiny" displayName="size_tiny" screenReaderText="size_tiny" />
+            <ListOption id="small" displayName="size_small" screenReaderText="size_small" />
+            <ListOption id="normal" displayName="size_normal" screenReaderText="size_normal" />
+            <ListOption id="large" displayName="size_large" screenReaderText="size_large" />
+            <ListOption id="huge" displayName="size_huge" screenReaderText="size_huge" />
+        </ListConfiguration>
         <ColorConfiguration id="appearance" displayName="setting_appearance" screenReaderText="setting_appearance" defaultValue="dark" highlight="@drawable/highlight_full_face">
             <ColorOption id="dark" displayName="appearance_dark" screenReaderText="appearance_dark" colors="#000000 #242424 #000000 #666666" />
             <ColorOption id="light" displayName="appearance_light" screenReaderText="appearance_light" colors="#F4F4F4 #E0E0E0 #F4F4F4 #666666" />
         </ColorConfiguration>
+        <ListConfiguration id="backdropVisibility" displayName="setting_backdrop_visibility" screenReaderText="setting_backdrop_visibility" defaultValue="active" highlight="@drawable/highlight_clock">
+            <ListOption id="off" displayName="backdrop_visibility_off" screenReaderText="backdrop_visibility_off" />
+            <ListOption id="active" displayName="backdrop_visibility_active" screenReaderText="backdrop_visibility_active" />
+            <ListOption id="ambient" displayName="backdrop_visibility_ambient" screenReaderText="backdrop_visibility_ambient" />
+            <ListOption id="both" displayName="backdrop_visibility_both" screenReaderText="backdrop_visibility_both" />
+        </ListConfiguration>
+        <ListConfiguration id="backdropLayout" displayName="setting_backdrop_layout" screenReaderText="setting_backdrop_layout" defaultValue="normal_centered" highlight="@drawable/highlight_clock">
+            <ListOption id="small_raised" displayName="backdrop_layout_small_raised" screenReaderText="backdrop_layout_small_raised" />
+            <ListOption id="normal_raised" displayName="backdrop_layout_normal_raised" screenReaderText="backdrop_layout_normal_raised" />
+            <ListOption id="large_raised" displayName="backdrop_layout_large_raised" screenReaderText="backdrop_layout_large_raised" />
+            <ListOption id="small_centered" displayName="backdrop_layout_small_centered" screenReaderText="backdrop_layout_small_centered" />
+            <ListOption id="normal_centered" displayName="backdrop_layout_normal_centered" screenReaderText="backdrop_layout_normal_centered" />
+            <ListOption id="large_centered" displayName="backdrop_layout_large_centered" screenReaderText="backdrop_layout_large_centered" />
+            <ListOption id="small_lowered" displayName="backdrop_layout_small_lowered" screenReaderText="backdrop_layout_small_lowered" />
+            <ListOption id="normal_lowered" displayName="backdrop_layout_normal_lowered" screenReaderText="backdrop_layout_normal_lowered" />
+            <ListOption id="large_lowered" displayName="backdrop_layout_large_lowered" screenReaderText="backdrop_layout_large_lowered" />
+            <ListOption id="compact" displayName="backdrop_layout_compact" screenReaderText="backdrop_layout_compact" />
+        </ListConfiguration>
         <ColorConfiguration id="backdropColor" displayName="setting_backdrop_color" screenReaderText="setting_backdrop_color" defaultValue="medium_gray" highlight="@drawable/highlight_clock">
             <ColorOption id="terminal" displayName="backdrop_color_terminal" screenReaderText="backdrop_color_terminal" colors="#28FE14" />
             <ColorOption id="white" displayName="backdrop_color_white" screenReaderText="backdrop_color_white" colors="#FFFFFF" />
@@ -62,49 +115,9 @@
             <ColorOption id="medium_gray" displayName="backdrop_color_medium_gray" screenReaderText="backdrop_color_medium_gray" colors="#757575" />
             <ColorOption id="dark_gray" displayName="backdrop_color_dark_gray" screenReaderText="backdrop_color_dark_gray" colors="#424242" />
         </ColorConfiguration>
-        <ListConfiguration id="backdropOpacity" displayName="setting_backdrop_opacity" screenReaderText="setting_backdrop_opacity" defaultValue="30" highlight="@drawable/highlight_clock">
-            <ListOption id="5" displayName="backdrop_opacity_5" screenReaderText="backdrop_opacity_5" />
-            <ListOption id="7_5" displayName="backdrop_opacity_7_5" screenReaderText="backdrop_opacity_7_5" />
-            <ListOption id="10" displayName="backdrop_opacity_10" screenReaderText="backdrop_opacity_10" />
-            <ListOption id="15" displayName="backdrop_opacity_15" screenReaderText="backdrop_opacity_15" />
-            <ListOption id="30" displayName="backdrop_opacity_30" screenReaderText="backdrop_opacity_30" />
-            <ListOption id="50" displayName="backdrop_opacity_50" screenReaderText="backdrop_opacity_50" />
-            <ListOption id="75" displayName="backdrop_opacity_75" screenReaderText="backdrop_opacity_75" />
-            <ListOption id="100" displayName="backdrop_opacity_100" screenReaderText="backdrop_opacity_100" />
-        </ListConfiguration>
-        <ListConfiguration id="backdropLayout" displayName="setting_backdrop_layout" screenReaderText="setting_backdrop_layout" defaultValue="normal_centered" highlight="@drawable/highlight_clock">
-            <ListOption id="small_raised" displayName="backdrop_layout_small_raised" screenReaderText="backdrop_layout_small_raised" />
-            <ListOption id="normal_raised" displayName="backdrop_layout_normal_raised" screenReaderText="backdrop_layout_normal_raised" />
-            <ListOption id="large_raised" displayName="backdrop_layout_large_raised" screenReaderText="backdrop_layout_large_raised" />
-            <ListOption id="small_centered" displayName="backdrop_layout_small_centered" screenReaderText="backdrop_layout_small_centered" />
-            <ListOption id="normal_centered" displayName="backdrop_layout_normal_centered" screenReaderText="backdrop_layout_normal_centered" />
-            <ListOption id="large_centered" displayName="backdrop_layout_large_centered" screenReaderText="backdrop_layout_large_centered" />
-            <ListOption id="small_lowered" displayName="backdrop_layout_small_lowered" screenReaderText="backdrop_layout_small_lowered" />
-            <ListOption id="normal_lowered" displayName="backdrop_layout_normal_lowered" screenReaderText="backdrop_layout_normal_lowered" />
-            <ListOption id="large_lowered" displayName="backdrop_layout_large_lowered" screenReaderText="backdrop_layout_large_lowered" />
-            <ListOption id="compact" displayName="backdrop_layout_compact" screenReaderText="backdrop_layout_compact" />
-        </ListConfiguration>
-        <ListConfiguration id="backdropVisibility" displayName="setting_backdrop_visibility" screenReaderText="setting_backdrop_visibility" defaultValue="active" highlight="@drawable/highlight_clock">
-            <ListOption id="off" displayName="backdrop_visibility_off" screenReaderText="backdrop_visibility_off" />
-            <ListOption id="active" displayName="backdrop_visibility_active" screenReaderText="backdrop_visibility_active" />
-            <ListOption id="ambient" displayName="backdrop_visibility_ambient" screenReaderText="backdrop_visibility_ambient" />
-            <ListOption id="both" displayName="backdrop_visibility_both" screenReaderText="backdrop_visibility_both" />
-        </ListConfiguration>
-        <ListConfiguration id="displaySize" displayName="setting_display_size" screenReaderText="setting_display_size" defaultValue="large" highlight="@drawable/highlight_clock">
-            <ListOption id="tiny" displayName="size_tiny" screenReaderText="size_tiny" />
-            <ListOption id="small" displayName="size_small" screenReaderText="size_small" />
-            <ListOption id="normal" displayName="size_normal" screenReaderText="size_normal" />
-            <ListOption id="large" displayName="size_large" screenReaderText="size_large" />
-            <ListOption id="huge" displayName="size_huge" screenReaderText="size_huge" />
-        </ListConfiguration>
-        <ListConfiguration id="clockMode" displayName="setting_clock_mode" screenReaderText="setting_clock_mode" defaultValue="24" highlight="@drawable/highlight_hour_row">
-            <ListOption id="12" displayName="clock_mode_12" screenReaderText="clock_mode_12" />
-            <ListOption id="24" displayName="clock_mode_24" screenReaderText="clock_mode_24" />
-        </ListConfiguration>
-        <ListConfiguration id="dotEffect" displayName="setting_dot_effect" screenReaderText="setting_dot_effect" defaultValue="glow" highlight="@drawable/highlight_dots">
-            <ListOption id="none" displayName="dot_effect_none" screenReaderText="dot_effect_none" />
-            <ListOption id="glow" displayName="dot_effect_glow" screenReaderText="dot_effect_glow" />
-            <ListOption id="bezel" displayName="dot_effect_bezel" screenReaderText="dot_effect_bezel" />
+        <ListConfiguration id="showSeconds" displayName="setting_show_seconds" screenReaderText="setting_show_seconds" defaultValue="FALSE" highlight="@drawable/highlight_seconds">
+            <ListOption id="TRUE" displayName="seconds_shown" screenReaderText="seconds_shown" />
+            <ListOption id="FALSE" displayName="seconds_hidden" screenReaderText="seconds_hidden" />
         </ListConfiguration>
         <ListConfiguration id="tickStyle" displayName="setting_tick_style" screenReaderText="setting_tick_style" defaultValue="single" highlight="@drawable/highlight_ticks">
             <ListOption id="none" displayName="tick_style_none" screenReaderText="tick_style_none" />
@@ -113,10 +126,6 @@
             <ListOption id="boost" displayName="tick_style_boost" screenReaderText="tick_style_boost" />
             <ListOption id="all" displayName="tick_style_all" screenReaderText="tick_style_all" />
         </ListConfiguration>
-        <ListConfiguration id="showSeconds" displayName="setting_show_seconds" screenReaderText="setting_show_seconds" defaultValue="FALSE" highlight="@drawable/highlight_seconds">
-            <ListOption id="TRUE" displayName="seconds_shown" screenReaderText="seconds_shown" />
-            <ListOption id="FALSE" displayName="seconds_hidden" screenReaderText="seconds_hidden" />
-        </ListConfiguration>
         <ListConfiguration id="showBitWeights" displayName="setting_show_bit_weights" screenReaderText="setting_show_bit_weights" defaultValue="FALSE" highlight="@drawable/highlight_weights">
             <ListOption id="TRUE" displayName="bit_weights_shown" screenReaderText="bit_weights_shown" />
             <ListOption id="active" displayName="bit_weights_active_only" screenReaderText="bit_weights_active_only" />
@@ -124,11 +133,24 @@
             <ListOption id="active_emphasized" displayName="bit_weights_active_emphasized" screenReaderText="bit_weights_active_emphasized" />
             <ListOption id="FALSE" displayName="bit_weights_hidden" screenReaderText="bit_weights_hidden" />
         </ListConfiguration>
-        <ListConfiguration id="showWeekday" displayName="setting_show_weekday" screenReaderText="setting_show_weekday" defaultValue="TRUE" highlight="@drawable/highlight_date">
-            <ListOption id="TRUE" displayName="weekday_shown" screenReaderText="weekday_shown" />
-            <ListOption id="FALSE" displayName="weekday_hidden" screenReaderText="weekday_hidden" />
-            <ListOption id="uppercase_weekday" displayName="date_style_uppercase_weekday" screenReaderText="date_style_uppercase_weekday" />
-            <ListOption id="uppercase_date" displayName="date_style_uppercase_date" screenReaderText="date_style_uppercase_date" />
+        <ListConfiguration id="dotEffect" displayName="setting_dot_effect" screenReaderText="setting_dot_effect" defaultValue="glow" highlight="@drawable/highlight_dots">
+            <ListOption id="none" displayName="dot_effect_none" screenReaderText="dot_effect_none" />
+            <ListOption id="glow" displayName="dot_effect_glow" screenReaderText="dot_effect_glow" />
+            <ListOption id="bezel" displayName="dot_effect_bezel" screenReaderText="dot_effect_bezel" />
+        </ListConfiguration>
+        <ListConfiguration id="batteryDisplay" displayName="setting_native_readouts" screenReaderText="setting_native_readouts" defaultValue="decimal" highlight="@drawable/highlight_readouts">
+            <ListOption id="decimal" displayName="readouts_decimal_heart_active" screenReaderText="readouts_decimal_heart_active" />
+            <ListOption id="hex" displayName="readouts_hex_heart_active" screenReaderText="readouts_hex_heart_active" />
+            <ListOption id="binary" displayName="readouts_binary_heart_active" screenReaderText="readouts_binary_heart_active" />
+            <ListOption id="off" displayName="readouts_battery_off_heart_active" screenReaderText="readouts_battery_off_heart_active" />
+            <ListOption id="decimal_heart_both" displayName="readouts_decimal_heart_both" screenReaderText="readouts_decimal_heart_both" />
+            <ListOption id="hex_heart_both" displayName="readouts_hex_heart_both" screenReaderText="readouts_hex_heart_both" />
+            <ListOption id="binary_heart_both" displayName="readouts_binary_heart_both" screenReaderText="readouts_binary_heart_both" />
+            <ListOption id="off_heart_both" displayName="readouts_battery_off_heart_both" screenReaderText="readouts_battery_off_heart_both" />
+            <ListOption id="decimal_heart_off" displayName="readouts_decimal_heart_off" screenReaderText="readouts_decimal_heart_off" />
+            <ListOption id="hex_heart_off" displayName="readouts_hex_heart_off" screenReaderText="readouts_hex_heart_off" />
+            <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
+            <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
         </ListConfiguration>
         <ListConfiguration id="ambientColor" displayName="setting_ambient_appearance" screenReaderText="setting_ambient_appearance" defaultValue="TRUE" highlight="@drawable/highlight_full_face">
             <ListOption id="dim_color" displayName="ambient_appearance_dim_color" screenReaderText="ambient_appearance_dim_color" />
@@ -156,59 +178,37 @@
             <ListOption id="unix" displayName="date_format_unix" screenReaderText="date_format_unix" />
             <ListOption id="off" displayName="date_format_off" screenReaderText="date_format_off" />
         </ListConfiguration>
-        <ListConfiguration id="batteryDisplay" displayName="setting_native_readouts" screenReaderText="setting_native_readouts" defaultValue="decimal" highlight="@drawable/highlight_readouts">
-            <ListOption id="decimal" displayName="readouts_decimal_heart_active" screenReaderText="readouts_decimal_heart_active" />
-            <ListOption id="hex" displayName="readouts_hex_heart_active" screenReaderText="readouts_hex_heart_active" />
-            <ListOption id="binary" displayName="readouts_binary_heart_active" screenReaderText="readouts_binary_heart_active" />
-            <ListOption id="off" displayName="readouts_battery_off_heart_active" screenReaderText="readouts_battery_off_heart_active" />
-            <ListOption id="decimal_heart_both" displayName="readouts_decimal_heart_both" screenReaderText="readouts_decimal_heart_both" />
-            <ListOption id="hex_heart_both" displayName="readouts_hex_heart_both" screenReaderText="readouts_hex_heart_both" />
-            <ListOption id="binary_heart_both" displayName="readouts_binary_heart_both" screenReaderText="readouts_binary_heart_both" />
-            <ListOption id="off_heart_both" displayName="readouts_battery_off_heart_both" screenReaderText="readouts_battery_off_heart_both" />
-            <ListOption id="decimal_heart_off" displayName="readouts_decimal_heart_off" screenReaderText="readouts_decimal_heart_off" />
-            <ListOption id="hex_heart_off" displayName="readouts_hex_heart_off" screenReaderText="readouts_hex_heart_off" />
-            <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
-            <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
+        <ListConfiguration id="showWeekday" displayName="setting_show_weekday" screenReaderText="setting_show_weekday" defaultValue="TRUE" highlight="@drawable/highlight_date">
+            <ListOption id="TRUE" displayName="weekday_shown" screenReaderText="weekday_shown" />
+            <ListOption id="FALSE" displayName="weekday_hidden" screenReaderText="weekday_hidden" />
+            <ListOption id="uppercase_weekday" displayName="date_style_uppercase_weekday" screenReaderText="date_style_uppercase_weekday" />
+            <ListOption id="uppercase_date" displayName="date_style_uppercase_date" screenReaderText="date_style_uppercase_date" />
         </ListConfiguration>
-        <ListConfiguration id="complicationCount" displayName="setting_complication_count" screenReaderText="setting_complication_count" defaultValue="2_history" highlight="@drawable/highlight_complications">
-            <ListOption id="0" displayName="complication_count_0" screenReaderText="complication_count_0" />
-            <ListOption id="2" displayName="complication_count_2" screenReaderText="complication_count_2" complicationSlotIds="0 1" />
-            <ListOption id="3" displayName="complication_count_3" screenReaderText="complication_count_3" complicationSlotIds="0 1 2" />
-            <ListOption id="4" displayName="complication_count_4" screenReaderText="complication_count_4" complicationSlotIds="0 1 3 4" />
-            <ListOption id="0_history_faint" displayName="complication_count_0_history_faint" screenReaderText="complication_count_0_history_faint" complicationSlotIds="5" />
-            <ListOption id="2_history_faint" displayName="complication_count_2_history_faint" screenReaderText="complication_count_2_history_faint" complicationSlotIds="0 1 5" />
-            <ListOption id="3_history_faint" displayName="complication_count_3_history_faint" screenReaderText="complication_count_3_history_faint" complicationSlotIds="0 1 2 5" />
-            <ListOption id="4_history_faint" displayName="complication_count_4_history_faint" screenReaderText="complication_count_4_history_faint" complicationSlotIds="0 1 3 4 5" />
-            <ListOption id="0_history" displayName="complication_count_0_history" screenReaderText="complication_count_0_history" complicationSlotIds="5" />
-            <ListOption id="2_history" displayName="complication_count_2_history" screenReaderText="complication_count_2_history" complicationSlotIds="0 1 5" />
-            <ListOption id="3_history" displayName="complication_count_3_history" screenReaderText="complication_count_3_history" complicationSlotIds="0 1 2 5" />
-            <ListOption id="4_history" displayName="complication_count_4_history" screenReaderText="complication_count_4_history" complicationSlotIds="0 1 3 4 5" />
-            <ListOption id="0_history_clear" displayName="complication_count_0_history_clear" screenReaderText="complication_count_0_history_clear" complicationSlotIds="5" />
-            <ListOption id="2_history_clear" displayName="complication_count_2_history_clear" screenReaderText="complication_count_2_history_clear" complicationSlotIds="0 1 5" />
-            <ListOption id="3_history_clear" displayName="complication_count_3_history_clear" screenReaderText="complication_count_3_history_clear" complicationSlotIds="0 1 2 5" />
-            <ListOption id="4_history_clear" displayName="complication_count_4_history_clear" screenReaderText="complication_count_4_history_clear" complicationSlotIds="0 1 3 4 5" />
+        <ListConfiguration id="clockMode" displayName="setting_clock_mode" screenReaderText="setting_clock_mode" defaultValue="24" highlight="@drawable/highlight_hour_row">
+            <ListOption id="12" displayName="clock_mode_12" screenReaderText="clock_mode_12" />
+            <ListOption id="24" displayName="clock_mode_24" screenReaderText="clock_mode_24" />
         </ListConfiguration>
         <Flavors defaultValue="terminal">
             <Flavor id="terminal" displayName="flavor_terminal" screenReaderText="flavor_terminal">
+                <Configuration id="complicationCount" optionId="2_history" />
+                <Configuration id="backdropOpacity" optionId="30" />
                 <Configuration id="dotColor" optionId="terminal" />
                 <Configuration id="textColor" optionId="terminal" />
-                <Configuration id="appearance" optionId="dark" />
-                <Configuration id="backdropColor" optionId="medium_gray" />
-                <Configuration id="backdropOpacity" optionId="30" />
-                <Configuration id="backdropLayout" optionId="normal_centered" />
-                <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="displaySize" optionId="large" />
-                <Configuration id="clockMode" optionId="24" />
-                <Configuration id="dotEffect" optionId="glow" />
-                <Configuration id="tickStyle" optionId="single" />
+                <Configuration id="appearance" optionId="dark" />
+                <Configuration id="backdropVisibility" optionId="active" />
+                <Configuration id="backdropLayout" optionId="normal_centered" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="showSeconds" optionId="FALSE" />
+                <Configuration id="tickStyle" optionId="single" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
-                <Configuration id="showWeekday" optionId="TRUE" />
+                <Configuration id="dotEffect" optionId="glow" />
+                <Configuration id="batteryDisplay" optionId="decimal" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="iso" />
-                <Configuration id="batteryDisplay" optionId="decimal" />
-                <Configuration id="complicationCount" optionId="2_history" />
+                <Configuration id="showWeekday" optionId="TRUE" />
+                <Configuration id="clockMode" optionId="24" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
@@ -220,46 +220,46 @@
                 </ComplicationSlot>
             </Flavor>
             <Flavor id="minimal" displayName="flavor_minimal" screenReaderText="flavor_minimal">
+                <Configuration id="complicationCount" optionId="0" />
+                <Configuration id="backdropOpacity" optionId="30" />
                 <Configuration id="dotColor" optionId="terminal" />
                 <Configuration id="textColor" optionId="terminal" />
-                <Configuration id="appearance" optionId="dark" />
-                <Configuration id="backdropColor" optionId="medium_gray" />
-                <Configuration id="backdropOpacity" optionId="30" />
-                <Configuration id="backdropLayout" optionId="normal_centered" />
-                <Configuration id="backdropVisibility" optionId="off" />
                 <Configuration id="displaySize" optionId="large" />
-                <Configuration id="clockMode" optionId="24" />
-                <Configuration id="dotEffect" optionId="none" />
-                <Configuration id="tickStyle" optionId="none" />
+                <Configuration id="appearance" optionId="dark" />
+                <Configuration id="backdropVisibility" optionId="off" />
+                <Configuration id="backdropLayout" optionId="normal_centered" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="showSeconds" optionId="FALSE" />
+                <Configuration id="tickStyle" optionId="none" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
-                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="dotEffect" optionId="none" />
+                <Configuration id="batteryDisplay" optionId="off_heart_off" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="off" />
-                <Configuration id="batteryDisplay" optionId="off_heart_off" />
-                <Configuration id="complicationCount" optionId="0" />
+                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="clockMode" optionId="24" />
             </Flavor>
             <Flavor id="seconds" displayName="flavor_seconds" screenReaderText="flavor_seconds">
+                <Configuration id="complicationCount" optionId="3" />
+                <Configuration id="backdropOpacity" optionId="15" />
                 <Configuration id="dotColor" optionId="yellow" />
                 <Configuration id="textColor" optionId="white" />
-                <Configuration id="appearance" optionId="dark" />
-                <Configuration id="backdropColor" optionId="medium_gray" />
-                <Configuration id="backdropOpacity" optionId="15" />
-                <Configuration id="backdropLayout" optionId="normal_lowered" />
-                <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="displaySize" optionId="normal" />
-                <Configuration id="clockMode" optionId="24" />
-                <Configuration id="dotEffect" optionId="bezel" />
-                <Configuration id="tickStyle" optionId="wave" />
+                <Configuration id="appearance" optionId="dark" />
+                <Configuration id="backdropVisibility" optionId="active" />
+                <Configuration id="backdropLayout" optionId="normal_lowered" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="showSeconds" optionId="TRUE" />
+                <Configuration id="tickStyle" optionId="wave" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
-                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="dotEffect" optionId="bezel" />
+                <Configuration id="batteryDisplay" optionId="binary" />
                 <Configuration id="ambientColor" optionId="dim_mono" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="day_month" />
-                <Configuration id="batteryDisplay" optionId="binary" />
-                <Configuration id="complicationCount" optionId="3" />
+                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="clockMode" optionId="24" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
@@ -271,25 +271,25 @@
                 </ComplicationSlot>
             </Flavor>
             <Flavor id="cyan_dashboard" displayName="flavor_cyan_dashboard" screenReaderText="flavor_cyan_dashboard">
+                <Configuration id="complicationCount" optionId="4" />
+                <Configuration id="backdropOpacity" optionId="30" />
                 <Configuration id="dotColor" optionId="cyan" />
                 <Configuration id="textColor" optionId="white" />
-                <Configuration id="appearance" optionId="dark" />
-                <Configuration id="backdropColor" optionId="medium_gray" />
-                <Configuration id="backdropOpacity" optionId="30" />
-                <Configuration id="backdropLayout" optionId="normal_centered" />
-                <Configuration id="backdropVisibility" optionId="off" />
                 <Configuration id="displaySize" optionId="small" />
-                <Configuration id="clockMode" optionId="12" />
-                <Configuration id="dotEffect" optionId="none" />
-                <Configuration id="tickStyle" optionId="single" />
+                <Configuration id="appearance" optionId="dark" />
+                <Configuration id="backdropVisibility" optionId="off" />
+                <Configuration id="backdropLayout" optionId="normal_centered" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="showSeconds" optionId="FALSE" />
+                <Configuration id="tickStyle" optionId="single" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
-                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="dotEffect" optionId="none" />
+                <Configuration id="batteryDisplay" optionId="hex_heart_both" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="date_battery" />
                 <Configuration id="dateFormat" optionId="iso" />
-                <Configuration id="batteryDisplay" optionId="hex_heart_both" />
-                <Configuration id="complicationCount" optionId="4" />
+                <Configuration id="showWeekday" optionId="FALSE" />
+                <Configuration id="clockMode" optionId="12" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
@@ -304,25 +304,25 @@
                 </ComplicationSlot>
             </Flavor>
             <Flavor id="light" displayName="flavor_light" screenReaderText="flavor_light">
+                <Configuration id="complicationCount" optionId="2" />
+                <Configuration id="backdropOpacity" optionId="15" />
                 <Configuration id="dotColor" optionId="dark_gray" />
                 <Configuration id="textColor" optionId="dark_gray" />
-                <Configuration id="appearance" optionId="light" />
-                <Configuration id="backdropColor" optionId="medium_gray" />
-                <Configuration id="backdropOpacity" optionId="15" />
-                <Configuration id="backdropLayout" optionId="normal_centered" />
-                <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="displaySize" optionId="large" />
-                <Configuration id="clockMode" optionId="24" />
-                <Configuration id="dotEffect" optionId="bezel" />
-                <Configuration id="tickStyle" optionId="all" />
+                <Configuration id="appearance" optionId="light" />
+                <Configuration id="backdropVisibility" optionId="active" />
+                <Configuration id="backdropLayout" optionId="normal_centered" />
+                <Configuration id="backdropColor" optionId="medium_gray" />
                 <Configuration id="showSeconds" optionId="FALSE" />
+                <Configuration id="tickStyle" optionId="all" />
                 <Configuration id="showBitWeights" optionId="active" />
-                <Configuration id="showWeekday" optionId="TRUE" />
+                <Configuration id="dotEffect" optionId="bezel" />
+                <Configuration id="batteryDisplay" optionId="decimal_heart_both" />
                 <Configuration id="ambientColor" optionId="FALSE" />
                 <Configuration id="ambientInfo" optionId="date_battery" />
                 <Configuration id="dateFormat" optionId="iso" />
-                <Configuration id="batteryDisplay" optionId="decimal_heart_both" />
-                <Configuration id="complicationCount" optionId="2" />
+                <Configuration id="showWeekday" optionId="TRUE" />
+                <Configuration id="clockMode" optionId="24" />
                 <ComplicationSlot slotId="0">
                     <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
                 </ComplicationSlot>
