@@ -194,6 +194,7 @@ class WatchFaceGeneratorTest(unittest.TestCase):
             [(choice.option_id, choice.value) for choice in GENERATOR.BACKDROP_OPACITY_CHOICES],
             [
                 ("5", 13),
+                ("7_5", 19),
                 ("10", 26),
                 ("15", 38),
                 ("30", 77),

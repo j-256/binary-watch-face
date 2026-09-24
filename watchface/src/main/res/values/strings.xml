@@ -62,6 +62,7 @@
     <string name="backdrop_color_dark_gray">Backdrop: Dark gray</string>
     <string name="setting_backdrop_opacity">Backdrop opacity</string>
     <string name="backdrop_opacity_5">Backdrop opacity: 5%%</string>
+    <string name="backdrop_opacity_7_5">Backdrop opacity: 7.5%%</string>
     <string name="backdrop_opacity_10">Backdrop opacity: 10%%</string>
     <string name="backdrop_opacity_15">Backdrop opacity: 15%%</string>
     <string name="backdrop_opacity_30">Backdrop opacity: 30%%</string>
