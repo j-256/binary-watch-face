@@ -2,6 +2,8 @@
 
 Binary Heart History includes an optional battery diagnostic under **Settings > Battery test**. It compares whole-watch discharge in different recording and graph configurations. It does not measure isolated per-app energy, upload telemetry, or put heart-rate values in battery reports. The diagnostic is available in the ordinary app build so a Play-installed watch can use it without ADB.
 
+For a step-by-step experiment, download the [standalone battery test plan](battery-test-plan.html) and open it in a browser. It compares Baseline, Tracking only, and Tracking + graph twice each, with a run schedule, repeatable checklist, and print layout. It works offline.
+
 ## Prepare a comparison
 
 Use Binary Pulse throughout the experiment. Keep the same ordinary complications, brightness, always-on display, colors, decimal backdrop, graph contrast, time window, labels, connectivity, and usual routine. Use similar starting charge levels and avoid comparing a quiet day with a workout, software update, or unusually poor signal. Recordings made during tracking-off runs are not recoverable later.

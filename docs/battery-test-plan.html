@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="A step-by-step battery test for Binary Pulse and Binary Heart History: compare baseline, tracking, and tracking with the background graph.">
+  <title>The battery test | Binary Pulse</title>
+  <style>
+    :root {
+      --paper: #f7f8f3;
+      --ink: #20372e;
+      --muted: #5c6c63;
+      --accent: #285b43;
+      --line: #d6ded4;
+      --wash: #eaf0e5;
+      --surface: #ffffff;
+      --radius: 0.75rem;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 1.5rem; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-text-size-adjust: 100%; }
+    button { font: inherit; }
+    a { color: var(--accent); text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+    [hidden] { display: none !important; }
+    .page { max-width: 64rem; margin: 0 auto; padding: 0 2.5rem; }
+    .skip { position: absolute; left: 1rem; top: -6rem; padding: 0.7rem 1rem; background: var(--surface); z-index: 1; }
+    .skip:focus { top: 1rem; }
+    .masthead { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 2rem 0; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; gap: 0.8rem; align-items: center; font-weight: 650; letter-spacing: -0.025em; }
+    .mark { display: grid; grid-template-columns: repeat(3, 5px); gap: 4px; }
+    .mark span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+    .mark span:nth-child(2), .mark span:nth-child(4) { opacity: 0.25; }
+    .print { min-height: 44px; padding: 0.55rem 0.9rem; border: 1px solid var(--line); border-radius: 2rem; background: transparent; color: var(--ink); cursor: pointer; }
+    .print:hover { background: var(--wash); border-color: var(--accent); }
+    .hero { padding: 3.5rem 0 2.75rem; }
+    .eyebrow, .section-number, .fact-label { font-size: 0.72rem; font-weight: 650; letter-spacing: 0.13em; text-transform: uppercase; }
+    .eyebrow { color: var(--accent); margin: 0 0 1rem; }
+    h1 { margin: 0 0 1rem; font: 400 clamp(2.7rem, 6vw, 4.7rem)/1.08 Georgia, "Times New Roman", serif; letter-spacing: -0.045em; }
+    .lede { max-width: 38rem; margin: 0; font-size: 1.2rem; line-height: 1.6; color: var(--muted); }
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); margin: 2rem 0 0; max-width: 38rem; padding-top: 1.35rem; border-top: 1px solid var(--line); gap: 1rem; }
+    .facts > div + div { border-left: 1px solid var(--line); padding-left: 1.5rem; }
+    .fact-label { display: block; margin-bottom: 0.2rem; color: var(--muted); }
+    .facts dd { margin: 0; font-size: 1.2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .jump-links { display: flex; flex-wrap: wrap; gap: 0.3rem 1.5rem; margin-top: 1.5rem; font-size: 0.9rem; }
+    .jump-links a { display: inline-flex; align-items: center; min-height: 44px; }
+    .section { display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); gap: 2.5rem; padding: 2.5rem 0; border-top: 1px solid var(--line); }
+    .section-number { display: block; margin-bottom: 0.65rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    h2 { margin: 0; font-size: 1.35rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.025em; }
+    h3 { font-size: 1rem; margin: 0 0 0.3rem; font-weight: 650; line-height: 1.5; }
+    p { margin: 0 0 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 650; }
+    .note { color: var(--muted); }
+    .note { font-size: 0.9rem; line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.94rem; }
+    caption { text-align: left; margin-bottom: 1rem; color: var(--muted); }
+    th, td { padding: 0.75rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    thead th { padding-top: 0; font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    th:first-child, td:first-child { padding-left: 0; }
+    th:last-child, td:last-child { padding-right: 0; }
+    tbody th { font-weight: 600; }
+    .run { display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; border: 1px solid var(--line); border-radius: 50%; font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .reverse td, .reverse th { border-top: 2px solid var(--accent); }
+    .mode { font-weight: 600; }
+    .state { font-size: 0.86rem; white-space: nowrap; }
+    .on { color: var(--accent); }
+    .off { color: var(--muted); }
+    .schedule-note { margin-top: 0.8rem; }
+    .callout { padding: 1.15rem 1.3rem; margin-top: 1.4rem; background: var(--wash); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; }
+    .callout p + p { margin-top: 0.5rem; }
+    .checks { margin: 0; padding-left: 1.15rem; }
+    .checks li { padding-left: 0.35rem; margin-bottom: 0.85rem; }
+    .checks li:last-child { margin-bottom: 0; }
+    .checks li::marker { color: var(--accent); }
+    .after-list { margin-top: 1rem; }
+    .steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+    .steps > li { position: relative; padding: 0 0 1.35rem 2.75rem; counter-increment: step; }
+    .steps > li:last-child { padding-bottom: 0; }
+    .steps > li::before { content: counter(step); position: absolute; left: 0; top: 0.05rem; display: grid; place-items: center; width: 1.7rem; height: 1.7rem; background: var(--wash); color: var(--accent); border-radius: 50%; font-size: 0.8rem; font-weight: 650; }
+    .steps p { margin-bottom: 0.6rem; }
+    .steps p:last-child { margin-bottom: 0; }
+    .path { display: block; margin-bottom: 0.55rem; font-size: 0.9rem; }
+    .path span { padding: 0 0.2rem; color: var(--muted); }
+    .decision { display: grid; gap: 0.6rem; margin-top: 0.8rem; padding: 1rem 1.15rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); font-size: 0.92rem; }
+    .decision p { margin: 0; }
+    .comparisons { margin: 1.4rem 0; }
+    .comparison { padding: 0.8rem 0; border-top: 1px solid var(--line); }
+    .comparison:last-child { border-bottom: 1px solid var(--line); }
+    .comparison dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 650; }
+    .comparison dd { margin: 0.2rem 0 0; font-weight: 600; }
+    .minus { padding: 0 0.35rem; font-weight: 400; color: var(--muted); }
+    .example { margin: 1.4rem 0; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius); }
+    .example-label { display: block; margin-bottom: 0.25rem; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; }
+    .save-heading { margin-top: 1.4rem; }
+    .footer { padding: 1.6rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; }
+    .footer p + p { margin-top: 0.45rem; }
+
+    @media (max-width: 760px) {
+      .page { padding: 0 1.4rem; }
+      .masthead { padding: 1.2rem 0; }
+      .hero { padding: 2.5rem 0 2rem; }
+      .section { grid-template-columns: 1fr; gap: 1.25rem; padding: 2rem 0; }
+      .section-heading { display: flex; align-items: baseline; gap: 0.9rem; }
+      .section-number { margin: 0; }
+      .lede { font-size: 1.08rem; }
+    }
+
+    @media (max-width: 420px) {
+      .page { padding: 0 1.1rem; }
+      .brand { gap: 0.6rem; }
+      .print { font-size: 0.82rem; padding: 0.5rem 0.75rem; }
+      .facts { gap: 0.6rem; }
+      .facts > div + div { padding-left: 0.7rem; }
+      .facts dd { font-size: 1.05rem; }
+      .fact-label { font-size: 0.66rem; letter-spacing: 0.06em; }
+      th, td { padding: 0.7rem 0.35rem; }
+      table { font-size: 0.85rem; }
+      .state { font-size: 0.8rem; }
+      thead th { font-size: 0.72rem; }
+      .steps > li { padding-left: 2.3rem; }
+      .callout, .decision, .example { padding: 1rem; }
+    }
+
+    @page { size: auto; margin: 15mm; }
+    @media print {
+      :root { --paper: #ffffff; --ink: #17271f; --muted: #465348; --line: #bbc5bc; }
+      body { font-size: 10pt; line-height: 1.5; }
+      .page { max-width: none; padding: 0; }
+      .skip, .print, .jump-links { display: none !important; }
+      .masthead { padding: 0 0 0.5rem; }
+      .hero { padding: 0.8rem 0; }
+      .eyebrow { margin-bottom: 0.5rem; }
+      h1 { font-size: 28pt; margin-bottom: 0.5rem; }
+      .lede { font-size: 10pt; max-width: none; }
+      .facts { margin-top: 0.65rem; padding-top: 0.45rem; max-width: none; }
+      .facts dd { font-size: 11pt; }
+      .section { display: block; padding: 0.7rem 0; }
+      #routine, #results { break-before: page; padding-top: 0; border-top: 0; }
+      .section-heading { display: flex; gap: 0.75rem; align-items: baseline; margin-bottom: 0.6rem; break-after: avoid; }
+      .section-number { margin: 0; }
+      h2 { font-size: 13pt; }
+      h3 { font-size: 10pt; }
+      p, li { orphans: 3; widows: 3; }
+      table, .note, .decision, .path, .state { font-size: 9pt; }
+      caption { margin-bottom: 0.5rem; }
+      th, td { padding: 0.2rem 0.4rem; }
+      tr, .steps > li, .callout, .example, .comparison, .checks li { break-inside: avoid; }
+      .run { width: 1.25rem; height: 1.25rem; }
+      .callout { margin-top: 0.7rem; padding: 0.5rem 0.7rem; }
+      .checks li { margin-bottom: 0.45rem; }
+      .after-list { margin-top: 0.6rem; }
+      .steps > li { padding-bottom: 0.9rem; }
+      .decision { margin-top: 0.6rem; padding: 0.7rem 1rem; }
+      .comparison { padding: 0.5rem 0; }
+      .example { margin: 0.9rem 0; }
+      .footer { padding: 0.8rem 0 0; font-size: 8pt; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#plan">Skip to the test plan</a>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand"><span class="mark" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></span>Binary Pulse</div>
+      <button class="print" id="print-guide" type="button" hidden>Print / save PDF</button>
+    </header>
+
+    <main id="plan">
+      <header class="hero">
+        <p class="eyebrow">On-watch field guide</p>
+        <h1>The battery test.</h1>
+        <p class="lede">Find out what heart-rate recording and the background graph add to your watch's daily battery drain.</p>
+        <dl class="facts">
+          <div><dt class="fact-label">Compare</dt><dd>3 modes</dd></div>
+          <div><dt class="fact-label">Repeat twice</dt><dd>6 runs</dd></div>
+          <div><dt class="fact-label">Aim per run</dt><dd>22&nbsp;hours</dd></div>
+        </dl>
+        <nav class="jump-links" aria-label="Guide sections">
+          <a href="#schedule">Run schedule</a>
+          <a href="#prepare">Prepare once</a>
+          <a href="#routine">Each run</a>
+          <a href="#results">Read results</a>
+        </nav>
+      </header>
+
+      <section class="section" id="schedule" aria-labelledby="schedule-title">
+        <div class="section-heading"><span class="section-number" aria-hidden="true">01</span><h2 id="schedule-title">Follow this order.</h2></div>
+        <div>
+          <table>
+            <caption>Use Binary Pulse for every run. Change only recording and the face's history layout.</caption>
+            <thead><tr><th scope="col">Run</th><th scope="col">Mode</th><th scope="col">Recording</th><th scope="col">Face graph</th></tr></thead>
+            <tbody>
+              <tr><th scope="row"><span class="run">1</span></th><td class="mode">Baseline</td><td class="state off">Paused</td><td class="state off">Off</td></tr>
+              <tr><th scope="row"><span class="run">2</span></th><td class="mode">Tracking only</td><td class="state on">On</td><td class="state off">Off</td></tr>
+              <tr><th scope="row"><span class="run">3</span></th><td class="mode">Tracking + graph</td><td class="state on">On</td><td class="state on">On</td></tr>
+              <tr class="reverse"><th scope="row"><span class="run">4</span></th><td class="mode">Tracking + graph</td><td class="state on">On</td><td class="state on">On</td></tr>
+              <tr><th scope="row"><span class="run">5</span></th><td class="mode">Tracking only</td><td class="state on">On</td><td class="state off">Off</td></tr>
+              <tr><th scope="row"><span class="run">6</span></th><td class="mode">Baseline</td><td class="state off">Paused</td><td class="state off">Off</td></tr>
+            </tbody>
+          </table>
+          <p class="note schedule-note">The second pass reverses the order to help balance gradual changes across days. Runs need not be on consecutive days; choose similar routines.</p>
+          <aside class="callout" aria-label="Run duration">
+            <p><strong>Aim for a day and a night.</strong> For example, start at 9 a.m. and finish at 7 a.m. the next morning, leaving time to recharge.</p>
+            <p class="note">Use a duration your battery can comfortably support. Only uninterrupted runs of <strong>at least 12 hours</strong> enter the comparison. Start at a similar charge level and time of day each time.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="prepare" aria-labelledby="prepare-title">
+        <div class="section-heading"><span class="section-number" aria-hidden="true">02</span><h2 id="prepare-title">Prepare once.</h2></div>
+        <div>
+          <ul class="checks">
+            <li><strong>Finish updates first.</strong> Confirm Binary Heart History has <strong>Settings &gt; Battery test</strong>. Use <strong>Start recording</strong> in History settings to grant heart-rate and background access, and check that readings arrive. Keep the app and OS versions fixed for the series.</li>
+            <li><strong>Keep the face consistent.</strong> Use Binary Pulse throughout, with the same ordinary complication count and providers, brightness, always-on display, colors, and decimal backdrop. Keep graph contrast, time window, and labels fixed throughout the series.</li>
+            <li><strong>Keep use comparable.</strong> Keep connectivity settings consistent. Pick days with similar sleep, activity, phone proximity, and screen use. Note unusual workouts, travel, poor signal, or heavy use so we can interpret the results.</li>
+          </ul>
+          <p class="note after-list">Pausing recording leaves a gap in heart-rate history. Readings from that gap cannot be recovered later.</p>
+        </div>
+      </section>
+
+      <section class="section" id="routine" aria-labelledby="routine-title">
+        <div class="section-heading"><span class="section-number" aria-hidden="true">03</span><h2 id="routine-title">For every run.</h2></div>
+        <div>
+          <ol class="steps">
+            <li>
+              <h3>Set up the next mode.</h3>
+              <p><span class="path"><strong>Binary Heart History</strong> <span aria-hidden="true">&gt;</span> <strong>Settings</strong> <span aria-hidden="true">&gt;</span> <strong>Battery test</strong></span>Choose the next mode in the schedule, then tap <strong>Set up mode</strong>. The app applies the recording setting for you.</p>
+            </li>
+            <li>
+              <h3>Match the face layout.</h3>
+              <p>Long-press Binary Pulse, open its editor, and change <strong>Layout</strong>. For <strong>Baseline</strong> and <strong>Tracking only</strong>, choose a layout <strong>without heart history</strong>. For <strong>Tracking + graph</strong>, choose one <strong>with heart history</strong>. Keep the same ordinary complication count.</p>
+              <p class="note">For a graph run, check that the graph is visible and populated with recorded readings. If needed, assign <strong>Heart history graph</strong> to the <strong>Heart history background</strong> slot. If the app asks you to wait for readings, wait before starting.</p>
+            </li>
+            <li>
+              <h3>Unplug, then start.</h3>
+              <p>Return to Battery test and tick <strong>Face layout matches this mode</strong>. Take the watch off its charger, tap <strong>Start run</strong>, and confirm the selected mode says it is running. Close the app.</p>
+            </li>
+            <li>
+              <h3>Wear it normally.</h3>
+              <p>Keep the watch unplugged and leave the face and settings alone. Avoid app updates, reboots, and force-stopping History during the run. Skip the optional <strong>Add battery reading</strong> for this series; the start and finish readings are enough for the comparison.</p>
+              <p class="note">Keep a short note elsewhere of anything unusual. Frequent battery checks wake the screen and add their own drain.</p>
+            </li>
+            <li>
+              <h3>Finish before charging.</h3>
+              <p>At the planned end, return to Battery test and tap <strong>Finish run</strong> while still unplugged. If you need to recharge early, finish first; a run under 12 hours will be saved but left out of the comparison.</p>
+              <div class="decision">
+                <p><strong>Yes, save</strong> if the run stayed unplugged with the same face and settings, without an update, reboot, or force-stop.</p>
+                <p><strong>No, exclude</strong> if there was an interruption, even a brief charge. Repeat that mode on another comparable day. Brief interruptions may escape automatic detection.</p>
+              </div>
+            </li>
+            <li>
+              <h3>Check the save, then recharge.</h3>
+              <p>Open <strong>Results</strong> to confirm the run is saved and see whether it was excluded. The app restores your previous recording mode; it <strong>cannot restore the face's Layout</strong>. Change the layout back if needed, then recharge for the next run.</p>
+              <p class="note">If the app shows <strong>Retry restore</strong>, complete that before starting the next setup. Keep the time window and labels fixed throughout the series so the results stay in one comparison group.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section" id="results" aria-labelledby="results-title">
+        <div class="section-heading"><span class="section-number" aria-hidden="true">04</span><h2 id="results-title">Read the difference.</h2></div>
+        <div>
+          <p>After two eligible runs per mode, open <strong>Battery test &gt; Results</strong>. Lower <strong>pp/h</strong> means less drain: it is battery <strong>percentage points per hour</strong>.</p>
+          <dl class="comparisons">
+            <div class="comparison"><dt>Estimated recording cost</dt><dd>Tracking only <span class="minus">minus</span> Baseline</dd></div>
+            <div class="comparison"><dt>Estimated graph cost while recording</dt><dd>Tracking + graph <span class="minus">minus</span> Tracking only</dd></div>
+            <div class="comparison"><dt>Estimated total cost</dt><dd>Tracking + graph <span class="minus">minus</span> Baseline</dd></div>
+          </dl>
+          <p>Bars show each mode's duration-weighted average; dots show individual runs. A longer run contributes more. <strong>If the spread between repeats is as large as the difference between modes, collect more comparable runs before drawing a conclusion.</strong></p>
+          <aside class="example" aria-label="Illustrative calculation">
+            <span class="example-label">Example only, not a measured result</span>
+            <p>An extra <strong>0.20 pp/h</strong> projects to about <strong>4.8 extra battery percentage points over 24 hours</strong>, if the same drain rate holds.</p>
+          </aside>
+          <p class="note">This is a practical estimate of whole-watch drain. Daily variation and the coarse battery gauge limit how precisely we can attribute small differences.</p>
+          <h3 class="save-heading">Keep the results.</h3>
+          <p>Use <strong>Share results</strong> if the watch offers a compatible receiving app. It exports the battery observations for later analysis and plotting, with no heart-rate readings. If sharing is unavailable, use the charts on the watch and copy down each mode's rate plus your notes.</p>
+          <p class="note">Save or export when the series is complete. Retention is limited; the app shows its limits at the bottom of Results.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>For Binary Pulse and Binary Heart History. Run the experiment on your actual watch; emulator battery readings do not measure real battery impact.</p>
+      <p>This guide works offline. The diagnostic adds no background battery polling and keeps results on the watch until you choose to share them.</p>
+    </footer>
+  </div>
+  <script>
+    const printButton = document.getElementById('print-guide');
+    printButton.hidden = false;
+    printButton.addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>
