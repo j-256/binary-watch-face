@@ -28,6 +28,8 @@ The optional heart-history image deliberately overlaps ordinary face content fro
 
 Exit status is `0` when all gaps pass, `1` for insufficient clearance, and `2` for invalid input or usage. The command needs no SDK, emulator, device, or image-processing dependency.
 
+CI also runs `tools/capture_cover.py` to build and capture the face in a fresh, isolated emulator. The harness requires a positive watch-face registration response before opening the picker and confirming the visible renderer. A zero registration result triggers a bounded readiness wait; persistent refusal, unexpected output, and command failures still stop the capture. Registration diagnostics include the attempt count and the final response.
+
 ## Capture a connected watch
 
 `tools/capture_watch.py` reads the selected watch's renderer and saves `watch.png` with a `snapshot.json` receipt. It requires Python 3 and Android platform-tools. Locate `adb` with `--adb`, `ANDROID_HOME`/`ANDROID_SDK_ROOT`, or `PATH`. Replace `SERIAL` with the target from `adb devices -l` and `VERSION` with the installed version name.

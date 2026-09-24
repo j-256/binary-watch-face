@@ -10,10 +10,11 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import xml.etree.ElementTree as ET
 
 from tools import capture_watch as CAPTURE
+from tools import capture_cover as COVER
 from tools import check_layout as LAYOUT
 
 
@@ -225,6 +226,47 @@ class WatchCaptureTest(unittest.TestCase):
         path.write_text('{"schema_version": 999}')
         with self.assertRaises(CAPTURE.PreconditionError):
             CAPTURE.read_baseline(path)
+
+
+class CoverRegistrationTest(unittest.TestCase):
+    @staticmethod
+    def response(result):
+        return subprocess.CompletedProcess([], 0, stdout=result)
+
+    def test_registration_waits_for_acceptance(self):
+        shell = Mock(side_effect=[
+            self.response("Broadcast completed: result=0\n"),
+            self.response("Broadcast completed: result=0\n"),
+            self.response('Broadcast completed: result=1, data="Favorite Id=[4] Runtime=[2]"\n'),
+        ])
+        stderr = io.StringIO()
+        with patch.object(COVER.time, "sleep") as sleep, contextlib.redirect_stderr(stderr):
+            COVER.register_watch_face(shell)
+        self.assertEqual(shell.call_count, 3)
+        self.assertEqual(sleep.call_count, 2)
+        self.assertIn("waiting for Wear OS", stderr.getvalue())
+        self.assertIn("registered Binary", stderr.getvalue())
+
+    def test_repeated_refusal_fails_at_the_deadline_with_last_response(self):
+        shell = Mock(return_value=self.response("Broadcast completed: result=0\n"))
+        with patch.object(COVER.time, "monotonic", side_effect=[0, 0, COVER.REGISTRATION_TIMEOUT_SECONDS]), \
+                patch.object(COVER.time, "sleep") as sleep, contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaisesRegex(RuntimeError, "after 2 attempts: Broadcast completed: result=0"):
+                COVER.register_watch_face(shell)
+        sleep.assert_called_once_with(COVER.REGISTRATION_POLL_SECONDS)
+
+    def test_unexpected_results_and_command_failures_are_not_retried(self):
+        for result in ("Broadcast completed: result=10\n", "Broadcast completed: result=-1\n", "No receiver output"):
+            shell = Mock(return_value=self.response(result))
+            with self.subTest(result=result), patch.object(COVER.time, "sleep") as sleep:
+                with self.assertRaisesRegex(RuntimeError, "Cannot register Binary"):
+                    COVER.register_watch_face(shell)
+                sleep.assert_not_called()
+                shell.assert_called_once()
+        shell = Mock(side_effect=subprocess.CalledProcessError(1, "adb"))
+        with self.assertRaises(subprocess.CalledProcessError):
+            COVER.register_watch_face(shell)
+        shell.assert_called_once()
 
 
 class HelpTest(unittest.TestCase):
