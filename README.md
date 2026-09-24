@@ -101,7 +101,7 @@ The requested editor order puts layout, opacity, colors, and size before less fr
 | Ticks | None, single, wave, boost, or all by default |
 | Binary display | Optional seconds row; uniform or lit-emphasized bit weights in active and AOD modes, active only, or hidden |
 | Date | ISO by default, plus Nov 26, 11/26, 26 Nov, 26/11, 26.11, Unix timestamp, or hidden; date style combines weekday/date-only and mixed/uppercase choices |
-| Native readouts | Watch battery in decimal percent by default, hexadecimal, binary, or hidden, with a low-battery cue; paired with active-only by default, active and AOD, or hidden heart rate |
+| Heart rate & battery | Active-only heart rate by default, active and AOD, or hidden; paired with decimal, hexadecimal, binary, or hidden battery |
 | Layout & brightness | None, two by default, three, or four provider slots; optional faint, subtle, or clear heart-history background |
 | Always-on display | Dim, normal by default, or bright rendering; optional date, weekday, battery, and independently controlled heart rate; and optional monochrome rendering |
 
@@ -113,6 +113,8 @@ The complication layouts keep the larger lower-left and lower-right providers st
 - Four: the lower pair plus side slots flanking the native readout row
 
 The binary time keeps the same position and size across complication layouts. Native readouts sit above the lower complications, leaving the bottom center available for Wear OS notification and ongoing-activity indicators.
+
+To keep the numeric heart rate in always-on mode, choose a **Heart rate: Active + AOD** option under **Heart rate & battery**. This control is independent of the history graph and decimal backdrop. **AOD date & battery** controls only those two supplemental values; hiding them does not override the heart-rate choice.
 
 Heart-history layouts add a background image slot dedicated to Binary Heart History. The graph follows the text color and is hidden in always-on mode; the decimal backdrop keeps its independent visibility settings. Choose a layout without history to hide the graph. Ordinary complication slots remain customizable.
 

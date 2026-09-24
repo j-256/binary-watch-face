@@ -75,6 +75,20 @@
             <ListOption id="large" displayName="size_large" screenReaderText="size_large" />
             <ListOption id="huge" displayName="size_huge" screenReaderText="size_huge" />
         </ListConfiguration>
+        <ListConfiguration id="batteryDisplay" displayName="setting_native_readouts" screenReaderText="setting_native_readouts" defaultValue="decimal" highlight="@drawable/highlight_readouts">
+            <ListOption id="decimal" displayName="readouts_decimal_heart_active" screenReaderText="readouts_decimal_heart_active" />
+            <ListOption id="hex" displayName="readouts_hex_heart_active" screenReaderText="readouts_hex_heart_active" />
+            <ListOption id="binary" displayName="readouts_binary_heart_active" screenReaderText="readouts_binary_heart_active" />
+            <ListOption id="off" displayName="readouts_battery_off_heart_active" screenReaderText="readouts_battery_off_heart_active" />
+            <ListOption id="decimal_heart_both" displayName="readouts_decimal_heart_both" screenReaderText="readouts_decimal_heart_both" />
+            <ListOption id="hex_heart_both" displayName="readouts_hex_heart_both" screenReaderText="readouts_hex_heart_both" />
+            <ListOption id="binary_heart_both" displayName="readouts_binary_heart_both" screenReaderText="readouts_binary_heart_both" />
+            <ListOption id="off_heart_both" displayName="readouts_battery_off_heart_both" screenReaderText="readouts_battery_off_heart_both" />
+            <ListOption id="decimal_heart_off" displayName="readouts_decimal_heart_off" screenReaderText="readouts_decimal_heart_off" />
+            <ListOption id="hex_heart_off" displayName="readouts_hex_heart_off" screenReaderText="readouts_hex_heart_off" />
+            <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
+            <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
+        </ListConfiguration>
         <ColorConfiguration id="appearance" displayName="setting_appearance" screenReaderText="setting_appearance" defaultValue="dark" highlight="@drawable/highlight_full_face">
             <ColorOption id="dark" displayName="appearance_dark" screenReaderText="appearance_dark" colors="#000000 #242424 #000000 #666666" />
             <ColorOption id="light" displayName="appearance_light" screenReaderText="appearance_light" colors="#F4F4F4 #E0E0E0 #F4F4F4 #666666" />
@@ -138,20 +152,6 @@
             <ListOption id="glow" displayName="dot_effect_glow" screenReaderText="dot_effect_glow" />
             <ListOption id="bezel" displayName="dot_effect_bezel" screenReaderText="dot_effect_bezel" />
         </ListConfiguration>
-        <ListConfiguration id="batteryDisplay" displayName="setting_native_readouts" screenReaderText="setting_native_readouts" defaultValue="decimal" highlight="@drawable/highlight_readouts">
-            <ListOption id="decimal" displayName="readouts_decimal_heart_active" screenReaderText="readouts_decimal_heart_active" />
-            <ListOption id="hex" displayName="readouts_hex_heart_active" screenReaderText="readouts_hex_heart_active" />
-            <ListOption id="binary" displayName="readouts_binary_heart_active" screenReaderText="readouts_binary_heart_active" />
-            <ListOption id="off" displayName="readouts_battery_off_heart_active" screenReaderText="readouts_battery_off_heart_active" />
-            <ListOption id="decimal_heart_both" displayName="readouts_decimal_heart_both" screenReaderText="readouts_decimal_heart_both" />
-            <ListOption id="hex_heart_both" displayName="readouts_hex_heart_both" screenReaderText="readouts_hex_heart_both" />
-            <ListOption id="binary_heart_both" displayName="readouts_binary_heart_both" screenReaderText="readouts_binary_heart_both" />
-            <ListOption id="off_heart_both" displayName="readouts_battery_off_heart_both" screenReaderText="readouts_battery_off_heart_both" />
-            <ListOption id="decimal_heart_off" displayName="readouts_decimal_heart_off" screenReaderText="readouts_decimal_heart_off" />
-            <ListOption id="hex_heart_off" displayName="readouts_hex_heart_off" screenReaderText="readouts_hex_heart_off" />
-            <ListOption id="binary_heart_off" displayName="readouts_binary_heart_off" screenReaderText="readouts_binary_heart_off" />
-            <ListOption id="off_heart_off" displayName="readouts_both_off" screenReaderText="readouts_both_off" />
-        </ListConfiguration>
         <ListConfiguration id="ambientColor" displayName="setting_ambient_appearance" screenReaderText="setting_ambient_appearance" defaultValue="TRUE" highlight="@drawable/highlight_full_face">
             <ListOption id="dim_color" displayName="ambient_appearance_dim_color" screenReaderText="ambient_appearance_dim_color" />
             <ListOption id="TRUE" displayName="ambient_appearance_normal_color" screenReaderText="ambient_appearance_normal_color" />
@@ -195,6 +195,7 @@
                 <Configuration id="dotColor" optionId="terminal" />
                 <Configuration id="textColor" optionId="terminal" />
                 <Configuration id="displaySize" optionId="large" />
+                <Configuration id="batteryDisplay" optionId="decimal" />
                 <Configuration id="appearance" optionId="dark" />
                 <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="backdropLayout" optionId="normal_centered" />
@@ -203,7 +204,6 @@
                 <Configuration id="tickStyle" optionId="single" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
                 <Configuration id="dotEffect" optionId="glow" />
-                <Configuration id="batteryDisplay" optionId="decimal" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="iso" />
@@ -225,6 +225,7 @@
                 <Configuration id="dotColor" optionId="terminal" />
                 <Configuration id="textColor" optionId="terminal" />
                 <Configuration id="displaySize" optionId="large" />
+                <Configuration id="batteryDisplay" optionId="off_heart_off" />
                 <Configuration id="appearance" optionId="dark" />
                 <Configuration id="backdropVisibility" optionId="off" />
                 <Configuration id="backdropLayout" optionId="normal_centered" />
@@ -233,7 +234,6 @@
                 <Configuration id="tickStyle" optionId="none" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
                 <Configuration id="dotEffect" optionId="none" />
-                <Configuration id="batteryDisplay" optionId="off_heart_off" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="off" />
@@ -246,6 +246,7 @@
                 <Configuration id="dotColor" optionId="yellow" />
                 <Configuration id="textColor" optionId="white" />
                 <Configuration id="displaySize" optionId="normal" />
+                <Configuration id="batteryDisplay" optionId="binary" />
                 <Configuration id="appearance" optionId="dark" />
                 <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="backdropLayout" optionId="normal_lowered" />
@@ -254,7 +255,6 @@
                 <Configuration id="tickStyle" optionId="wave" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
                 <Configuration id="dotEffect" optionId="bezel" />
-                <Configuration id="batteryDisplay" optionId="binary" />
                 <Configuration id="ambientColor" optionId="dim_mono" />
                 <Configuration id="ambientInfo" optionId="off" />
                 <Configuration id="dateFormat" optionId="day_month" />
@@ -276,6 +276,7 @@
                 <Configuration id="dotColor" optionId="cyan" />
                 <Configuration id="textColor" optionId="white" />
                 <Configuration id="displaySize" optionId="small" />
+                <Configuration id="batteryDisplay" optionId="hex_heart_both" />
                 <Configuration id="appearance" optionId="dark" />
                 <Configuration id="backdropVisibility" optionId="off" />
                 <Configuration id="backdropLayout" optionId="normal_centered" />
@@ -284,7 +285,6 @@
                 <Configuration id="tickStyle" optionId="single" />
                 <Configuration id="showBitWeights" optionId="FALSE" />
                 <Configuration id="dotEffect" optionId="none" />
-                <Configuration id="batteryDisplay" optionId="hex_heart_both" />
                 <Configuration id="ambientColor" optionId="TRUE" />
                 <Configuration id="ambientInfo" optionId="date_battery" />
                 <Configuration id="dateFormat" optionId="iso" />
@@ -309,6 +309,7 @@
                 <Configuration id="dotColor" optionId="dark_gray" />
                 <Configuration id="textColor" optionId="dark_gray" />
                 <Configuration id="displaySize" optionId="large" />
+                <Configuration id="batteryDisplay" optionId="decimal_heart_both" />
                 <Configuration id="appearance" optionId="light" />
                 <Configuration id="backdropVisibility" optionId="active" />
                 <Configuration id="backdropLayout" optionId="normal_centered" />
@@ -317,7 +318,6 @@
                 <Configuration id="tickStyle" optionId="all" />
                 <Configuration id="showBitWeights" optionId="active" />
                 <Configuration id="dotEffect" optionId="bezel" />
-                <Configuration id="batteryDisplay" optionId="decimal_heart_both" />
                 <Configuration id="ambientColor" optionId="FALSE" />
                 <Configuration id="ambientInfo" optionId="date_battery" />
                 <Configuration id="dateFormat" optionId="iso" />

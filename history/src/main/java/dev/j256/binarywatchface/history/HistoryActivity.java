@@ -157,6 +157,7 @@ public final class HistoryActivity extends Activity {
             text(content, getString(R.string.mark_spacing, intervalLabel(settings.span(), settings.density())), 12, MUTED);
         }
         text(content, getString(R.string.brightness_help), 12, MUTED).setPadding(0, dp(12), 0, dp(4));
+        text(content, getString(R.string.aod_help), 12, MUTED);
         action(content, working ? R.string.working : R.string.start, true, view -> requestStart());
         if (settings.recording()) action(content, R.string.pause, false, view -> {
             working = true;

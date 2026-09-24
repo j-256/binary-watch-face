@@ -1178,6 +1178,23 @@ class WatchFaceGeneratorTest(unittest.TestCase):
         all_ids = [slot.get("slotId") for slot in scene.findall("ComplicationSlot")]
         self.assertEqual(len(all_ids), len(set(all_ids)))
 
+    def test_numeric_heart_rate_does_not_inherit_background_or_aod_info_visibility(self) -> None:
+        for prototype in (False, True):
+            with self.subTest(prototype=prototype):
+                scene = GENERATOR.build_watchface(prototype=prototype).find("Scene")
+                readout = next(condition for condition in scene.findall("Condition")
+                               if condition.find("./Expressions/Expression[@name='heart_rate_active_visible']") is not None)
+                serialized = ET.tostring(readout, encoding="unicode")
+                for setting in (GENERATOR.COMPLICATION_COUNT_ID, GENERATOR.BACKDROP_VISIBILITY_ID,
+                                GENERATOR.AMBIENT_INFO_ID):
+                    self.assertNotIn(f"CONFIGURATION.{setting}", serialized)
+                self.assertIn("CONFIGURATION.batteryDisplay", serialized)
+                for battery in ("decimal", "hex", "binary", "off"):
+                    self.assertIn(f"{battery}_heart_both", GENERATOR.HEART_RATE_AMBIENT_OPTION_IDS)
+                    self.assertNotIn(battery, GENERATOR.HEART_RATE_AMBIENT_OPTION_IDS)
+                    self.assertNotIn(f"{battery}_heart_off", GENERATOR.HEART_RATE_AMBIENT_OPTION_IDS)
+                self.assertEqual(scene.find("ComplicationSlot[@name='heart_history']/Variant[@mode='AMBIENT']").get("value"), "0")
+
     def test_only_one_setting_controls_complication_slots(self) -> None:
         controllers = [configuration.get("id") for configuration in self.user_configurations()
                        if any("complicationSlotIds" in option.attrib for option in configuration)]

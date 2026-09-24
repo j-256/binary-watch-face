@@ -29,6 +29,7 @@
     <string name="inspect_empty">Open Settings to get started</string>
     <string name="inspect_stale">Readings are stale / Drag to inspect</string>
     <string name="brightness_help">Graph brightness lives in the watch face editor: Layout &amp; brightness. Choose Faint, Subtle, or Clear.</string>
+    <string name="aod_help">The graph is hidden in AOD. To keep the numeric heart rate, choose Active + AOD under Heart rate &amp; battery in the face editor.</string>
     <string name="span_heading">Time window</string>
     <string name="cycle_window">Time window: %1$s. Tap for %2$s.</string>
     <string name="start">Start recording</string>
