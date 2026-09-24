@@ -22,8 +22,8 @@ android {
         applicationId = "dev.j256.binarywatchface.history"
         minSdk = 37
         targetSdk = 37
-        versionCode = 3
-        versionName = "0.2.1-prototype"
+        versionCode = 4
+        versionName = "0.3.0-prototype"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

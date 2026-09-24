@@ -5,8 +5,8 @@ plugins {
 val releaseStoreFileEnvironment = "BINARY_WATCH_FACE_UPLOAD_STORE_FILE"
 val releasePasswordEnvironment = "BINARY_WATCH_FACE_UPLOAD_PASSWORD"
 val releaseKeyAlias = "upload"
-val prototypeVersionCode = 5
-val prototypeVersionNameSuffix = "-history-prototype.1"
+val prototypeVersionCode = 6
+val prototypeVersionNameSuffix = "-history-prototype.2"
 val releaseStoreFile = providers.environmentVariable(releaseStoreFileEnvironment).orNull?.takeIf(String::isNotBlank)
 val releasePassword = providers.environmentVariable(releasePasswordEnvironment).orNull?.takeIf(String::isNotBlank)
 val releaseSigningConfigured = releaseStoreFile != null && releasePassword != null
