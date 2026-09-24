@@ -16,6 +16,9 @@
     <string name="app_name">Binary Heart History</string>
     <string name="complication_name">Heart history graph</string>
     <string name="title">Heart history</string>
+    <string name="title_compact">History</string>
+    <string name="preview_title">Preview</string>
+    <string name="stale_title">Stale</string>
     <string name="settings">Settings</string>
     <string name="battery_test">Battery test</string>
     <string name="battery_layout_confirmed">Face layout matches this mode</string>

@@ -25,6 +25,8 @@ public final class HistoryActivity extends Activity {
     private static final int MINUTES_PER_HOUR = 60;
     private static final String SETTINGS_SCREEN = "settings-screen";
     private static final int TIME_WINDOW_BUTTON_DP = 48;
+    private static final int SETTINGS_BUTTON_WIDTH_DP = 96;
+    private static final int COMPACT_SCREEN_WIDTH_DP = 200;
     private boolean working;
     private boolean showingSettings;
     private ScrollView scroll;
@@ -190,20 +192,22 @@ public final class HistoryActivity extends Activity {
     }
 
     private void renderGraph(HistorySettings settings, HistorySeries series) {
+        boolean compact = getResources().getConfiguration().screenWidthDp < COMPACT_SCREEN_WIDTH_DP;
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
         content.setBackgroundColor(Color.BLACK);
-        content.setPadding(0, dp(10), 0, dp(24));
+        content.setPadding(0, dp(compact ? 8 : 10), 0, dp(24));
         content.addView(new HistoryGraphView(this, series, settings.demo()), new LinearLayout.LayoutParams(-1, 0, 1));
         LinearLayout controls = new LinearLayout(this);
         controls.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams controlsLayout = new LinearLayout.LayoutParams(-2, -2);
-        controlsLayout.topMargin = dp(7);
+        controlsLayout.topMargin = dp(compact ? 4 : 7);
         content.addView(controls, controlsLayout);
         Button settingsButton = button(getString(R.string.settings), false);
         settingsButton.setEnabled(true);
-        controls.addView(settingsButton, new LinearLayout.LayoutParams(dp(84), -2));
+        settingsButton.setSingleLine(true);
+        controls.addView(settingsButton, new LinearLayout.LayoutParams(dp(SETTINGS_BUTTON_WIDTH_DP), dp(TIME_WINDOW_BUTTON_DP)));
         settingsButton.setOnClickListener(view -> {
             showingSettings = true;
             render(settings, series);
@@ -214,7 +218,7 @@ public final class HistoryActivity extends Activity {
         windowButton.setPadding(0, 0, 0, 0);
         LinearLayout.LayoutParams windowLayout = new LinearLayout.LayoutParams(
                 dp(TIME_WINDOW_BUTTON_DP), dp(TIME_WINDOW_BUTTON_DP));
-        windowLayout.leftMargin = dp(8);
+        windowLayout.leftMargin = dp(compact ? 4 : 8);
         controls.addView(windowButton, windowLayout);
         windowButton.setOnClickListener(view -> {
             settings.span(settings.span().next());

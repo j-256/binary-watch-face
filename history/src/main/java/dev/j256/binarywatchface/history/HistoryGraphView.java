@@ -28,6 +28,10 @@ public final class HistoryGraphView extends View {
     private static final float PLOT_INSET_DP = 18;
     private static final float PLOT_TOP_DP = 49;
     private static final float PLOT_BOTTOM_DP = 36;
+    private static final float COMPACT_HEIGHT_DP = 125;
+    private static final float COMPACT_FONT_SCALE = 1.15f;
+    private static final float COMPACT_PLOT_TOP_DP = 40;
+    private static final float COMPACT_PLOT_BOTTOM_DP = 18;
     private final HistorySeries series;
     private final HistoryInspection inspection;
     private final boolean demo;
@@ -36,6 +40,7 @@ public final class HistoryGraphView extends View {
     private final RectF plot = new RectF();
     private final DateTimeFormatter timestamp = DateTimeFormatter.ofPattern("EEE HH:mm:ss", Locale.getDefault());
     private Bitmap chart;
+    private boolean compact;
     private int pointer = NO_POINTER;
     private HistoryInspection.Selection selection;
 
@@ -53,7 +58,9 @@ public final class HistoryGraphView extends View {
     @Override protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         clearInspection();
-        plot.set(dp(PLOT_INSET_DP), dp(PLOT_TOP_DP), width - dp(PLOT_INSET_DP), height - dp(PLOT_BOTTOM_DP));
+        compact = height < dp(COMPACT_HEIGHT_DP) || getResources().getConfiguration().fontScale > COMPACT_FONT_SCALE;
+        plot.set(dp(PLOT_INSET_DP), dp(compact ? COMPACT_PLOT_TOP_DP : PLOT_TOP_DP),
+                width - dp(PLOT_INSET_DP), height - dp(compact ? COMPACT_PLOT_BOTTOM_DP : PLOT_BOTTOM_DP));
         chart = null;
         if (width <= 0 || height <= 0 || plot.height() <= 0) return;
         chart = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -72,7 +79,8 @@ public final class HistoryGraphView extends View {
         if (chart != null) {
             canvas.drawBitmap(chart, 0, 0, chartPaint);
         }
-        String title = getContext().getString(R.string.title);
+        int compactTitle = demo ? R.string.preview_title : series.isStale() ? R.string.stale_title : R.string.title_compact;
+        String title = getContext().getString(compact ? compactTitle : R.string.title);
         String detail = series.span.label;
         if (series.sampleCount > 0) {
             detail += String.format(Locale.getDefault(), "  /  %.0f-%.0f BPM", series.minimum, series.maximum);
@@ -94,21 +102,26 @@ public final class HistoryGraphView extends View {
                 canvas.drawCircle(x, y, dp(2.5f), paint);
             }
         }
-        label(canvas, title, getWidth() / 2f, dp(21), 18, INK, Paint.Align.CENTER);
-        label(canvas, detail, getWidth() / 2f, dp(39), 12, MUTED, Paint.Align.CENTER);
+        label(canvas, title, getWidth() / 2f, dp(compact ? 18 : 21), compact ? 14 : 18, INK, Paint.Align.CENTER);
+        label(canvas, detail, getWidth() / 2f, dp(compact ? 34 : 39), compact ? 10 : 12, MUTED, Paint.Align.CENTER);
         if (series.sampleCount == 0) {
             label(canvas, getContext().getString(R.string.no_readings), getWidth() / 2f,
                     plot.centerY(), 14, MUTED, Paint.Align.CENTER);
         }
-        for (boolean end : new boolean[]{false, true}) {
-            HistoryTimeline.Label time = HistoryTimeline.label(series, end, ZoneId.systemDefault());
-            String caption = time.day().isEmpty() ? time.time() : time.day() + " " + time.time();
-            label(canvas, caption, end ? plot.right : plot.left, plot.bottom + dp(15), 10, MUTED,
-                    end ? Paint.Align.RIGHT : Paint.Align.LEFT);
+        boolean compactInspectionStatus = compact && selection != null && (demo || series.isStale());
+        if (compactInspectionStatus) {
+            label(canvas, getContext().getString(compactTitle), plot.centerX(), plot.bottom + dp(13), 10, MUTED, Paint.Align.CENTER);
+        } else {
+            for (boolean end : new boolean[]{false, true}) {
+                HistoryTimeline.Label time = HistoryTimeline.label(series, end, ZoneId.systemDefault());
+                String caption = time.day().isEmpty() ? time.time() : time.day() + " " + time.time();
+                label(canvas, caption, end ? plot.right : plot.left, plot.bottom + dp(compact ? 13 : 15), 10, MUTED,
+                        end ? Paint.Align.RIGHT : Paint.Align.LEFT);
+            }
         }
         int hint = demo ? R.string.inspect_preview : series.sampleCount == 0 ? R.string.inspect_empty
                 : series.isStale() ? R.string.inspect_stale : R.string.inspect_hint;
-        label(canvas, getContext().getString(hint), getWidth() / 2f, getHeight() - dp(3), 10, MUTED, Paint.Align.CENTER);
+        if (!compact) label(canvas, getContext().getString(hint), getWidth() / 2f, getHeight() - dp(3), 10, MUTED, Paint.Align.CENTER);
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {

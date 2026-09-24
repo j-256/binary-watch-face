@@ -1,6 +1,10 @@
 package dev.j256.binarywatchface.history;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -44,6 +48,18 @@ public class HistoryControlsTest {
                     assertEquals(shortcut.getHeight(), visible.height());
                     assertEquals(shortcut.getWidth(), visible.width());
                     assertTrue(shortcut.getHeight() >= HistoryUi.dp(activity, 48));
+                    if (activity.getResources().getConfiguration().isScreenRound()) {
+                        int[] location = new int[2];
+                        shortcut.getLocationOnScreen(location);
+                        float radius = activity.getResources().getDisplayMetrics().widthPixels / 2f;
+                        double centerDistance = Math.hypot(location[0] + shortcut.getWidth() / 2f - radius,
+                                location[1] + shortcut.getHeight() / 2f - radius);
+                        assertTrue("Keep the entire round shortcut inside the display", centerDistance + shortcut.getWidth() / 2f <= radius);
+                    }
+                    Button settingsButton = button(activity, "Settings");
+                    assertEquals("Settings must remain a single readable word", 1, settingsButton.getLineCount());
+                    assertTrue(settingsButton.getPaint().measureText(settingsButton.getText().toString())
+                            <= settingsButton.getWidth() - settingsButton.getPaddingLeft() - settingsButton.getPaddingRight());
                     assertTrue(shortcut.getContentDescription().toString().contains(span.next().label));
                     shortcut.performClick();
                 });
@@ -59,6 +75,40 @@ public class HistoryControlsTest {
             scenario.onActivity(activity -> button(activity, "View graph").performClick());
             await(scenario, activity -> button(activity, "6h") != null);
         }
+    }
+
+    @Test public void smallGraphRetainsAnInspectableTraceWithEnlargedText() {
+        var context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Configuration configuration = new Configuration(context.getResources().getConfiguration());
+        configuration.fontScale = 1.3f;
+        configuration.screenWidthDp = 180;
+        configuration.screenHeightDp = 180;
+        var compact = context.createConfigurationContext(configuration);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            HistoryGraphView graph = new HistoryGraphView(compact,
+                    HistorySeries.demo(HistorySeries.Span.HOUR, System.currentTimeMillis()), true);
+            graph.layout(0, 0, HistoryUi.dp(compact, 180), HistoryUi.dp(compact, 96));
+            Bitmap image = Bitmap.createBitmap(graph.getWidth(), graph.getHeight(), Bitmap.Config.ARGB_8888);
+            graph.draw(new Canvas(image));
+            int firstY = image.getHeight();
+            int lastY = -1;
+            int touchX = -1;
+            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                int pixel = image.getPixel(x, y);
+                if (Color.alpha(pixel) < 160 || Color.green(pixel) <= Color.red(pixel) * 1.3f) continue;
+                if (firstY == image.getHeight()) { firstY = y; touchX = x; }
+                lastY = y;
+            }
+            image.recycle();
+            assertTrue("The trace must have usable vertical range", lastY - firstY >= HistoryUi.dp(compact, 20));
+            long now = SystemClock.uptimeMillis();
+            MotionEvent down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, touchX, firstY, 0);
+            MotionEvent cancel = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, touchX, firstY, 0);
+            try {
+                assertTrue("The visible trace must accept inspection", graph.onTouchEvent(down));
+                graph.onTouchEvent(cancel);
+            } finally { down.recycle(); cancel.recycle(); }
+        });
     }
 
     @Test public void crownScrollsSettingsBeforeTouchAndAfterChangingASettingOrRecreating() {
