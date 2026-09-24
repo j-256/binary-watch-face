@@ -1,6 +1,6 @@
 # Heart-history prototype
 
-Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a very faint trace and a soft fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional time marks cross the trace, with start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and choose Faint, Subtle, or Clear graph brightness with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
+Binary Pulse places a wide, quiet heart-rate history behind the binary time. It defaults to the subtle layout, with a very faint trace and a soft fill beneath it. The line keeps the same opacity across the time window, including its beginning and end. Labels are hidden by default, leaving timestamps in the app after a background tap. Optional vertical ticks, dots, or upright triangles mark the trace. Independent labels show start and end times at the sides and an optional BPM range beneath the date. Choose a 30-minute, 1-hour, 6-hour, or 24-hour window, and choose Faint, Subtle, or Clear graph brightness with any of the existing provider layouts. The clock stays centered, the native readouts remain legible, and the bottom system-indicator reserve remains clear.
 
 This is a Wear OS 7 prototype distributed through private internal testing. **Binary Pulse** installs alongside **Binary**, and **Binary Heart History** is a separate on-watch application. The existing Binary installation does not need to be replaced.
 
@@ -8,7 +8,7 @@ This is a Wear OS 7 prototype distributed through private internal testing. **Bi
 
 These Wear OS emulator captures use invented readings. They do not show anyone's health data. The companion app identifies preview mode; the watch face follows the selected label preference without a demo badge.
 
-The decimal backdrop remains available above the graph, with full-dial numbers or compact HH:mm and independent appearance controls:
+The decimal backdrop remains available above the graph, with full-dial numbers or compact HH:mm and independent appearance controls. Its opacity choices include 7.5%:
 
 <p align="center">
   <img src="screenshots/history-decimal-full.png" alt="Full-dial decimal hours and minutes above the faint heart-history graph" width="45%">
@@ -18,9 +18,9 @@ The decimal backdrop remains available above the graph, with full-dial numbers o
 With the decimal backdrop hidden, these captures show the graph across its time windows:
 
 <p align="center">
-  <img src="screenshots/history-hour.png" alt="One-hour sample graph behind the centered binary clock" width="31%">
-  <img src="screenshots/history-six-hours.png" alt="Six-hour sample graph showing activity and gaps" width="31%">
-  <img src="screenshots/history-day.png" alt="Day-long sample history behind the binary clock" width="31%">
+  <img src="screenshots/history-hour.png" alt="One-hour invented graph behind the centered binary clock" width="31%">
+  <img src="screenshots/history-six-hours.png" alt="Six-hour invented graph showing activity and gaps" width="31%">
+  <img src="screenshots/history-day.png" alt="Day-long invented history behind the binary clock" width="31%">
 </p>
 
 The [30-minute view](screenshots/history-half-hour.png) gives the closest look at short-term changes.
@@ -28,8 +28,8 @@ The [30-minute view](screenshots/history-half-hour.png) gives the closest look a
 Light appearance uses the same image tinted to the selected text color. The largest clock keeps its bit weights clear of the graph caption. In confirmed AOD, the graph is hidden and the system's stopwatch indicator remains clear of the face content. The native heart-rate values in these layout fixtures are synthetic too.
 
 <p align="center">
-  <img src="screenshots/history-light.png" alt="Light appearance with the sample graph and a clear stopwatch indicator" width="31%">
-  <img src="screenshots/history-dense.png" alt="Large clock with bit weights and four provider slots over a sample graph" width="31%">
+  <img src="screenshots/history-light.png" alt="Light appearance with invented history and a clear stopwatch indicator" width="31%">
+  <img src="screenshots/history-dense.png" alt="Large clock with bit weights and four provider slots over invented history" width="31%">
   <img src="screenshots/history-ambient.png" alt="Confirmed ambient rendering hides the graph and clears the system stopwatch indicator" width="31%">
 </p>
 
@@ -89,13 +89,15 @@ Wear OS allows only one active setting to control complication-slot enablement. 
 
 The graph's window and annotation preferences belong to the history app and add no WFF settings. The face shares its existing Layout & brightness choices because the [WFF configuration schema](https://github.com/google/watchface/blob/main/third_party/wff/specification/documents/5/userConfiguration/userConfigurationsElement.xsd) permits at most twenty top-level entries, including the presets container. Generator tests enforce this limit.
 
+The ordinary face controls put backdrop opacity, colors, size, and heart-rate visibility before less frequently adjusted details. The tested Wear OS 7 editor puts **Layout & brightness** and **Complications** at the end despite their source ordering. Swipe to those pages to change the graph's brightness or the ordinary providers.
+
 The history graph is hidden in AOD independently of the numeric heart-rate readout. To keep the number visible, select **Heart rate: Active + AOD** under the face editor's **Heart rate & battery** control, called **Native readouts** in earlier builds. **AOD date & battery** governs the date and battery only. Decimal backdrop visibility is also independent. These choices preserve their existing setting IDs and saved values.
 
 Recording starts with an empty history and fills as the watch delivers readings. It does not import an existing fitness app's history. **Pause recording** and preview preserve eligible recorded data; **Start recording** resumes collection. **Stop and erase history** clears it after confirmation. The decimal backdrop renders above the history graph, and its visibility stays independent of the selected history layout.
 
-**Settings > Battery test** compares battery drain with recording and the background graph independently enabled or disabled. It includes guided setup, preserved recording preferences, local results, comparison charts, and a battery-only JSON export. Follow the [battery comparison guide](battery-testing.md) for matched runs and the limitations of whole-watch measurements.
+**Settings > Battery test** compares whole-watch battery drain. The [standalone test plan](battery-test-plan.html) uses Baseline, Tracking only, and Tracking + graph runs to estimate recording and graph costs. The app includes guided setup, preserved recording preferences, local results, comparison charts, and a battery-only JSON export. Follow the [battery comparison guide](battery-testing.md) for matched runs and measurement limitations.
 
-The time-window controls are under **Settings** in the on-watch app. Turn the crown or swipe to scroll Settings, battery-test screens, and their dialogs. Button labels are centered with space on both sides, including the compact time-window choices.
+The graph screen has a round time-window shortcut; the full window choices also remain under **Settings**. Turn the crown or swipe to scroll Settings, battery-test screens, and their dialogs. Button labels are centered with space on both sides, including the compact time-window choices.
 
 <img src="screenshots/history-settings.png" alt="On-watch controls for 30 minutes, 1 hour, 6 hours, and 24 hours" width="260">
 
@@ -108,10 +110,14 @@ Hold a finger on the app's plot and drag horizontally. A vertical line and point
 Inspection shows the original recorded timestamp and value, even when the overview combines readings into display buckets. It snaps to the nearest reading within one minute of the touched time; farther from recorded data it shows the touched time and **No reading**. It does not interpolate heart-rate values across gaps. Times include seconds and the weekday, so a day-long view remains unambiguous across midnight.
 
 <p align="center">
-  <img src="screenshots/history-inspection.png" alt="Heart History app showing an invented one-hour trend and a Settings button" width="31%">
+  <img src="screenshots/history-inspection.png" alt="Heart History app showing an invented one-hour trend, Settings, and a round timeframe shortcut" width="31%">
   <img src="screenshots/history-inspection-held.png" alt="A held finger reveals a vertical cursor and the selected recorded time and BPM" width="31%">
   <img src="screenshots/history-inspection-gap.png" alt="Dragging into a missing-data gap shows its time without inventing a heart-rate value" width="31%">
 </p>
+
+On small displays or with enlarged text, the chart uses a shorter heading and keeps both buttons visible. This 180 dp emulator capture uses enlarged system text:
+
+<img src="screenshots/history-small-display.png" alt="Preview graph, single-line Settings, and round timeframe shortcut on a small display with enlarged text" width="260">
 
 ## Preview data
 
@@ -166,12 +172,39 @@ Weekdays accompany the side times when the window crosses midnight. Times use th
   <img src="screenshots/history-time-marks-dense.png" alt="Trace marks and side times remain separate from the large clock and four complications" width="45%">
 </p>
 
-The clear layout raises the graph's contrast. Light appearance retains the subtle treatment by default:
+Graph brightness has three levels. These use the same 7.5% decimal backdrop and keep labels and markers brighter than the trace:
+
+| Faint | Subtle (default) | Clear |
+| --- | --- | --- |
+| ![Faint graph](screenshots/history-brightness-faint.png) | ![Subtle graph](screenshots/history-brightness-subtle.png) | ![Clear graph](screenshots/history-time-marks-clear.png) |
+
+Light appearance retains the subtle treatment by default:
 
 <p align="center">
-  <img src="screenshots/history-time-marks-clear.png" alt="Clear history increases contrast while keeping the trace fainter than its marks and side captions" width="45%">
   <img src="screenshots/history-time-marks-light.png" alt="Dark time marks and side captions on the light watch face" width="45%">
 </p>
+
+### Marker and spacing choices
+
+Markers follow the trace, with no conventional axis. Each window remembers its own spacing. None removes marks while preserving independently selected labels.
+
+| Dots | Triangles | No markers |
+| --- | --- | --- |
+| ![Dots on the trace](screenshots/history-markers-dots.png) | ![Upright triangles on the trace](screenshots/history-markers-triangles.png) | ![Trace with side times and no markers](screenshots/history-markers-none.png) |
+
+| Sparse ticks | Dense ticks |
+| --- | --- |
+| ![Sparse one-hour ticks](screenshots/history-spacing-sparse.png) | ![Dense one-hour ticks](screenshots/history-spacing-dense.png) |
+
+The choice menus center and wrap their labels. Choices and **Cancel** scroll together, using touch or the crown, without a fixed footer covering the list.
+
+<img src="screenshots/history-choice-cancel.png" alt="Centered time-label choices and Cancel in the same scrolling menu" width="260">
+
+### Numeric heart rate in AOD
+
+The numeric heart-rate control is separate from both backgrounds. This confirmed ambient capture has **Heart rate: Active + AOD**, the decimal backdrop hidden, and AOD date and battery hidden. The graph is absent while the synthetic numeric heart rate remains visible:
+
+<img src="screenshots/history-aod-readout.png" alt="Always-on binary clock and numeric heart rate with both backgrounds hidden" width="260">
 
 ## Architecture and privacy
 
@@ -199,6 +232,8 @@ ANDROID_SERIAL=EMULATOR_SERIAL ./gradlew :history:connectedDebugAndroidTest
 ```
 
 The prototype has been checked on a Wear OS 7 emulator for Health Services callback delivery with emulated sensor values, the separate permission prompts, reboot registration, sample-window updates, and active/AOD rendering. Actionable world-clock providers at every ordinary slot position verified that the overlapping background leaves their actions reachable. Tapping the system stopwatch indicator opened the ongoing activity. Storage tests cover expiration, out-of-order batches, unreliable values, late callbacks after stopping, permission-loss handling, and sample isolation. Image tests check payload size, transparent edges, unfilled gaps, and side-label clearance. Touch tests cover dragging and clearing the cursor on release, cancellation, visibility changes, and focus loss. Inspection tests cover original timestamps and values, out-of-order readings, empty history, and missing intervals. Timeline tests cover elapsed spacing, trace interpolation, missing and partial history, local time, and daylight-saving changes. Layout checks cover foreground layer order, readouts, ordinary provider targets, and the ongoing-activity reserve. Official WFF validation and memory evaluation complement these checks; see the [verification guide](layout-verification.md).
+
+Emulator update checks verified that an older, editable background set to Empty returns to the dedicated history provider while saved styles and ordinary providers survive. Rendered checks cover Faint, Subtle, and Clear graphs; optional markers and spacing; centered choice menus; the round timeframe shortcut; and a usable chart at 180 dp with enlarged text. Confirmed ambient captures keep numeric heart rate visible with the graph and decimal backdrop hidden. These control changes have emulator evidence, not physical-watch installation evidence.
 
 On 2026-09-23, the wearer confirmed installing both apps through private Play testing on a Pixel Watch 5, granting heart-rate and background access, adding Binary Pulse as a watch face, and seeing recorded readings in both the app and the face after selecting the graph provider. Long-duration reliability, battery impact, and manufacturer-specific sensor cadence remain unverified on hardware. Private Play internal testing enables on-wrist evaluation; it does not establish public release readiness. On-wrist testing and health-permission distribution requirements need review before wider publication.
 
