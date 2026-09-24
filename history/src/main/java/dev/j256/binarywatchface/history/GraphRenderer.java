@@ -20,7 +20,7 @@ public final class GraphRenderer {
     public static final int HEIGHT = 364;
     public static final int BACKGROUND_WIDTH = 450;
     public static final int BACKGROUND_HEIGHT = 300;
-    private static final float BACKGROUND_PLOT_TOP = 40;
+    private static final float BACKGROUND_PLOT_TOP = 80;
     private static final float BACKGROUND_PLOT_BOTTOM = BACKGROUND_HEIGHT;
     private static final int BACKGROUND_PLOT_ALPHA = 64;
     private static final float MARK_HALF_LENGTH = 5.5f;
