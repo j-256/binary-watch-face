@@ -79,7 +79,7 @@ The SDK check must report `37` or newer. In the downloadable prototype bundle, t
 1. Open **Binary Heart History** from the watch's app list, then tap **Settings** below the graph.
 2. Choose **Preview sample data** for an immediate demonstration, or **Start recording** and grant heart-rate access followed by background access.
 3. Choose the time window in the app. It applies to both the preview and watch-face graph.
-4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time marks** or **Time + range**. Time marks sit directly on the trace; the small side captions give the window's start and end in local 24-hour time. The app explains the spacing for the selected window. This setting changes the face; the app's chart keeps its labels.
+4. Under **Graph labels**, keep **None** for the default minimal face, or choose **Time** or **Time + range**. Under **Graph markers**, choose **None**, vertical **Ticks**, **Dots**, or upright **Triangles** on the trace. Markers and labels are independent; the small side captions give the window's start and end in local 24-hour time. The app explains the spacing for the selected window. This setting changes the face; the app's chart keeps its labels.
 5. Long-press the watch face, choose **Add new**, and select **Binary Pulse**. Its default layout enables the subtle graph and two ordinary providers.
 6. In the face editor, use **Layout & brightness** to select faint, subtle, or clear heart history with no ordinary providers, or with two, three, or four. The background slot is dedicated to **Heart history graph**; the editor cannot replace or remove its provider. Install Binary Heart History before adding the face so the provider is available.
 
@@ -125,7 +125,8 @@ The shorter windows show less of the fixture: thirty minutes covers modest varia
 | --- | --- |
 | Window | Rolling 30 minutes, 1 hour, 6 hours, or 24 hours, ending at image generation |
 | Contrast | Faint, Subtle (default), or Clear through the face's Layout & brightness setting |
-| Labels | None by default; optionally show marks on the trace and side times, with or without the observed BPM range |
+| Labels | None by default; optionally show side times, with or without the observed BPM range |
+| Markers | None, vertical ticks, dots, or upright triangles on the trace, independent of labels |
 | Refresh | Requests Wear OS updates about every five minutes; explicit setting changes request an immediate refresh |
 | Trace | Dim bucket averages with a faint min/max envelope to retain short peaks and a soft fill beneath each connected segment |
 | Missing data | Breaks both the trace and its fill when adjacent readings are more than two minutes apart; gaps shorter than a display bucket can disappear at long spans |
@@ -142,7 +143,7 @@ Hiding labels leaves fresh history entirely free of captions in both preview and
 
 ### Reading the time marks
 
-Vertical strokes mark the trace at equal elapsed intervals. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
+Optional vertical ticks, dots, or upright triangles mark the trace at equal elapsed intervals. Choose None to hide them without hiding the timestamps. The trace is very faint, the strokes are slightly brighter, and the side timestamps are brighter still. All three remain dimmer than the primary time and readouts. Each stroke stays upright and centered on the trace as it rises and falls. Count inward from the start or end time using the spacing below. Marks are omitted where there is no connected trace; the clock and complication content can cover portions of the background. The side times describe the full selected window, even when recorded history fills only part of it. They advance when the graph image refreshes.
 
 | Window | Time between marks |
 | --- | --- |

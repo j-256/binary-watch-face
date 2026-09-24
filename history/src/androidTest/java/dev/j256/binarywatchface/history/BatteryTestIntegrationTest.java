@@ -128,6 +128,18 @@ public class BatteryTestIntegrationTest {
         assertEquals(Issue.UPDATED, store.active().issue());
     }
 
+    @Test public void markerChangesSeparateComparisonsAndPermanentlyExcludeAnActiveRun() {
+        HistorySettings settings = new HistorySettings(context);
+        settings.markers(HistorySettings.Markers.NONE);
+        String original = BatteryReader.configuration(context);
+        store.active(run("markers", now).observe(reading(0, 90), false, true));
+        settings.markers(HistorySettings.Markers.TRIANGLES);
+        assertNotEquals(original, BatteryReader.configuration(context));
+        settings.markers(HistorySettings.Markers.NONE);
+        assertEquals(original, BatteryReader.configuration(context));
+        assertEquals(Issue.SETTINGS_CHANGED, store.active().issue());
+    }
+
     @Test public void resultsAreBoundedExpiredAndExportedWithRawBatteryObservations() throws Exception {
         for (int index = 0; index < BatteryTestStore.MAX_RUNS + 3; index++) {
             Run run = run("run-" + index, now).observe(reading(0, 90), false, true).observe(reading(12, 75), true, true);

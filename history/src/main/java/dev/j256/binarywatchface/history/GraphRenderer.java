@@ -25,6 +25,9 @@ public final class GraphRenderer {
     private static final int BACKGROUND_PLOT_ALPHA = 64;
     private static final float MARK_HALF_LENGTH = 5.5f;
     private static final float MARK_STROKE_WIDTH = 2;
+    private static final float MARK_DOT_RADIUS = 2.7f;
+    private static final float MARK_TRIANGLE_HALF_WIDTH = 3.5f;
+    private static final float MARK_TRIANGLE_HALF_HEIGHT = 4;
     private static final int TIME_MARK_ALPHA = 88;
     private static final int TIME_LABEL_ALPHA = 192;
     // Keep side labels between the moving bezel tick and the hour row
@@ -37,16 +40,16 @@ public final class GraphRenderer {
     private GraphRenderer() {}
 
     public static Bitmap render(HistorySeries series, boolean demo, String emptyLabel) {
-        return render(series, demo, emptyLabel, false, HistorySettings.Labels.RANGE);
+        return render(series, demo, emptyLabel, false, HistorySettings.Labels.RANGE, HistorySettings.Markers.NONE);
     }
 
     public static Bitmap renderBackground(HistorySeries series, boolean demo, String emptyLabel,
-            HistorySettings.Labels labels) {
-        return render(series, demo, emptyLabel, true, labels);
+            HistorySettings.Labels labels, HistorySettings.Markers markers) {
+        return render(series, demo, emptyLabel, true, labels, markers);
     }
 
     private static Bitmap render(HistorySeries series, boolean demo, String emptyLabel, boolean background,
-            HistorySettings.Labels labels) {
+            HistorySettings.Labels labels, HistorySettings.Markers markers) {
         int width = background ? BACKGROUND_WIDTH : WIDTH;
         int height = background ? BACKGROUND_HEIGHT : HEIGHT;
         float left = 16;
@@ -60,8 +63,8 @@ public final class GraphRenderer {
         if (series.sampleCount > 0) {
             drawPlot(canvas, paint, series, left, top, right, bottom, background);
             if (background) dimBackground(canvas, paint, width, height);
-            if (background && labels != HistorySettings.Labels.NONE) {
-                drawTimeMarks(canvas, paint, series, left, top, right, bottom);
+            if (background && markers != HistorySettings.Markers.NONE) {
+                drawTimeMarks(canvas, paint, series, markers, left, top, right, bottom);
             }
         }
         paint.reset();
@@ -90,7 +93,7 @@ public final class GraphRenderer {
         return bitmap;
     }
 
-    private static void drawTimeMarks(Canvas canvas, Paint paint, HistorySeries series,
+    private static void drawTimeMarks(Canvas canvas, Paint paint, HistorySeries series, HistorySettings.Markers markers,
             float left, float top, float right, float bottom) {
         paint.reset();
         paint.setAntiAlias(true);
@@ -101,7 +104,19 @@ public final class GraphRenderer {
         for (HistoryTimeline.Mark mark : HistoryTimeline.marks(series)) {
             float x = (float) (left + (right - left) * mark.fraction());
             float y = y(mark.bpm(), series.lowerBound(), series.upperBound(), top, bottom);
-            canvas.drawLine(x, y - MARK_HALF_LENGTH, x, y + MARK_HALF_LENGTH, paint);
+            switch (markers) {
+                case TICKS -> canvas.drawLine(x, y - MARK_HALF_LENGTH, x, y + MARK_HALF_LENGTH, paint);
+                case DOTS -> canvas.drawCircle(x, y, MARK_DOT_RADIUS, paint);
+                case TRIANGLES -> {
+                    Path triangle = new Path();
+                    triangle.moveTo(x, y - MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.lineTo(x + MARK_TRIANGLE_HALF_WIDTH, y + MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.lineTo(x - MARK_TRIANGLE_HALF_WIDTH, y + MARK_TRIANGLE_HALF_HEIGHT);
+                    triangle.close();
+                    canvas.drawPath(triangle, paint);
+                }
+                case NONE -> { }
+            }
         }
     }
 

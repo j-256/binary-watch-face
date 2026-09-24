@@ -42,7 +42,8 @@ final class BatteryReader {
         HistorySettings settings = new HistorySettings(context);
         return "v" + version(context) + " / " + Build.MODEL + " / " + Build.VERSION.RELEASE
                 + " / " + Build.VERSION.INCREMENTAL
-                + " / " + settings.span().name() + " / " + settings.labels().name();
+                + " / " + settings.span().name() + " / " + settings.labels().name()
+                + " / " + settings.markers().name();
     }
 
     private BatteryReader() {}

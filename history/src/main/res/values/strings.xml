@@ -2,9 +2,14 @@
 <resources>
     <string name="labels_heading">Graph labels</string>
     <string name="labels_none">None</string>
-    <string name="labels_window">Time marks</string>
+    <string name="labels_window">Time</string>
     <string name="labels_range">Time + range</string>
-    <string name="mark_spacing">%1$s between marks on the line. Side labels show the window\'s start and end in local 24-hour time.</string>
+    <string name="markers_heading">Graph markers</string>
+    <string name="markers_none">None</string>
+    <string name="markers_ticks">Ticks</string>
+    <string name="markers_dots">Dots</string>
+    <string name="markers_triangles">Triangles</string>
+    <string name="mark_spacing">%1$s between marks on the line. Optional side labels show the window\'s start and end in local 24-hour time.</string>
     <string name="app_name">Binary Heart History</string>
     <string name="complication_name">Heart history graph</string>
     <string name="title">Heart history</string>

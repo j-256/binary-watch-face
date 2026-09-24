@@ -165,13 +165,13 @@ public class HistoryIntegrationTest {
             Bitmap bitmap = GraphRenderer.render(series, true, "Sample");
             assertEquals(0, bitmap.getPixel(0, 0));
             assertTrue(bitmap.getAllocationByteCount() < 1_000_000);
-            Bitmap background = GraphRenderer.renderBackground(series, true, "Sample", HistorySettings.Labels.NONE);
+            Bitmap background = GraphRenderer.renderBackground(series, true, "Sample", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
             assertTrue(background.getAllocationByteCount() < 1_000_000);
             for (int y = 0; y < background.getHeight(); y++) {
                 assertEquals(0, background.getPixel(0, y));
                 assertEquals(0, background.getPixel(background.getWidth() - 1, y));
             }
-            var data = HeartHistoryComplication.image(context, series, true, "Sample", HistorySettings.Labels.NONE);
+            var data = HeartHistoryComplication.image(context, series, true, "Sample", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
             assertNotNull(data.getTapAction());
             assertTrue(data.getTapAction().isImmutable());
             assertTrue(data.getTapAction().isActivity());
@@ -183,11 +183,12 @@ public class HistoryIntegrationTest {
         HistorySeries series = new HistorySeries(HistorySeries.Span.HOUR, now);
         series.add(new HistorySeries.Sample(now - 45 * HistorySeries.MINUTE_MS, 70));
         series.add(new HistorySeries.Sample(now - 15 * HistorySeries.MINUTE_MS, 90));
-        for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
-            Bitmap background = GraphRenderer.renderBackground(series, false, "", labels);
+        for (HistorySettings.Markers markers : HistorySettings.Markers.values()) {
+            Bitmap background = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW, markers);
             for (int y = 40; y < background.getHeight(); y++) {
                 assertEquals(0, background.getPixel(background.getWidth() / 2, y));
             }
+            background.recycle();
         }
     }
 
@@ -201,6 +202,49 @@ public class HistoryIntegrationTest {
             assertEquals(choice, new HistorySettings(context).labels());
         }
         settings.labels(HistorySettings.Labels.NONE);
+    }
+
+    @Test public void markerUpgradePreservesAppearanceAndThenSeparatesMarkersFromLabels() {
+        var preferences = context.getSharedPreferences("history-settings", Context.MODE_PRIVATE);
+        for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
+            preferences.edit().putString(HistorySettings.LABELS_KEY, labels.name())
+                    .remove(HistorySettings.MARKERS_KEY).commit();
+            HistorySettings settings = new HistorySettings(context);
+            assertEquals(labels == HistorySettings.Labels.NONE ? HistorySettings.Markers.NONE
+                    : HistorySettings.Markers.TICKS, settings.markers());
+            for (HistorySettings.Markers markers : HistorySettings.Markers.values()) {
+                settings.markers(markers);
+                settings.labels(HistorySettings.Labels.NONE);
+                assertEquals(markers, new HistorySettings(context).markers());
+                settings.labels(HistorySettings.Labels.WINDOW);
+                assertEquals(markers, new HistorySettings(context).markers());
+            }
+        }
+        new HistorySettings(context).labels(HistorySettings.Labels.NONE);
+        new HistorySettings(context).markers(HistorySettings.Markers.NONE);
+    }
+
+    @Test public void markerShapesAreDistinctDimAndIndependentOfTimeLabels() {
+        HistorySeries series = new HistorySeries(HistorySeries.Span.HOUR, now);
+        for (long time = series.startMs; time <= now; time += HistorySeries.MINUTE_MS) {
+            series.add(new HistorySeries.Sample(time, 80));
+        }
+        java.util.ArrayList<Bitmap> images = new java.util.ArrayList<>();
+        for (HistorySettings.Markers markers : HistorySettings.Markers.values()) {
+            Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE, markers);
+            for (Bitmap previous : images) assertFalse(previous.sameAs(image));
+            images.add(image);
+            for (int y = 0; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                assertTrue("Markers must remain below interface brightness", (image.getPixel(x, y) >>> 24) < 160);
+            }
+            Bitmap labeled = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW, markers);
+            assertFalse(image.sameAs(labeled));
+            for (int y = 90; y < image.getHeight(); y++) for (int x = 0; x < image.getWidth(); x++) {
+                assertEquals("Labels must not change the trace or markers", image.getPixel(x, y), labeled.getPixel(x, y));
+            }
+            labeled.recycle();
+        }
+        for (Bitmap image : images) image.recycle();
     }
 
     @Test public void everySideTimeAndWeekdayClearsTheBezelTickAndFitsTheOuterHourGutters() {
@@ -220,7 +264,7 @@ public class HistoryIntegrationTest {
 
     private void assertSideLabelClearance(long time, ZoneId zone, int[] pixels) {
         HistorySeries series = new HistorySeries(HistorySeries.Span.DAY, time);
-        Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
+        Bitmap image = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW, HistorySettings.Markers.NONE);
         int width = image.getWidth();
         image.getPixels(pixels, 0, width, 0, 0, width, image.getHeight());
         image.recycle();
@@ -252,23 +296,23 @@ public class HistoryIntegrationTest {
 
     @Test public void labelsCanBeHiddenInEitherModeWithoutHidingStaleOrEmptyNotices() {
         HistorySeries series = HistorySeries.demo(HistorySeries.Span.HOUR, now);
-        Bitmap hidden = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE);
-        Bitmap window = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW);
-        Bitmap range = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.RANGE);
+        Bitmap hidden = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE);
+        Bitmap window = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.WINDOW, HistorySettings.Markers.NONE);
+        Bitmap range = GraphRenderer.renderBackground(series, false, "", HistorySettings.Labels.RANGE, HistorySettings.Markers.NONE);
         assertEquals(0, captionPixels(hidden));
         assertEquals(0, captionPixels(window));
         assertFalse(hidden.sameAs(window));
         assertTrue(captionPixels(range) > captionPixels(window));
         for (HistorySettings.Labels labels : HistorySettings.Labels.values()) {
-            assertTrue(GraphRenderer.renderBackground(series, false, "", labels)
-                    .sameAs(GraphRenderer.renderBackground(series, true, "", labels)));
+            assertTrue(GraphRenderer.renderBackground(series, false, "", labels, HistorySettings.Markers.TICKS)
+                    .sameAs(GraphRenderer.renderBackground(series, true, "", labels, HistorySettings.Markers.TICKS)));
         }
         assertFalse(GraphRenderer.render(series, false, "").sameAs(GraphRenderer.render(series, true, "")));
         HistorySeries stale = new HistorySeries(HistorySeries.Span.HOUR, now);
         stale.add(new HistorySeries.Sample(now - 20 * HistorySeries.MINUTE_MS, 70));
-        assertTrue(captionPixels(GraphRenderer.renderBackground(stale, false, "", HistorySettings.Labels.NONE)) > 0);
+        assertTrue(captionPixels(GraphRenderer.renderBackground(stale, false, "", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE)) > 0);
         assertTrue(captionPixels(GraphRenderer.renderBackground(new HistorySeries(HistorySeries.Span.HOUR, now),
-                false, "Waiting for readings", HistorySettings.Labels.NONE)) > 0);
+                false, "Waiting for readings", HistorySettings.Labels.NONE, HistorySettings.Markers.NONE)) > 0);
     }
 
     private int captionPixels(Bitmap bitmap) {

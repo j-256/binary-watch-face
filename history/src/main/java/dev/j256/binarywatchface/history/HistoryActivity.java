@@ -127,7 +127,21 @@ public final class HistoryActivity extends Activity {
                         refresh();
                     }).setNegativeButton(R.string.not_now, null));
         });
-        if (settings.labels() != HistorySettings.Labels.NONE) {
+        TextView markersHeading = text(content, getString(R.string.markers_heading), 14, INK);
+        markersHeading.setPadding(0, dp(14), 0, dp(4));
+        action(content, settings.markers().title, false, view -> {
+            HistorySettings.Markers[] choices = HistorySettings.Markers.values();
+            String[] titles = new String[choices.length];
+            for (int index = 0; index < choices.length; index++) titles[index] = getString(choices[index].title);
+            HistoryUi.showDialog(new AlertDialog.Builder(this).setTitle(R.string.markers_heading)
+                    .setSingleChoiceItems(titles, settings.markers().ordinal(), (dialog, index) -> {
+                        settings.markers(choices[index]);
+                        HistoryRuntime.requestImage(this);
+                        dialog.dismiss();
+                        refresh();
+                    }).setNegativeButton(R.string.not_now, null));
+        });
+        if (settings.markers() != HistorySettings.Markers.NONE) {
             long minutes = HistoryTimeline.intervalMs(settings.span()) / HistorySeries.MINUTE_MS;
             String interval = minutes < MINUTES_PER_HOUR ? minutes + " min" : minutes / MINUTES_PER_HOUR + " h";
             text(content, getString(R.string.mark_spacing, interval), 12, MUTED);
