@@ -23,10 +23,28 @@ IMAGE = "system-images;android-37.0;android-wear-signed"
 SIZE = 454
 TIMEOUT = 180
 RENDER_SETTLE_SECONDS = 5
+FAVORITE_REGISTRATION_ATTEMPTS = 15
+FAVORITE_REGISTRATION_RETRY_SECONDS = 1
 
 
 def run(arguments, **kwargs):
     return subprocess.run(arguments, check=True, timeout=TIMEOUT, **kwargs)
+
+
+def register_favorite(shell, pause=time.sleep):
+    for attempt in range(FAVORITE_REGISTRATION_ATTEMPTS):
+        result = shell("am", "broadcast", "-a", "com.google.android.wearable.app.DEBUG_SURFACE",
+                       "--es", "operation", "set-watchface", "--es", "watchFaceId", PACKAGE).stdout
+        status = re.search(r"Broadcast completed: result=(-?\d+)(?:[,\s]|$)", result)
+        if status and status.group(1) == "1":
+            return
+        if not status or status.group(1) != "0":
+            raise RuntimeError(f"Cannot register Binary as a favorite: {result}")
+        if attempt + 1 < FAVORITE_REGISTRATION_ATTEMPTS:
+            pause(FAVORITE_REGISTRATION_RETRY_SECONDS)
+    raise RuntimeError(
+        f"Cannot register Binary as a favorite after {FAVORITE_REGISTRATION_ATTEMPTS} attempts: {result}"
+    )
 
 
 def capture(sdk, apk, output):
@@ -86,10 +104,7 @@ def capture(sdk, apk, output):
                 shell("settings", "put", "secure", "user_setup_complete", "1")
                 shell("settings", "put", "system", "screen_off_timeout", "2147483647")
                 run(adb + ["install", str(apk)])
-                result = shell("am", "broadcast", "-a", "com.google.android.wearable.app.DEBUG_SURFACE",
-                               "--es", "operation", "set-watchface", "--es", "watchFaceId", PACKAGE).stdout
-                if "result=1" not in result:
-                    raise RuntimeError(f"Cannot register Binary as a favorite: {result}")
+                register_favorite(shell)
                 shell("dumpsys", "battery", "unplug")
                 shell("input", "keyevent", "KEYCODE_WAKEUP")
                 shell("input", "keyevent", "KEYCODE_HOME")
