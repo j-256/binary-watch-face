@@ -35,7 +35,7 @@ def register_favorite(shell, pause=time.sleep):
     for attempt in range(FAVORITE_REGISTRATION_ATTEMPTS):
         result = shell("am", "broadcast", "-a", "com.google.android.wearable.app.DEBUG_SURFACE",
                        "--es", "operation", "set-watchface", "--es", "watchFaceId", PACKAGE).stdout
-        status = re.search(r"Broadcast completed: result=(-?\d+)(?:\s|$)", result)
+        status = re.search(r"Broadcast completed: result=(-?\d+)(?:[,\s]|$)", result)
         if status and status.group(1) == "1":
             return
         if not status or status.group(1) != "0":

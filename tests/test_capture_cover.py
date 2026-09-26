@@ -7,6 +7,15 @@ from tools import capture_cover as COVER
 
 
 class FavoriteRegistrationTest(unittest.TestCase):
+    def test_accepts_success_with_broadcast_data(self):
+        shell = Mock(return_value=SimpleNamespace(
+            stdout='Broadcast completed: result=1, data="Favorite Id=[4] Runtime=[2]"\n'
+        ))
+        pause = Mock()
+        COVER.register_favorite(shell, pause)
+        shell.assert_called_once()
+        pause.assert_not_called()
+
     def test_waits_for_the_receiver_to_register_the_installed_face(self):
         shell = Mock(side_effect=[
             SimpleNamespace(stdout="Broadcast completed: result=0\n"),
