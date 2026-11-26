@@ -25,6 +25,8 @@ TIMEOUT = 180
 RENDER_SETTLE_SECONDS = 5
 FAVORITE_REGISTRATION_ATTEMPTS = 15
 FAVORITE_REGISTRATION_RETRY_SECONDS = 1
+BOOT_POLL_SECONDS = 1
+BOOT_DIAGNOSTIC_CHARACTERS = 512
 
 
 def run(arguments, **kwargs):
@@ -45,6 +47,18 @@ def register_favorite(shell, pause=time.sleep):
     raise RuntimeError(
         f"Cannot register Binary as a favorite after {FAVORITE_REGISTRATION_ATTEMPTS} attempts: {result}"
     )
+
+
+def wait_for_boot(shell, emulator):
+    deadline = time.monotonic() + TIMEOUT
+    while True:
+        result = shell("getprop", "sys.boot_completed", check=False)
+        if result.returncode == 0 and result.stdout.strip() == "1":
+            return
+        if emulator.poll() is not None or time.monotonic() > deadline:
+            detail = result.stderr.strip() or result.stdout.strip() or "No boot completion signal"
+            raise RuntimeError(f"Wear OS emulator did not boot: {detail[-BOOT_DIAGNOSTIC_CHARACTERS:]}")
+        time.sleep(BOOT_POLL_SECONDS)
 
 
 def capture(sdk, apk, output):
@@ -89,17 +103,15 @@ def capture(sdk, apk, output):
             return ET.fromstring(shell("cat", "/sdcard/cover-ui.xml").stdout)
 
         log_path = temporary / "emulator.log"
+        # Initialize host authentication before the emulator imports the ADB identity
+        run([str(sdk / "platform-tools/adb"), "start-server"], env=environment)
         with log_path.open("w") as log:
             emulator = subprocess.Popen([
                 str(sdk / "emulator/emulator"), "-avd", "binary_cover", "-port", str(port),
                 "-no-window", "-no-audio", "-no-snapshot", "-wipe-data", "-no-boot-anim", "-gpu", "swiftshader",
             ], env=environment, stdout=log, stderr=subprocess.STDOUT)
             try:
-                deadline = time.monotonic() + TIMEOUT
-                while shell("getprop", "sys.boot_completed", check=False).stdout.strip() != "1":
-                    if emulator.poll() is not None or time.monotonic() > deadline:
-                        raise RuntimeError("Wear OS emulator did not boot")
-                    time.sleep(1)
+                wait_for_boot(shell, emulator)
                 shell("settings", "put", "global", "device_provisioned", "1")
                 shell("settings", "put", "secure", "user_setup_complete", "1")
                 shell("settings", "put", "system", "screen_off_timeout", "2147483647")
