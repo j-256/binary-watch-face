@@ -1,9 +1,70 @@
 from types import SimpleNamespace
+from pathlib import Path
 import subprocess
+import tempfile
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
+import zipfile
 
 from tools import capture_cover as COVER
+
+
+class EmulatorStartupTest(unittest.TestCase):
+    def test_initializes_adb_before_the_emulator_reads_its_identity(self):
+        class LaunchObserved(Exception):
+            pass
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sdk = root / "sdk"
+            image = sdk / "system-images/android-37.0/android-wear-signed/arm64-v8a"
+            image.mkdir(parents=True)
+            (image / "package.xml").write_text("<package/>")
+            xml = root / "watchface.xml"
+            xml.write_bytes(b"<WatchFace/>")
+            apk = root / "watchface.apk"
+            with zipfile.ZipFile(apk, "w") as archive:
+                archive.writestr("res/raw/watchface.xml", xml.read_bytes())
+            identity_ready = False
+
+            def run(arguments, **kwargs):
+                nonlocal identity_ready
+                if arguments[0] == str(sdk / "cmdline-tools/latest/bin/avdmanager"):
+                    device = Path(arguments[arguments.index("--path") + 1])
+                    device.mkdir()
+                    (device / "config.ini").write_text("hw.ramSize=1536\n")
+                elif arguments == [str(sdk / "platform-tools/adb"), "start-server"]:
+                    identity_ready = True
+                else:
+                    self.fail(f"Unexpected startup command: {arguments}")
+
+            def launch(*args, **kwargs):
+                self.assertTrue(identity_ready, "Emulator read the ADB identity before initialization")
+                raise LaunchObserved()
+
+            with patch.object(COVER, "SCREENSHOT_XML", xml), \
+                    patch.object(COVER.platform, "machine", return_value="arm64"), \
+                    patch.object(COVER, "run", side_effect=run), \
+                    patch.object(COVER.subprocess, "Popen", side_effect=launch):
+                with self.assertRaises(LaunchObserved):
+                    COVER.capture(sdk, apk, root / "cover.png")
+
+    def test_boot_timeout_reports_the_adb_authorization_failure(self):
+        shell = Mock(return_value=SimpleNamespace(
+            returncode=1, stdout="", stderr="adb: device unauthorized.\n"
+        ))
+        emulator = Mock()
+        emulator.poll.return_value = None
+        with patch.object(COVER.time, "monotonic", side_effect=[0, COVER.TIMEOUT + 1]):
+            with self.assertRaisesRegex(RuntimeError, "device unauthorized"):
+                COVER.wait_for_boot(shell, emulator)
+
+    def test_boot_completion_does_not_require_another_poll(self):
+        shell = Mock(return_value=SimpleNamespace(returncode=0, stdout="1\n", stderr=""))
+        emulator = Mock()
+        with patch.object(COVER.time, "sleep") as pause:
+            COVER.wait_for_boot(shell, emulator)
+        pause.assert_not_called()
 
 
 class FavoriteRegistrationTest(unittest.TestCase):
